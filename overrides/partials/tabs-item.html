@@ -1,0 +1,32 @@
+{# Six compact workstream tabs with keyboard-operable destination submenus. #}
+{% macro destination(nav_item, label, class) %}
+  {% if nav_item.children %}
+    {{ destination(nav_item.children | first, label, class) }}
+  {% else %}
+    <a href="{{ nav_item.url | url }}" class="{{ class }}"{% if nav_item.active %} aria-current="page"{% endif %}>{{ label }}</a>
+  {% endif %}
+{% endmacro %}
+
+{% macro render(nav_item, ref) %}
+  {% set ref = ref or nav_item %}
+  {% set class = "md-tabs__item portal-tabs__item" %}
+  {% if ref.active %}
+    {% set class = class ~ " md-tabs__item--active" %}
+  {% endif %}
+  {% set menu_id = "portal-tab-" ~ (nav_item.title | lower | replace(" ", "-") | replace("&", "and") | replace("/", "-")) %}
+  <li class="{{ class }}" data-portal-tab>
+    {{ destination(nav_item, nav_item.title, "md-tabs__link portal-tabs__link") }}
+    {% if nav_item.children %}
+      <button class="portal-tabs__toggle" type="button" aria-expanded="false" aria-controls="{{ menu_id }}" aria-label="Open {{ nav_item.title }} submenu">
+        <span aria-hidden="true">⌄</span>
+      </button>
+      <ul class="portal-tabs__menu" id="{{ menu_id }}" aria-label="{{ nav_item.title }} destinations">
+        {% for child in nav_item.children %}
+          <li{% if child.active %} class="is-active"{% endif %}>
+            {{ destination(child, child.title, "portal-tabs__menu-link") }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </li>
+{% endmacro %}

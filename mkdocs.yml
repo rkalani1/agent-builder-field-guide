@@ -93,22 +93,97 @@ extra_javascript:
   - assets/javascripts/task-builder.js
   - assets/javascripts/claude-workbench.js
   - assets/javascripts/universal-workbench.js
+  - assets/javascripts/portal-nav.js
 
 nav:
-  - Home: index.md
-  - Start Here:
-      - start-here/index.md
-      - What is an agent?: start-here/what-is-an-agent.md
-      - Good tasks for agents: start-here/good-tasks.md
-      - When not to use agents: start-here/when-not-to-use.md
-      - Subscription, app, or API?: start-here/decision-tree.md
-      - Beginner setup path: start-here/beginner-path.md
-      - Power-user setup path: start-here/power-user-path.md
-      - Local-first setup path: start-here/local-first-path.md
-      - Team/org setup path: start-here/team-path.md
-      - Safety baseline: start-here/safety-baseline.md
-  - Learn:
+  - Start:
+      - Home: index.md
+      - Start Here:
+          - start-here/index.md
+          - What is an agent?: start-here/what-is-an-agent.md
+          - Good tasks for agents: start-here/good-tasks.md
+          - When not to use agents: start-here/when-not-to-use.md
+          - Subscription, app, or API?: start-here/decision-tree.md
+          - Beginner setup path: start-here/beginner-path.md
+          - Power-user setup path: start-here/power-user-path.md
+          - Local-first setup path: start-here/local-first-path.md
+          - Team/org setup path: start-here/team-path.md
+          - Safety baseline: start-here/safety-baseline.md
+  - Build:
       - Task Builder: task-builder/index.md
+      - Agent Factory:
+          - agent-factory/index.md
+          - Operating model: agent-factory/factory-operating-model.md
+          - Portfolio design: agent-factory/agent-portfolio-design.md
+          - Requirements intake: agent-factory/requirements-intake.md
+          - Candidate ranking: agent-factory/candidate-ranking.md
+          - Prompt-pack generation: agent-factory/prompt-pack-generation.md
+          - Eval generation: agent-factory/eval-generation.md
+          - Red-team generation: agent-factory/red-team-generation.md
+          - Cross-platform porting: agent-factory/cross-platform-porting.md
+          - Launch readiness: agent-factory/launch-readiness.md
+          - Maintenance and drift: agent-factory/maintenance-and-drift.md
+          - Worked example run: agent-factory/worked-example.md
+      - Templates:
+          - template-library/index.md
+          - Agent spec template: template-library/agent-spec.md
+          - Prompt template: template-library/prompt.md
+          - Eval rubric: template-library/eval-rubric.md
+          - Safety checklist: template-library/safety-checklist.md
+          - PRD for an agent: template-library/agent-prd.md
+          - Starter kits index: starter-kits.md
+  - Connect:
+      - Choose a tool:
+          - Capability map: capability-map/index.md
+          - Surface router: surface-router/index.md
+          - Memory & preferences: preferences-memory/index.md
+          - No-code automations: no-code-automations/index.md
+      - Platforms:
+          - platforms/index.md
+          - Claude Desktop: platforms/claude-desktop.md
+          - Claude Code (CLI): platforms/claude-code.md
+          - Claude Projects & instructions: platforms/claude-projects.md
+          - Gemini app: platforms/gemini-app.md
+          - Gemini CLI: platforms/gemini-cli.md
+          - Google Antigravity: platforms/antigravity.md
+          - Google AI Studio & Gemini API: platforms/ai-studio.md
+          - ChatGPT (consumer & Projects): platforms/chatgpt.md
+          - Custom GPTs: platforms/custom-gpts.md
+          - OpenAI API & Agents SDK: platforms/openai-api.md
+          - Codex CLI & Codex app: platforms/codex.md
+          - GitHub Copilot coding agent: platforms/copilot.md
+          - Grok / xAI: platforms/grok.md
+          - Local scripts & schedulers: platforms/local-scripts.md
+      - MCP & Connectors:
+          - mcp/index.md
+          - MCP concepts: mcp/concepts.md
+          - Installing MCP servers: mcp/install.md
+          - Writing your own MCP server: mcp/writing.md
+          - Remote/custom connectors: mcp/remote-connectors.md
+          - MCP security: mcp/security.md
+          - Example MCP toolkit: my-toolkit/mcp-plugins.md
+      - Browser & Computer Use:
+          - browser-use/index.md
+          - Surface comparison: browser-use/comparison.md
+          - Anthropic computer use: browser-use/anthropic.md
+          - OpenAI computer use: browser-use/openai.md
+          - browser-use library: browser-use/browser-use.md
+          - Operating boundaries: browser-use/boundaries.md
+  - Operate:
+      - Orchestration:
+          - orchestration/index.md
+          - Single-agent loops: orchestration/single-agent.md
+          - Multi-agent patterns: orchestration/multi-agent.md
+          - Local-first automation: orchestration/local-first.md
+          - State, memory, handoffs: orchestration/state.md
+      - Evaluation & Safety:
+          - evals/index.md
+          - Building eval sets: evals/eval-sets.md
+          - Red-team workflows: evals/red-team.md
+          - Safety checklists: safety/checklists.md
+          - Human-in-the-loop: safety/hitl.md
+          - Incident response: safety/incidents.md
+  - Learn:
       - Learning path: learning-path/index.md
       - Mastery:
           - mastery/index.md
@@ -142,78 +217,8 @@ nav:
           - First browser agent: quickstarts/first-browser-agent.md
           - First MCP agent: quickstarts/first-mcp-agent.md
           - First Grok task: quickstarts/first-grok-task.md
-  - Choose a tool:
-      - Capability map: capability-map/index.md
-      - Surface router: surface-router/index.md
-      - Memory & preferences: preferences-memory/index.md
-      - No-code automations: no-code-automations/index.md
-  - Platforms:
-      - platforms/index.md
-      - Claude Desktop: platforms/claude-desktop.md
-      - Claude Code (CLI): platforms/claude-code.md
-      - Claude Projects & instructions: platforms/claude-projects.md
-      - Gemini app: platforms/gemini-app.md
-      - Gemini CLI: platforms/gemini-cli.md
-      - Google Antigravity: platforms/antigravity.md
-      - Google AI Studio & Gemini API: platforms/ai-studio.md
-      - ChatGPT (consumer & Projects): platforms/chatgpt.md
-      - Custom GPTs: platforms/custom-gpts.md
-      - OpenAI API & Agents SDK: platforms/openai-api.md
-      - Codex CLI & Codex app: platforms/codex.md
-      - GitHub Copilot coding agent: platforms/copilot.md
-      - Grok / xAI: platforms/grok.md
-      - Local scripts & schedulers: platforms/local-scripts.md
-  - MCP & Connectors:
-      - mcp/index.md
-      - MCP concepts: mcp/concepts.md
-      - Installing MCP servers: mcp/install.md
-      - Writing your own MCP server: mcp/writing.md
-      - Remote/custom connectors: mcp/remote-connectors.md
-      - MCP security: mcp/security.md
-      - Example MCP toolkit: my-toolkit/mcp-plugins.md
-  - Browser & Computer Use:
-      - browser-use/index.md
-      - Surface comparison: browser-use/comparison.md
-      - Anthropic computer use: browser-use/anthropic.md
-      - OpenAI computer use: browser-use/openai.md
-      - browser-use library: browser-use/browser-use.md
-      - Operating boundaries: browser-use/boundaries.md
-  - Orchestration:
-      - orchestration/index.md
-      - Single-agent loops: orchestration/single-agent.md
-      - Multi-agent patterns: orchestration/multi-agent.md
-      - Local-first automation: orchestration/local-first.md
-      - State, memory, handoffs: orchestration/state.md
-  - Evaluation & Safety:
-      - evals/index.md
-      - Building eval sets: evals/eval-sets.md
-      - Red-team workflows: evals/red-team.md
-      - Safety checklists: safety/checklists.md
-      - Human-in-the-loop: safety/hitl.md
-      - Incident response: safety/incidents.md
-  - Recipes:
-      - recipes/index.md
-  - Agent Factory:
-      - agent-factory/index.md
-      - Operating model: agent-factory/factory-operating-model.md
-      - Portfolio design: agent-factory/agent-portfolio-design.md
-      - Requirements intake: agent-factory/requirements-intake.md
-      - Candidate ranking: agent-factory/candidate-ranking.md
-      - Prompt-pack generation: agent-factory/prompt-pack-generation.md
-      - Eval generation: agent-factory/eval-generation.md
-      - Red-team generation: agent-factory/red-team-generation.md
-      - Cross-platform porting: agent-factory/cross-platform-porting.md
-      - Launch readiness: agent-factory/launch-readiness.md
-      - Maintenance and drift: agent-factory/maintenance-and-drift.md
-      - Worked example run: agent-factory/worked-example.md
-  - Templates:
-      - template-library/index.md
-      - Agent spec template: template-library/agent-spec.md
-      - Prompt template: template-library/prompt.md
-      - Eval rubric: template-library/eval-rubric.md
-      - Safety checklist: template-library/safety-checklist.md
-      - PRD for an agent: template-library/agent-prd.md
-      - Starter kits index: starter-kits.md
+      - Recipes:
+          - recipes/index.md
   - Reference:
       - Glossary: glossary.md
       - Plain-English glossary: glossary-plain.md
@@ -228,4 +233,5 @@ nav:
           - 0002 — Sourced and dated: decision-records/0002-sourced-and-dated.md
           - 0003 — No default schedulers: decision-records/0003-no-default-schedulers.md
           - 0004 — Recipe nav pattern: decision-records/0004-recipe-nav-pattern.md
+          - 0005 — Workstream navigation: decision-records/0005-workstream-navigation.md
           - ADR template: decision-records/0000-template.md
