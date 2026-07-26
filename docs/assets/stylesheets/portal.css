@@ -1,0 +1,182 @@
+/* Agents and Automations — portal-wide visual system.
+   Keeps Material's structure and behavior while improving hierarchy,
+   wayfinding, and dense-reference readability. */
+
+:root {
+  --portal-accent: #4f46e5;
+  --portal-accent-strong: #3730a3;
+  --portal-cyan: #0891b2;
+  --portal-rule: rgba(79, 70, 229, 0.14);
+  --portal-surface: rgba(255, 255, 255, 0.82);
+  --portal-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
+  --portal-radius: 0.85rem;
+}
+
+@media screen {
+  .md-grid {
+    max-width: 88rem;
+  }
+
+  .md-header {
+    background:
+      linear-gradient(105deg, rgba(15, 23, 42, 0.98), rgba(49, 46, 129, 0.94)) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+  }
+
+  .md-tabs {
+    background: rgba(15, 23, 42, 0.96);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .md-tabs__list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+
+  .md-tabs__link {
+    opacity: 0.72;
+    transition: opacity 150ms ease, color 150ms ease;
+  }
+
+  .md-tabs__link:is(:hover, :focus-visible),
+  .md-tabs__item--active .md-tabs__link {
+    opacity: 1;
+  }
+
+  .md-main {
+    background:
+      radial-gradient(900px 460px at 8% -10%, rgba(79, 70, 229, 0.10), transparent 62%),
+      radial-gradient(760px 400px at 100% 0%, rgba(8, 145, 178, 0.08), transparent 58%),
+      var(--md-default-bg-color);
+  }
+
+  .md-content__inner {
+    padding-bottom: 3rem;
+  }
+
+  .md-typeset > p,
+  .md-typeset > ul:not(.grid),
+  .md-typeset > ol {
+    max-width: 76ch;
+  }
+
+  .md-typeset h1 {
+    max-width: 22ch;
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .md-typeset h2 {
+    margin-top: 2.5rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--portal-rule);
+    letter-spacing: -0.018em;
+  }
+
+  .md-sidebar__scrollwrap {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(79, 70, 229, 0.28) transparent;
+  }
+
+  .md-nav__link {
+    border-radius: 0.4rem;
+    transition: background 140ms ease, color 140ms ease;
+  }
+
+  .md-nav__link:is(:hover, :focus-visible) {
+    background: rgba(79, 70, 229, 0.08);
+  }
+
+  .md-nav__link--active {
+    background: rgba(79, 70, 229, 0.10);
+    box-shadow: inset 3px 0 0 var(--portal-accent);
+    font-weight: 650;
+  }
+
+  .md-typeset .grid.cards > ul > li {
+    position: relative;
+    overflow: hidden;
+    border-color: var(--portal-rule);
+    border-radius: var(--portal-radius);
+    background: var(--portal-surface);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .md-typeset .grid.cards > ul > li::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--portal-accent), var(--portal-cyan));
+    opacity: 0.72;
+  }
+
+  .md-typeset .grid.cards > ul > li:is(:hover, :focus-within) {
+    transform: translateY(-2px);
+    border-color: rgba(79, 70, 229, 0.34);
+    box-shadow: var(--portal-shadow);
+  }
+
+  .md-typeset table:not([class]) {
+    border-radius: 0.7rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .md-typeset :where(a, button, input, select, textarea, summary):focus-visible {
+    outline: 2px solid var(--portal-accent);
+    outline-offset: 3px;
+  }
+}
+
+[data-md-color-scheme="slate"] {
+  --portal-rule: rgba(129, 140, 248, 0.20);
+  --portal-surface: rgba(30, 41, 59, 0.72);
+  --portal-shadow: 0 16px 40px rgba(0, 0, 0, 0.20);
+}
+
+[data-md-color-scheme="slate"] .md-main {
+  background:
+    radial-gradient(900px 460px at 8% -10%, rgba(99, 102, 241, 0.16), transparent 62%),
+    radial-gradient(760px 400px at 100% 0%, rgba(6, 182, 212, 0.09), transparent 58%),
+    var(--md-default-bg-color);
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset h1 {
+    font-size: clamp(1.75rem, 8vw, 2.35rem);
+  }
+
+  .md-typeset .md-typeset__table {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .md-typeset table:not([class]):has(th:nth-child(3)) {
+    min-width: 42rem;
+  }
+
+  .md-typeset .grid.cards > ul > li {
+    border-radius: 0.7rem;
+  }
+}
+
+@media (hover: none) {
+  .md-typeset .grid.cards > ul > li:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-tabs__link,
+  .md-nav__link,
+  .md-typeset .grid.cards > ul > li {
+    transition: none;
+  }
+}

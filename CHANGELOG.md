@@ -2,6 +2,14 @@
 
 All notable changes to this guide are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The site-rendered version of this file lives at [`docs/changelog.md`](docs/changelog.md) and is kept in sync.
 
+## [Unreleased] — Design-system refinement
+
+### Changed
+- Refined the portal and three interactive workbenches with clearer visual hierarchy, responsive tables and navigation, visible focus states, and a more productive split-pane Task Builder. Guide content and product claims are unchanged.
+
+### Verified
+- `mkdocs build --strict` exits 0, and desktop/mobile browser checks show no page-level horizontal overflow.
+
 ## [0.7.0] — 2026-07-18 — Deep review: currency, IA, and safety pass
 
 ### Fixed

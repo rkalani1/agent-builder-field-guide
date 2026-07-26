@@ -842,3 +842,35 @@ details { border-radius: var(--radius); }.claude-workbench details > summary {
   --rust-soft:   oklch(0.32 0.06 268);
   --rust-deep:   oklch(0.86 0.1 268);
 }
+
+/* Keep the embedded workbench visually integrated with the documentation shell. */
+.claude-workbench {
+  width: 100%;
+  min-width: 0;
+}
+
+.claude-workbench .choice:focus-visible,
+.claude-workbench .button:focus-visible,
+.claude-workbench summary:focus-visible,
+.claude-workbench textarea:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 3px;
+}
+
+@media (max-width: 44.984375em) {
+  .claude-workbench .surface-filter,
+  .claude-workbench .choice-grid,
+  .claude-workbench .task-grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    padding-bottom: 0.35rem;
+  }
+
+  .claude-workbench .surface-filter > *,
+  .claude-workbench .choice-grid > *,
+  .claude-workbench .task-grid > * {
+    flex: 0 0 auto;
+  }
+}
