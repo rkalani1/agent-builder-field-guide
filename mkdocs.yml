@@ -84,6 +84,7 @@ extra:
       link: https://github.com/rkalani1/agents-automations
 
 extra_css:
+  - assets/stylesheets/portal.css
   - assets/stylesheets/task-builder.css
   - assets/stylesheets/claude-workbench.css
   - assets/stylesheets/universal-workbench.css
