@@ -1,15 +1,29 @@
+<div class="portal-hero" markdown="1">
+
 # Agents and Automations
 
-A practical, vendor-neutral portal for designing, configuring, testing, and operating AI agents and workflow automations across Claude, Gemini, ChatGPT/OpenAI, and adjacent surfaces.
+<p class="portal-lede">A practical, vendor-neutral portal for designing, configuring, testing, and operating AI agents and workflow automations across Claude, Gemini, ChatGPT/OpenAI, and adjacent surfaces.</p>
 
+<div class="portal-actions" markdown="1">
+[Open the Task Builder](task-builder/index.md){ .portal-primary }
+[Start the learning path](learning-path/index.md){ .portal-secondary }
+</div>
 
+<ol class="workflow-ribbon" aria-label="Agent workflow">
+  <li><span>01</span><strong>Task</strong><small>Name the outcome</small></li>
+  <li><span>02</span><strong>Tool</strong><small>Choose the surface</small></li>
+  <li><span>03</span><strong>Guardrails</strong><small>Bound actions</small></li>
+  <li><span>04</span><strong>Test</strong><small>Probe failure</small></li>
+  <li><span>05</span><strong>Operate</strong><small>Monitor + hand off</small></li>
+</ol>
 
-
----
+</div>
 
 ## Pick the right starting point
 
 You do not need to read this site front to back. Start with the row that matches you.
+
+<div class="starter-routes" markdown="1">
 
 | If you are... | Do this first | You should have by the end |
 |---|---|---|
@@ -19,6 +33,8 @@ You do not need to read this site front to back. Start with the row that matches
 | Choosing between ChatGPT, Claude, Gemini, Grok, Perplexity, or Copilot | Use the [Capability map](capability-map/index.md) and [Mastery hub](mastery/index.md). | A deliberate tool choice for each recurring workflow instead of defaulting to whichever tab is open. |
 | Building a real agent or coding workflow | Start with [Agent Factory](agent-factory/index.md), [Evals & safety](evals/index.md), and [Starter kits](starter-kits.md). | A scoped agent spec, tool allowlist, eval set, red-team probes, and launch checklist. |
 | Responsible for a team or sensitive data | Read [Team path](start-here/team-path.md), [Safety baseline](start-here/safety-baseline.md), and [Human-in-the-loop](safety/hitl.md). | A permission model, review gates, data boundaries, and off-switch before any automation runs. |
+
+</div>
 
 <div class="grid cards" markdown>
 
