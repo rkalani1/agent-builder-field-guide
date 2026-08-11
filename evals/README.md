@@ -38,6 +38,11 @@ evals/
     red-team-rubric.md      PASS/BORDERLINE/FAIL rubric per attack class
     scoring-runbook.md      Step-by-step human scoring instructions
 
+  automedbench-lite/
+    README.md               S1-S5 process eval for medical/research agents
+    rubric.md               Stage scoring and automatic failure conditions
+    tasks/                  Starter workflow-eval tasks
+
   USAGE-claude.md           How to run evals in Claude Desktop and Claude Code
   USAGE-chatgpt.md          How to run evals in ChatGPT
   USAGE-gemini.md           How to run evals in Gemini and via the Gemini API
@@ -54,7 +59,8 @@ evals/
 |-----|-------|-------|
 | Golden | 9 | 103 |
 | Red-team | 10 | 101 |
-| Total | 19 | 204 |
+| AutoMedBench-Lite | 1 pack | 3 starter tasks |
+| Total | 20+ | 207+ |
 
 ---
 
@@ -113,6 +119,10 @@ ID conventions: rt-{attack-abbr}-{NNN}.
 5. Score using the appropriate rubric in evals/rubrics/.
 
 Platform-specific step-by-step guides are in the USAGE-*.md files.
+
+### AutoMedBench-Lite workflow eval
+
+Use `automedbench-lite/` when the target is a multi-step agent workflow, especially medical, scientific, compliance, or regulated-domain work. Score the visible trace across S1 Plan, S2 Setup, S3 Validate, S4 Execute, and S5 Submit instead of scoring only the final answer.
 
 ### Automated batch run (OpenAI / Gemini API)
 

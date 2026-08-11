@@ -141,6 +141,7 @@ nav:
   - Evaluation & Safety:
       - evals/index.md
       - Building eval sets: evals/eval-sets.md
+      - AutoMedBench-Lite: evals/automedbench-lite.md
       - Red-team workflows: evals/red-team.md
       - Safety checklists: safety/checklists.md
       - Human-in-the-loop: safety/hitl.md

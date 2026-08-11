@@ -24,6 +24,7 @@ This section gives you practical, actionable guidance on building and operating 
 
 - [Building eval sets](eval-sets.md) — how to define cases, what schema to use, how to version and expand your dataset over time.
 - [Red-team workflows](red-team.md) — adversarial testing categories specific to agents, with concrete test procedures and remediation guidance.
+- [AutoMedBench-Lite](automedbench-lite.md) — a five-stage process eval for medical, scientific, and regulated-domain agent work.
 
 ## A minimum viable eval program
 
