@@ -4,6 +4,9 @@ All notable changes to this guide are documented here. Format loosely follows [K
 
 ## [Unreleased] — Design-system refinement
 
+### Changed (homepage rebuild)
+- The homepage now focuses on four ecosystems — Claude, Gemini, ChatGPT/Codex, and Grok — with a new "Pick your ecosystem" card row pairing each ecosystem's setup guide, mastery track, and highest-leverage agent surface. Perplexity and GitHub Copilot mentions were removed from the homepage (their coverage elsewhere on the site is unchanged), the repo-maintenance worked example now pairs Claude Code with Codex CLI, and the hero lede and site meta description name the four ecosystems.
+
 ### Fixed
 - Homepage accuracy pass: the quickstart count now says six (matching the six shipped quickstarts — the index page was also still saying five), the Mastery card names the tracks that actually exist (coding agents rather than separate Perplexity/Copilot tracks), the recipe-library card describes the real recipe sections (permission model, eval cases) instead of a "tool allowlist" that no recipe contains, and the three Task Builder worked examples quote eval cases and red-team probes that appear in their linked recipes.
 
