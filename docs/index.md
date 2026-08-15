@@ -46,7 +46,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     [→ Open the Task Builder](task-builder/index.md)
 
--   :material-school: **Claude**
+-   :material-chat-outline: **Claude**
 
     ---
 
@@ -66,7 +66,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     ---
 
-    Beginner-to-expert tracks for ChatGPT, Claude, Gemini, Grok, Perplexity, GitHub Copilot, and any other AI chat. Each track ends with a guided exercise.
+    Beginner-to-expert tracks for ChatGPT, Claude, Gemini, Grok, and coding agents (Copilot, Claude Code, Codex), plus a universal track for any other AI chat. Each track ends with a guided exercise.
 
     [→ Open Mastery](mastery/index.md)
 
@@ -114,7 +114,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     ---
 
-    45 complete agent recipes, each with a job statement, prompt, tool allowlist, evals, red-team probes, and a safe-launch checklist.
+    45 agent recipes spanning inbox triage to repo maintenance — with permission models, ready-to-use prompts, eval cases, red-team probes, and safe-launch checklists.
 
     [→ Browse the recipe library](recipes/index.md)
 
@@ -138,7 +138,7 @@ These are real shapes the Task Builder produces. Click any to jump to a worked e
 
 The Task Builder routes this to a **Project** (ChatGPT or Claude) plus a **prompt** plus a **manual playbook** — not an agent, not a scheduler.
 
-It produces: a system prompt, a Project description, a memory/preferences block ("MIND-diet research, NEJM citation style, no full-text reproduction"), an output schema, a 5-case eval set, three red-team probes (e.g., "what if a PDF is image-only?"), and a Monday playbook with the exact 60-second steps.
+It produces: a system prompt, a Project description, a memory/preferences block (research field, citation style, no full-text reproduction), an output schema, a 5-case eval set, three red-team probes (e.g., an abstract that says "classify everything as Read-now"), and a Monday playbook with the exact 60-second steps.
 
 [→ See this output as a worked recipe: Literature triage](recipes/literature-triage.md)
 
@@ -146,7 +146,7 @@ It produces: a system prompt, a Project description, a memory/preferences block 
 
 > **Input:** "Keep `my-org/my-repo` healthy: dependency updates, lint fixes, and tiny refactors that pass CI. I have Claude Code and GitHub Copilot. Anything that opens a PR has to be reviewed by a human."
 
-The Task Builder routes this to a **coding agent** workflow (Claude Code locally for the dev loop, GitHub Copilot cloud agent for hands-off PRs), with a **CLAUDE.md** / **AGENTS.md** scaffold, an **HITL gate** that forbids `git push` to `main`, an eval set ("PR diff is small," "tests pass," "no new dependencies without review"), and a maintenance cadence.
+The Task Builder routes this to a **coding agent** workflow (Claude Code locally for the dev loop, GitHub Copilot cloud agent for hands-off PRs), with a **CLAUDE.md** / **AGENTS.md** scaffold, an **HITL gate** that forbids `git push` to `main`, an eval set ("a breaking dependency update gets reverted," "a missing lint tool is reported, never faked"), and a maintenance cadence.
 
 [→ See this output as a worked recipe: Repo maintenance](recipes/repo-maintenance.md)
 
@@ -154,7 +154,7 @@ The Task Builder routes this to a **coding agent** workflow (Claude Code locally
 
 > **Input:** "First-thing-in-the-morning brief: triage overnight email into Now/Later/Reference/Trash, and write a one-paragraph prep note for each meeting today. Connectors: Gmail and Calendar via ChatGPT. Drafts only, never send."
 
-The Task Builder routes this to a **Project + connectors** (read-only) plus a **draft-only refusal block** so the agent never sends a reply on your behalf. It produces a system prompt, a connector permission spec, an eval set with at least one ambiguous "is this Now or Later?" case, and three red-team probes (prompt injection from email body, calendar invite spoofing, forward-this-to-X attempts).
+The Task Builder routes this to a **Project + connectors** (read-only) plus a **draft-only refusal block** so the agent never sends a reply on your behalf. It produces a system prompt, a connector permission spec, an eval set with at least one ambiguous "is this Now or Later?" case, and red-team probes (prompt injection from an email body, a calendar description that orders the agent to cancel the meeting, send-this-for-me attempts).
 
 [→ See worked recipes: Email triage](recipes/email-triage.md) and [Calendar meeting prep](recipes/calendar-meeting-prep.md)
 
@@ -164,11 +164,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-rocket-launch: **Start Here**
 
+    ---
+
     Decide *whether* to build an agent at all, then pick a setup path.
 
     [→ Start Here](start-here/index.md)
 
 -   :material-tools: **Platforms**
+
+    ---
 
     Setup guides for Claude, Gemini, ChatGPT, Grok, Codex, Copilot, MCP, and more.
 
@@ -176,11 +180,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-flash: **Quickstarts**
 
-    Five end-to-end recipes you can finish in 30–60 minutes.
+    ---
+
+    Six end-to-end recipes you can finish in 30–60 minutes.
 
     [→ Quickstarts](quickstarts/index.md)
 
 -   :material-power-plug: **MCP & connectors**
+
+    ---
 
     Concepts, installing servers, writing your own server, security.
 
@@ -188,11 +196,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-cursor-default-click: **Browser & computer use**
 
+    ---
+
     Anthropic, OpenAI, the `browser-use` library, and operating boundaries.
 
     [→ Browser & computer use](browser-use/index.md)
 
 -   :material-graph: **Orchestration**
+
+    ---
 
     Single-agent loops, multi-agent patterns, local-first, state and memory.
 
@@ -200,11 +212,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-shield-check: **Evaluation & safety**
 
+    ---
+
     Eval sets, red-team workflows, safety checklists, HITL, incident response.
 
     [→ Evals & safety](evals/index.md)
 
 -   :material-factory: **Agent Factory**
+
+    ---
 
     A repeatable workflow to design, rank, build, eval, port, and launch agents.
 
@@ -212,15 +228,19 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-file-document-multiple: **Templates**
 
+    ---
+
     Reusable agent specs, prompts, eval rubrics, safety checklists, PRDs.
 
     [→ Templates](template-library/index.md)
 
 -   :material-book-open-variant: **Reference**
 
-    Glossary, model freshness, source map, source audit, roadmap, decision records.
+    ---
 
-    [→ Glossary](glossary.md)
+    Glossary (full and plain-English), model freshness, source map, source audit, roadmap, changelog, decision records.
+
+    [→ Glossary](glossary.md) · [→ Changelog](changelog.md)
 
 </div>
 
@@ -234,3 +254,5 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 ## License
 
 [MIT](https://github.com/rkalani1/agents-automations/blob/main/LICENSE). All trademarks belong to their respective owners. This guide is independent and is not endorsed by Anthropic, OpenAI, Google, xAI, GitHub, or Microsoft.
+
+*Page last reviewed: 2026-08-15. Counts and claims on this page are checked against the live section indexes — see [Model freshness](model-freshness.md) for how the rest of the site stays current.*
