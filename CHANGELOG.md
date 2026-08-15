@@ -4,8 +4,12 @@ All notable changes to this guide are documented here. Format loosely follows [K
 
 ## [Unreleased] — Design-system refinement
 
+### Fixed
+- Homepage accuracy pass: the quickstart count now says six (matching the six shipped quickstarts — the index page was also still saying five), the Mastery card names the tracks that actually exist (coding agents rather than separate Perplexity/Copilot tracks), the recipe-library card describes the real recipe sections (permission model, eval cases) instead of a "tool allowlist" that no recipe contains, and the three Task Builder worked examples quote eval cases and red-team probes that appear in their linked recipes.
+
 ### Changed
 - Refined the portal and three interactive workbenches with clearer visual hierarchy, responsive tables and navigation, visible focus states, and a more productive split-pane Task Builder. Guide content and product claims are unchanged.
+- Homepage "What's inside" cards now use the same title-divider layout as the top card grid, every homepage card has a unique icon, the Reference card mentions the plain-English glossary and changelog, and the page carries a "last reviewed" date.
 
 ### Verified
 - `mkdocs build --strict` exits 0, and desktop/mobile browser checks show no page-level horizontal overflow.
