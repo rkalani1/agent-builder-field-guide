@@ -2,7 +2,7 @@
 
 > **Last verified:** 2026-05-06 · **Drift risk:** low
 
-Fourteen guided examples that teach by doing. Every example shows the same workflow at five layers, so you can stop wherever it's enough:
+Thirteen guided examples that teach by doing — plus the 7-mission learning path as a capstone. Every example shows the same workflow at five layers, so you can stop wherever it's enough:
 
 1. **Chat-only** — paste-and-go in any AI app (Free).
 2. **Project / workspace** — reusable in Claude / ChatGPT / Gemini / Perplexity (Sub).
@@ -19,7 +19,7 @@ Every example also includes:
 - **Plan-availability tags** on every step.
 - **Fallback** when a feature is missing.
 
-## All 14 examples
+## All examples
 
 | # | Example | Best fit | What you learn |
 |---|---|---|---|

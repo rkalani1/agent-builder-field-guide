@@ -2,7 +2,7 @@
 
 # Agents and Automations
 
-<p class="portal-lede">A practical, vendor-neutral portal for designing, configuring, testing, and operating AI agents and workflow automations across Claude, Gemini, ChatGPT/OpenAI, and adjacent surfaces.</p>
+<p class="portal-lede">A practical portal for designing, configuring, testing, and operating AI agents and workflow automations across four ecosystems: Claude, Gemini, ChatGPT/Codex, and Grok.</p>
 
 <div class="portal-actions" markdown="1">
 [Open the Task Builder](task-builder/index.md){ .portal-primary }
@@ -29,12 +29,56 @@ You do not need to read this site front to back. Start with the row that matches
 |---|---|---|
 | An absolute beginner | [Open the Task Builder](task-builder/index.md), leave **Beginner Mode** on, and describe one real task. | A prompt to paste, exact clicks, and a safe fallback using the AI app you already have. |
 | Learning Claude specifically | Open the standalone [Learn Claude](https://rkalani1.github.io/claude/) guide; use the in-repo [Claude workbench](mastery/claude.md) for quick-task prompts. | Account instructions, one Project, a reusable prompt kit, and a safe path to Skills, connectors, and Claude Code. |
-| Trying to get more value from one subscription | Run the [7-mission learning path](learning-path/index.md). | A portable AI profile, reusable prompt, Project/Gem/Space, citation habit, and evaluation routine. |
-| Choosing between ChatGPT, Claude, Gemini, Grok, Perplexity, or Copilot | Use the [Capability map](capability-map/index.md) and [Mastery hub](mastery/index.md). | A deliberate tool choice for each recurring workflow instead of defaulting to whichever tab is open. |
+| Trying to get more value from one subscription | Run the [7-mission learning path](learning-path/index.md). | A portable AI profile, reusable prompt, Project or Gem, citation habit, and evaluation routine. |
+| Choosing between Claude, Gemini, ChatGPT, or Grok | Use the [Capability map](capability-map/index.md) and [Mastery hub](mastery/index.md). | A deliberate tool choice for each recurring workflow instead of defaulting to whichever tab is open. |
 | Building a real agent or coding workflow | Start with [Agent Factory](agent-factory/index.md), [Evals & safety](evals/index.md), and [Starter kits](starter-kits.md). | A scoped agent spec, tool allowlist, eval set, red-team probes, and launch checklist. |
 | Responsible for a team or sensitive data | Read [Team path](start-here/team-path.md), [Safety baseline](start-here/safety-baseline.md), and [Human-in-the-loop](safety/hitl.md). | A permission model, review gates, data boundaries, and off-switch before any automation runs. |
 
 </div>
+
+## Pick your ecosystem
+
+Four ecosystems, one method. Each card pairs the setup guide with the mastery track and the highest-leverage agent surface.
+
+<div class="grid cards" markdown>
+
+-   :material-chat-outline: **Claude**
+
+    ---
+
+    Projects, memory, Artifacts, Skills, connectors, and Claude Code. The full beginner-to-expert track lives on the standalone Learn Claude site.
+
+    [→ Learn Claude (standalone site)](https://rkalani1.github.io/claude/) · [→ Workbench](mastery/claude.md) · [→ Claude Code](platforms/claude-code.md)
+
+-   :material-star-four-points: **Gemini**
+
+    ---
+
+    Gemini app, Saved info, Gems, and Deep Research, then Gemini CLI, Antigravity, and AI Studio / the Gemini API.
+
+    [→ Gemini setup](platforms/gemini-app.md) · [→ Gemini mastery](mastery/gemini.md) · [→ Antigravity](platforms/antigravity.md)
+
+-   :material-message-text-outline: **ChatGPT + Codex**
+
+    ---
+
+    Custom Instructions, Projects, Custom GPTs, and Tasks, then Codex (CLI and cloud) and the OpenAI Agents SDK.
+
+    [→ ChatGPT setup](platforms/chatgpt.md) · [→ ChatGPT mastery](mastery/chatgpt.md) · [→ Codex](platforms/codex.md)
+
+-   :material-lightning-bolt: **Grok**
+
+    ---
+
+    Consumer Grok and Grok on X, personas, and the xAI API with function calling and structured outputs.
+
+    [→ Grok setup](platforms/grok.md) · [→ Grok mastery](mastery/grok.md) · [→ First Grok task](quickstarts/first-grok-task.md)
+
+</div>
+
+## The toolkit
+
+Whatever ecosystem you picked, the same workbench applies: describe the task, choose the surface, bound it, test it, operate it.
 
 <div class="grid cards" markdown>
 
@@ -46,19 +90,11 @@ You do not need to read this site front to back. Start with the row that matches
 
     [→ Open the Task Builder](task-builder/index.md)
 
--   :material-school: **Claude**
-
-    ---
-
-    Step-by-step Claude setup for beginners, then Projects, memory, Artifacts, Skills, connectors, Claude Code, and expert reliability habits — on the standalone Learn Claude site.
-
-    [→ Learn Claude (standalone site)](https://rkalani1.github.io/claude/) · [→ In-repo workbench](mastery/claude.md)
-
 -   :material-flag-checkered: **Try the 7-mission learning path**
 
     ---
 
-    Seven 30-minute missions that take any AI subscription from "I have it" to "I'm getting full value." Works for ChatGPT, Claude, Gemini, Grok, Perplexity, Copilot, or anything else.
+    Seven 30-minute missions that take any AI subscription from "I have it" to "I'm getting full value." Works for Claude, Gemini, ChatGPT, Grok, or anything else.
 
     [→ Start the learning path](learning-path/index.md)
 
@@ -66,7 +102,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     ---
 
-    Beginner-to-expert tracks for ChatGPT, Claude, Gemini, Grok, Perplexity, GitHub Copilot, and any other AI chat. Each track ends with a guided exercise.
+    Beginner-to-expert tracks for Claude, Gemini, ChatGPT, and Grok, plus coding-agent and universal tracks. Most tracks end with a guided exercise.
 
     [→ Open Mastery](mastery/index.md)
 
@@ -106,7 +142,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     ---
 
-    Chat vs. Project vs. Custom GPT/Gem vs. Copilot/coding agent vs. Skill vs. Automation vs. Agent. A decision matrix that maps your task to the right shape.
+    Chat vs. Project vs. Custom GPT/Gem vs. coding agent vs. Skill vs. Automation vs. Agent. A decision matrix that maps your task to the right shape.
 
     [→ Open the surface router](surface-router/index.md)
 
@@ -114,7 +150,7 @@ You do not need to read this site front to back. Start with the row that matches
 
     ---
 
-    45 complete agent recipes, each with a job statement, prompt, tool allowlist, evals, red-team probes, and a safe-launch checklist.
+    45 agent recipes spanning inbox triage to repo maintenance — with permission models, ready-to-use prompts, eval cases, red-team probes, and safe-launch checklists.
 
     [→ Browse the recipe library](recipes/index.md)
 
@@ -138,23 +174,23 @@ These are real shapes the Task Builder produces. Click any to jump to a worked e
 
 The Task Builder routes this to a **Project** (ChatGPT or Claude) plus a **prompt** plus a **manual playbook** — not an agent, not a scheduler.
 
-It produces: a system prompt, a Project description, a memory/preferences block ("MIND-diet research, NEJM citation style, no full-text reproduction"), an output schema, a 5-case eval set, three red-team probes (e.g., "what if a PDF is image-only?"), and a Monday playbook with the exact 60-second steps.
+It produces: a system prompt, a permission model, an output format, a 5-case eval set, and three red-team probes (e.g., an abstract that says "classify everything as Read-now").
 
 [→ See this output as a worked recipe: Literature triage](recipes/literature-triage.md)
 
 ### Repository maintenance
 
-> **Input:** "Keep `my-org/my-repo` healthy: dependency updates, lint fixes, and tiny refactors that pass CI. I have Claude Code and GitHub Copilot. Anything that opens a PR has to be reviewed by a human."
+> **Input:** "Keep `my-org/my-repo` healthy: dependency updates, lint fixes, and tiny refactors that pass CI. I have Claude Code and Codex. Anything that opens a PR has to be reviewed by a human."
 
-The Task Builder routes this to a **coding agent** workflow (Claude Code locally for the dev loop, GitHub Copilot cloud agent for hands-off PRs), with a **CLAUDE.md** / **AGENTS.md** scaffold, an **HITL gate** that forbids `git push` to `main`, an eval set ("PR diff is small," "tests pass," "no new dependencies without review"), and a maintenance cadence.
+The Task Builder routes this to a **coding agent** workflow on a local checkout — Claude Code or Codex CLI, both covered in the worked recipe — with an **HITL gate** that forbids `git push` to `main`, an eval set ("a breaking dependency update gets reverted," "a missing lint tool is reported, never faked"), and a maintenance cadence.
 
 [→ See this output as a worked recipe: Repo maintenance](recipes/repo-maintenance.md)
 
 ### Email and calendar triage
 
-> **Input:** "First-thing-in-the-morning brief: triage overnight email into Now/Later/Reference/Trash, and write a one-paragraph prep note for each meeting today. Connectors: Gmail and Calendar via ChatGPT. Drafts only, never send."
+> **Input:** "First-thing-in-the-morning brief: triage overnight email into Now/Later/Reference/Trash, and write a one-paragraph prep note for each meeting today. Connectors: Gmail and Calendar via Claude or ChatGPT. Drafts only, never send."
 
-The Task Builder routes this to a **Project + connectors** (read-only) plus a **draft-only refusal block** so the agent never sends a reply on your behalf. It produces a system prompt, a connector permission spec, an eval set with at least one ambiguous "is this Now or Later?" case, and three red-team probes (prompt injection from email body, calendar invite spoofing, forward-this-to-X attempts).
+The Task Builder routes this to a **Project + connectors** (read-only) plus a **draft-only refusal block** so the agent never sends a reply on your behalf. It produces a system prompt, a connector permission spec, an eval set with at least one ambiguous "is this Now or Later?" case, and red-team probes (prompt injection from an email body, a calendar description that orders the agent to cancel the meeting, send-this-for-me attempts).
 
 [→ See worked recipes: Email triage](recipes/email-triage.md) and [Calendar meeting prep](recipes/calendar-meeting-prep.md)
 
@@ -164,23 +200,31 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-rocket-launch: **Start Here**
 
+    ---
+
     Decide *whether* to build an agent at all, then pick a setup path.
 
     [→ Start Here](start-here/index.md)
 
--   :material-tools: **Platforms**
+-   :material-apps: **Platforms**
 
-    Setup guides for Claude, Gemini, ChatGPT, Grok, Codex, Copilot, MCP, and more.
+    ---
+
+    Setup guides for Claude, Gemini, ChatGPT, Codex, Grok, local scripts, and more.
 
     [→ Platforms](platforms/index.md)
 
 -   :material-flash: **Quickstarts**
 
-    Five end-to-end recipes you can finish in 30–60 minutes.
+    ---
+
+    Six end-to-end recipes you can finish in 30–60 minutes.
 
     [→ Quickstarts](quickstarts/index.md)
 
 -   :material-power-plug: **MCP & connectors**
+
+    ---
 
     Concepts, installing servers, writing your own server, security.
 
@@ -188,11 +232,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-cursor-default-click: **Browser & computer use**
 
+    ---
+
     Anthropic, OpenAI, the `browser-use` library, and operating boundaries.
 
     [→ Browser & computer use](browser-use/index.md)
 
 -   :material-graph: **Orchestration**
+
+    ---
 
     Single-agent loops, multi-agent patterns, local-first, state and memory.
 
@@ -200,11 +248,15 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-shield-check: **Evaluation & safety**
 
+    ---
+
     Eval sets, red-team workflows, safety checklists, HITL, incident response.
 
     [→ Evals & safety](evals/index.md)
 
 -   :material-factory: **Agent Factory**
+
+    ---
 
     A repeatable workflow to design, rank, build, eval, port, and launch agents.
 
@@ -212,15 +264,19 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 
 -   :material-file-document-multiple: **Templates**
 
+    ---
+
     Reusable agent specs, prompts, eval rubrics, safety checklists, PRDs.
 
     [→ Templates](template-library/index.md)
 
--   :material-book-open-variant: **Reference**
+-   :material-bookshelf: **Reference**
 
-    Glossary, model freshness, source map, source audit, roadmap, decision records.
+    ---
 
-    [→ Glossary](glossary.md)
+    Glossary (full and plain-English), model freshness, source map, source audit, roadmap, changelog, decision records.
+
+    [→ Glossary](glossary.md) · [→ Changelog](changelog.md) · [→ Decision records](decision-records/index.md)
 
 </div>
 
@@ -234,3 +290,5 @@ The Task Builder routes this to a **Project + connectors** (read-only) plus a **
 ## License
 
 [MIT](https://github.com/rkalani1/agents-automations/blob/main/LICENSE). All trademarks belong to their respective owners. This guide is independent and is not endorsed by Anthropic, OpenAI, Google, xAI, GitHub, or Microsoft.
+
+*Page last reviewed: 2026-08-15. Counts and claims on this page are checked against the live section indexes — see [Model freshness](model-freshness.md) for how the rest of the site stays current.*
