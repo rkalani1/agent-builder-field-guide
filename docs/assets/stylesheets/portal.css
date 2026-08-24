@@ -57,8 +57,15 @@
 
   .md-typeset > p,
   .md-typeset > ul:not(.grid),
-  .md-typeset > ol {
+  .md-typeset > ol,
+  .md-typeset > blockquote {
     max-width: 76ch;
+  }
+
+  /* Card footer links wrap as whole units, so "→" never strands at a line end
+     and multi-word labels never split mid-name. */
+  .md-typeset .grid.cards > ul > li a {
+    display: inline-block;
   }
 
   .md-typeset h1 {
@@ -91,8 +98,9 @@
   }
 
   .md-nav__link--active {
+    /* No inset left rail: on a short rounded pill the 3px shadow bends
+       around the corner radius and reads as a stray glyph over the label. */
     background: rgba(79, 70, 229, 0.10);
-    box-shadow: inset 3px 0 0 var(--portal-accent);
     font-weight: 650;
   }
 
@@ -495,8 +503,20 @@
   }
 
   .starter-routes td a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    /* Inline padding paints an enlarged tap target without inflating the
+       line box the way the old inline-flex/min-height treatment did. */
+    display: inline;
+    padding-block: 0.6rem;
+    margin-block: -0.6rem;
+  }
+
+  .starter-routes td:first-child {
+    /* Material's td border-top outranks the block-layout reset above and
+       leaves a stray rule at the top of each stacked card. */
+    border-top: 0 !important;
+  }
+
+  .md-typeset .grid.cards > ul > li a {
+    padding-block: 0.3rem;
   }
 }
