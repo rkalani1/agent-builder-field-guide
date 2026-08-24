@@ -1,5 +1,5 @@
 site_name: Agents and Automations
-site_description: A practical, vendor-neutral portal for designing, configuring, testing, and operating AI agents and workflow automations across Claude, Gemini, ChatGPT/OpenAI, and adjacent surfaces.
+site_description: "A practical portal for designing, configuring, testing, and operating AI agents and workflow automations across four ecosystems: Claude, Gemini, ChatGPT/Codex, and Grok."
 site_author: Agents and Automations contributors
 site_url: https://rkalani1.github.io/agents-automations/
 repo_url: https://github.com/rkalani1/agents-automations
