@@ -5,7 +5,13 @@ from __future__ import annotations
 from datetime import date
 
 from models import Record
-from rank import rank_records, score_record
+from rank import (
+    _boost_points,
+    _keyword_points,
+    _mesh_points,
+    rank_records,
+    score_record,
+)
 
 
 KEYWORDS = ["ischemic stroke", "cardioembolic", "biomarker"]
@@ -95,3 +101,23 @@ def test_rank_records_sorts_descending(ranking_config, today):
     ranked = rank_records([low, high], ranking_config, KEYWORDS, MESH, today=today)
     assert ranked[0] is high
     assert ranked[0].score > ranked[1].score
+
+
+def test_helper_keyword_points():
+    weights = {"title_keyword": 3.0, "abstract_keyword": 1.0}
+    bd, matched = _keyword_points("Stroke Study", "Biomarker findings", ["stroke", "biomarker"], weights)
+    assert bd["title_keyword"] == 3.0
+    assert bd["abstract_keyword"] == 1.0
+    assert matched == ["stroke", "biomarker"]
+
+
+def test_helper_mesh_points():
+    pts, matched = _mesh_points(["Ischemic Stroke"], ["ischemic stroke"], 2.5)
+    assert pts == 2.5
+    assert matched == ["ischemic stroke"]
+
+
+def test_helper_boost_points():
+    boost_terms = {"randomized controlled trial": 3.0}
+    pts = _boost_points("Title", "A randomized controlled trial", boost_terms)
+    assert pts == 3.0

@@ -74,32 +74,30 @@ Manual-only run; opt-in scheduling is out of scope for this recipe.
 
 ## Prompt / instructions
 
-```
-You are a repository maintenance assistant. Work on the current branch only.
-Never push to main, master, or any protected branch.
-Never force-push.
-
-Task 1 — Dependency updates:
-1. Run: pip list --outdated (or npm outdated) to identify packages with newer versions.
-2. Run: pip-audit (or npm audit) to identify vulnerable packages.
-3. For each outdated or vulnerable package, update to the latest compatible version.
-4. Run the test suite after each update. If tests fail, revert only that package and note the failure.
-5. Commit changes with message: "chore: update dependencies YYYY-MM-DD"
-
-Task 2 — Lint fixes:
-1. Run: ruff check src/ --output-format=json (or eslint src/ --format=json) and capture warnings.
-2. For each auto-fixable warning, apply the fix.
-3. For warnings that require judgment (e.g., refactoring), add a comment: `# TODO: lint warning [rule] - review needed`
-4. Commit changes with message: "chore: fix ruff lint warnings YYYY-MM-DD"
-
-Task 3 — PR description:
-Write a PR description with:
-- A "Dependencies updated" section listing each package, old version, and new version.
-- A "Lint fixes applied" section listing each rule fixed and the file.
-- A "Blocked items" section listing any update or fix that was skipped and why.
-
-Open a draft PR when done. Do not merge it.
-```
+> You are a repository maintenance assistant. Work on the current branch only.
+> Never push to main, master, or any protected branch.
+> Never force-push.
+>
+> Task 1 — Dependency updates:
+> 1. Run: pip list --outdated (or npm outdated) to identify packages with newer versions.
+> 2. Run: pip-audit (or npm audit) to identify vulnerable packages.
+> 3. For each outdated or vulnerable package, update to the latest compatible version.
+> 4. Run the test suite after each update. If tests fail, revert only that package and note the failure.
+> 5. Commit changes with message: "chore: update dependencies YYYY-MM-DD"
+>
+> Task 2 — Lint fixes:
+> 1. Run: ruff check src/ --output-format=json (or eslint src/ --format=json) and capture warnings.
+> 2. For each auto-fixable warning, apply the fix.
+> 3. For warnings that require judgment (e.g., refactoring), add a comment: `# TODO: lint warning [rule] - review needed`
+> 4. Commit changes with message: "chore: fix ruff lint warnings YYYY-MM-DD"
+>
+> Task 3 — PR description:
+> Write a PR description with:
+> - A "Dependencies updated" section listing each package, old version, and new version.
+> - A "Lint fixes applied" section listing each rule fixed and the file.
+> - A "Blocked items" section listing any update or fix that was skipped and why.
+>
+> Open a draft PR when done. Do not merge it.
 
 ## Example input
 

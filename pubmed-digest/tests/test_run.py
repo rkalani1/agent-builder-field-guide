@@ -1,11 +1,33 @@
 import argparse
-from unittest.mock import patch, MagicMock
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from unittest.mock import patch
+
 import pytest
 
-from run import run, resolve_window
 from models import Record
+from run import resolve_window, run
+
+
+@pytest.fixture
+def mock_datetime():
+    with patch("run.datetime") as mock_dt:
+        mock_dt.utcnow.return_value = datetime(2026, 6, 26, 12, 0, 0)
+        mock_dt.strptime = datetime.strptime
+        yield mock_dt
+
+
+def create_args(since=None, until=None, date=None):
+    return argparse.Namespace(since=since, until=until, date=date)
+
+
+def test_resolve_window_explicit_since_and_until(mock_datetime):
+    args = create_args(since="2026-06-01", until="2026-06-26")
+    since, until, run_date = resolve_window(args, 7)
+    assert since == "2026-06-01"
+    assert until == "2026-06-26"
+    assert run_date == "2026-06-26"
+
 
 def test_resolve_window_explicit_both():
     args = argparse.Namespace(since="2026-06-01", until="2026-06-26", date=None)
@@ -13,6 +35,15 @@ def test_resolve_window_explicit_both():
     assert since == "2026-06-01"
     assert until == "2026-06-26"
     assert run_date == "2026-06-26"
+
+
+def test_resolve_window_explicit_since_only(mock_datetime):
+    args = create_args(since="2026-06-01")
+    since, until, run_date = resolve_window(args, 7)
+    assert since == "2026-06-01"
+    assert until == "2026-06-26"
+    assert run_date == "2026-06-26"
+
 
 def test_resolve_window_explicit_since():
     with patch("run.datetime") as mock_dt:
@@ -24,12 +55,38 @@ def test_resolve_window_explicit_since():
         assert until == "2026-06-26"
         assert run_date == "2026-06-26"
 
+
+def test_resolve_window_explicit_until_only(mock_datetime):
+    args = create_args(until="2026-06-20")
+    since, until, run_date = resolve_window(args, 7)
+    assert since == "2026-06-13"
+    assert until == "2026-06-20"
+    assert run_date == "2026-06-20"
+
+
+def test_resolve_window_date_only(mock_datetime):
+    args = create_args(date="2026-06-20")
+    since, until, run_date = resolve_window(args, 5)
+    assert since == "2026-06-15"
+    assert until == "2026-06-20"
+    assert run_date == "2026-06-20"
+
+
 def test_resolve_window_date_flag():
     args = argparse.Namespace(since=None, until=None, date="2026-06-26")
     since, until, run_date = resolve_window(args, 7)
     assert since == "2026-06-19"
     assert until == "2026-06-26"
     assert run_date == "2026-06-26"
+
+
+def test_resolve_window_no_args(mock_datetime):
+    args = create_args()
+    since, until, run_date = resolve_window(args, 10)
+    assert since == "2026-06-16"
+    assert until == "2026-06-26"
+    assert run_date == "2026-06-26"
+
 
 def test_resolve_window_default():
     with patch("run.datetime") as mock_dt:
@@ -41,15 +98,30 @@ def test_resolve_window_default():
         assert until == "2026-06-26"
         assert run_date == "2026-06-26"
 
+
+def test_resolve_window_invalid_date_format():
+    args = create_args(since="06/01/2026")
+    with pytest.raises(SystemExit, match="Invalid date '06/01/2026'; expected YYYY-MM-DD"):
+        resolve_window(args, 7)
+
+
 def test_resolve_window_invalid_date():
     args = argparse.Namespace(since="invalid", until=None, date=None)
     with pytest.raises(SystemExit, match="Invalid date"):
         resolve_window(args, 7)
 
+
 def test_resolve_window_since_after_until():
+    args = create_args(since="2026-06-26", until="2026-06-01")
+    with pytest.raises(SystemExit, match="--since \\(2026-06-26\\) is after --until \\(2026-06-01\\)"):
+        resolve_window(args, 7)
+
+
+def test_resolve_window_since_after_until_adjacent():
     args = argparse.Namespace(since="2026-06-27", until="2026-06-26", date=None)
     with pytest.raises(SystemExit, match="is after --until"):
         resolve_window(args, 7)
+
 
 @pytest.fixture
 def mock_config():
@@ -60,7 +132,7 @@ def mock_config():
             "recency": {"max_points": 2.0, "halflife_days": 7},
             "needs_review_threshold": 5.0,
             "boost_terms": {},
-            "journal_tiers": {}
+            "journal_tiers": {},
         },
         "preprints": {"enabled": True, "servers": ["medrxiv"]},
         "topics": [
@@ -68,11 +140,12 @@ def mock_config():
                 "name": "Stroke",
                 "query": "stroke[tiab]",
                 "keywords": ["stroke"],
-                "mesh": ["Stroke"]
+                "mesh": ["Stroke"],
             }
         ],
-        "output": {"dir": "/tmp"}
+        "output": {"dir": "/tmp"},
     }
+
 
 @patch("run.load_env")
 @patch("run.load_config")
@@ -83,9 +156,15 @@ def mock_config():
 @patch("run.load_seen")
 @patch("run.save_seen")
 def test_run_happy_path(
-    mock_save_seen, mock_load_seen, mock_write_digest,
-    mock_fetch_preprints, mock_fetch_topic, mock_pubmed_client,
-    mock_load_config, mock_load_env, mock_config
+    mock_save_seen,
+    mock_load_seen,
+    mock_write_digest,
+    mock_fetch_preprints,
+    mock_fetch_topic,
+    mock_pubmed_client,
+    mock_load_config,
+    mock_load_env,
+    mock_config,
 ):
     mock_load_config.return_value = mock_config
     mock_load_seen.return_value = set()
@@ -94,24 +173,41 @@ def test_run_happy_path(
     # Mock pubmed results
     mock_fetch_topic.return_value = [
         Record(
-            title="Stroke treatment", source="pubmed", pmid="123",
-            doi="10.123", authors=["A"], journal="J", date="2026-06-25",
-            abstract="test", url="http"
+            title="Stroke treatment",
+            source="pubmed",
+            pmid="123",
+            doi="10.123",
+            authors=["A"],
+            journal="J",
+            date="2026-06-25",
+            abstract="test",
+            url="http",
         )
     ]
     # Mock preprint results
     mock_fetch_preprints.return_value = [
         Record(
-            title="New stroke marker", source="medrxiv", pmid="",
-            doi="10.456", authors=["B"], journal="", date="2026-06-25",
-            abstract="stroke", url="http"
+            title="New stroke marker",
+            source="medrxiv",
+            pmid="",
+            doi="10.456",
+            authors=["B"],
+            journal="",
+            date="2026-06-25",
+            abstract="stroke",
+            url="http",
         )
     ]
 
     args = argparse.Namespace(
-        date="2026-06-26", since=None, until=None,
-        config="config.yaml", output=None, seen="seen.json",
-        no_cache=False, email=False
+        date="2026-06-26",
+        since=None,
+        until=None,
+        config="config.yaml",
+        output=None,
+        seen="seen.json",
+        no_cache=False,
+        email=False,
     )
 
     exit_code = run(args)
@@ -139,9 +235,15 @@ def test_run_happy_path(
 @patch("run.load_seen")
 @patch("run.save_seen")
 def test_run_with_seen_cache(
-    mock_save_seen, mock_load_seen, mock_write_digest,
-    mock_fetch_preprints, mock_fetch_topic, mock_pubmed_client,
-    mock_load_config, mock_load_env, mock_config
+    mock_save_seen,
+    mock_load_seen,
+    mock_write_digest,
+    mock_fetch_preprints,
+    mock_fetch_topic,
+    mock_pubmed_client,
+    mock_load_config,
+    mock_load_env,
+    mock_config,
 ):
     mock_load_config.return_value = mock_config
     # Already seen the item (mock record has doi:10.123, which identity_key prefers)
@@ -151,17 +253,28 @@ def test_run_with_seen_cache(
     # Mock pubmed results
     mock_fetch_topic.return_value = [
         Record(
-            title="Stroke treatment", source="pubmed", pmid="123",
-            doi="10.123", authors=["A"], journal="J", date="2026-06-25",
-            abstract="test", url="http"
+            title="Stroke treatment",
+            source="pubmed",
+            pmid="123",
+            doi="10.123",
+            authors=["A"],
+            journal="J",
+            date="2026-06-25",
+            abstract="test",
+            url="http",
         )
     ]
     mock_fetch_preprints.return_value = []
 
     args = argparse.Namespace(
-        date="2026-06-26", since=None, until=None,
-        config="config.yaml", output=None, seen="seen.json",
-        no_cache=False, email=False
+        date="2026-06-26",
+        since=None,
+        until=None,
+        config="config.yaml",
+        output=None,
+        seen="seen.json",
+        no_cache=False,
+        email=False,
     )
 
     exit_code = run(args)
@@ -173,6 +286,7 @@ def test_run_with_seen_cache(
     # No new items added
     assert saved_seen == {"doi:10.123"}
 
+
 @patch("run.load_env")
 @patch("run.load_config")
 @patch("run.PubMedClient")
@@ -183,9 +297,16 @@ def test_run_with_seen_cache(
 @patch("run.save_seen")
 @patch("notify_email.send_digest")
 def test_run_with_email_success(
-    mock_send_digest, mock_save_seen, mock_load_seen, mock_write_digest,
-    mock_fetch_preprints, mock_fetch_topic, mock_pubmed_client,
-    mock_load_config, mock_load_env, mock_config
+    mock_send_digest,
+    mock_save_seen,
+    mock_load_seen,
+    mock_write_digest,
+    mock_fetch_preprints,
+    mock_fetch_topic,
+    mock_pubmed_client,
+    mock_load_config,
+    mock_load_env,
+    mock_config,
 ):
     mock_load_config.return_value = mock_config
     mock_load_seen.return_value = set()
@@ -195,9 +316,14 @@ def test_run_with_email_success(
     mock_fetch_preprints.return_value = []
 
     args = argparse.Namespace(
-        date="2026-06-26", since=None, until=None,
-        config="config.yaml", output=None, seen="seen.json",
-        no_cache=False, email=True
+        date="2026-06-26",
+        since=None,
+        until=None,
+        config="config.yaml",
+        output=None,
+        seen="seen.json",
+        no_cache=False,
+        email=True,
     )
 
     exit_code = run(args)
@@ -215,9 +341,16 @@ def test_run_with_email_success(
 @patch("run.save_seen")
 @patch("notify_email.send_digest")
 def test_run_with_email_failure(
-    mock_send_digest, mock_save_seen, mock_load_seen, mock_write_digest,
-    mock_fetch_preprints, mock_fetch_topic, mock_pubmed_client,
-    mock_load_config, mock_load_env, mock_config
+    mock_send_digest,
+    mock_save_seen,
+    mock_load_seen,
+    mock_write_digest,
+    mock_fetch_preprints,
+    mock_fetch_topic,
+    mock_pubmed_client,
+    mock_load_config,
+    mock_load_env,
+    mock_config,
 ):
     mock_load_config.return_value = mock_config
     mock_load_seen.return_value = set()
@@ -227,12 +360,18 @@ def test_run_with_email_failure(
     mock_fetch_preprints.return_value = []
 
     from notify_email import EmailConfigError
+
     mock_send_digest.side_effect = EmailConfigError("bad config")
 
     args = argparse.Namespace(
-        date="2026-06-26", since=None, until=None,
-        config="config.yaml", output=None, seen="seen.json",
-        no_cache=False, email=True
+        date="2026-06-26",
+        since=None,
+        until=None,
+        config="config.yaml",
+        output=None,
+        seen="seen.json",
+        no_cache=False,
+        email=True,
     )
 
     exit_code = run(args)

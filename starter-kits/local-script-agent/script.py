@@ -82,7 +82,13 @@ and Action Items.
 # ---------------------------------------------------------------------------
 def safe_read(path: pathlib.Path) -> str:
     """Read a file only if it is inside SANDBOX_DIR."""
-    resolved = path.resolve()
+    try:
+        resolved = path.resolve(strict=True)
+    except FileNotFoundError:
+        # If the file doesn't exist, we can't read it anyway.
+        # But for security, we want to fail fast before any symlink attacks.
+        raise PermissionError(f"File not found or invalid path: {path}")
+
     if not resolved.is_relative_to(SANDBOX_DIR):
         raise PermissionError(
             f"Attempted to read outside sandbox: {resolved}"

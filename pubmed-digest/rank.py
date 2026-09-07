@@ -80,6 +80,61 @@ def _journal_tier_points(journal: str, tiers: dict[str, list[str]]) -> tuple[flo
     return best_points, best_label
 
 
+def _keyword_points(
+    title: str,
+    abstract: str,
+    keywords: list[str],
+    weights: dict[str, Any],
+) -> tuple[dict[str, float], list[str]]:
+    """Compute title and abstract keyword score components and matched terms."""
+    breakdown: dict[str, float] = {}
+    matched: list[str] = []
+
+    title_hits = _count_keyword_hits(title, keywords)
+    if title_hits:
+        pts = len(title_hits) * float(weights.get("title_keyword", 3.0))
+        breakdown["title_keyword"] = round(pts, 3)
+        matched.extend(title_hits)
+
+    abstract_hits = _count_keyword_hits(abstract, keywords)
+    abstract_only = [k for k in abstract_hits if k not in title_hits]
+    if abstract_only:
+        pts = len(abstract_only) * float(weights.get("abstract_keyword", 1.0))
+        breakdown["abstract_keyword"] = round(pts, 3)
+        matched.extend(abstract_only)
+
+    return breakdown, matched
+
+
+def _mesh_points(
+    mesh_terms: list[str],
+    mesh_targets: list[str],
+    weight: float,
+) -> tuple[float, list[str]]:
+    """Compute MeSH match score component and matched terms."""
+    if not mesh_targets or not mesh_terms:
+        return 0.0, []
+    record_mesh_lower = {m.lower() for m in mesh_terms}
+    mesh_hits = [m for m in mesh_targets if m.lower() in record_mesh_lower]
+    if not mesh_hits:
+        return 0.0, []
+    pts = len(mesh_hits) * weight
+    return round(pts, 3), mesh_hits
+
+
+def _boost_points(title: str, abstract: str, boost_terms: dict[str, float]) -> float:
+    """Compute global boost terms score component."""
+    if not boost_terms:
+        return 0.0
+    haystack = f"{title}\n{abstract}".lower()
+    boost_total = sum(
+        float(weight)
+        for term, weight in boost_terms.items()
+        if term.lower() in haystack
+    )
+    return round(boost_total, 3) if boost_total else 0.0
+
+
 def score_record(record: Record, ranking: dict[str, Any], today: date | None = None) -> Record:
     """Compute and attach a transparent relevance score to *record*.
 
@@ -91,10 +146,6 @@ def score_record(record: Record, ranking: dict[str, Any], today: date | None = N
     weights = ranking.get("weights", {})
     recency_cfg = ranking.get("recency", {})
 
-    # Topic-level keyword/mesh lists are attached to the record's topic config
-    # by the caller via ``record.matched_keywords`` seeding is NOT used here;
-    # instead keywords come through the ranking call. We read them off the
-    # ranking dict's per-call injected fields.
     keywords: list[str] = ranking.get("_active_keywords", [])
     mesh_targets: list[str] = ranking.get("_active_mesh", [])
     boost_terms: dict[str, float] = ranking.get("boost_terms", {})
@@ -102,38 +153,23 @@ def score_record(record: Record, ranking: dict[str, Any], today: date | None = N
     breakdown: dict[str, float] = {}
     matched: list[str] = []
 
-    # --- Title keyword hits ---
-    title_hits = _count_keyword_hits(record.title, keywords)
-    if title_hits:
-        pts = len(title_hits) * float(weights.get("title_keyword", 3.0))
-        breakdown["title_keyword"] = round(pts, 3)
-        matched.extend(title_hits)
-
-    # --- Abstract keyword hits (don't double-count title hits) ---
-    abstract_hits = _count_keyword_hits(record.abstract, keywords)
-    abstract_only = [k for k in abstract_hits if k not in title_hits]
-    if abstract_only:
-        pts = len(abstract_only) * float(weights.get("abstract_keyword", 1.0))
-        breakdown["abstract_keyword"] = round(pts, 3)
-        matched.extend(abstract_only)
+    # --- Title & Abstract keyword hits ---
+    kw_breakdown, kw_matched = _keyword_points(record.title, record.abstract, keywords, weights)
+    breakdown.update(kw_breakdown)
+    matched.extend(kw_matched)
 
     # --- MeSH term matches ---
-    if mesh_targets and record.mesh_terms:
-        record_mesh_lower = {m.lower() for m in record.mesh_terms}
-        mesh_hits = [m for m in mesh_targets if m.lower() in record_mesh_lower]
-        if mesh_hits:
-            pts = len(mesh_hits) * float(weights.get("mesh_match", 2.5))
-            breakdown["mesh_match"] = round(pts, 3)
-            matched.extend(mesh_hits)
+    mesh_pts, mesh_matched = _mesh_points(
+        record.mesh_terms, mesh_targets, float(weights.get("mesh_match", 2.5))
+    )
+    if mesh_pts:
+        breakdown["mesh_match"] = mesh_pts
+        matched.extend(mesh_matched)
 
     # --- Global boost terms (e.g., study designs) ---
-    haystack = f"{record.title}\n{record.abstract}".lower()
-    boost_total = 0.0
-    for term, weight in boost_terms.items():
-        if term.lower() in haystack:
-            boost_total += float(weight)
-    if boost_total:
-        breakdown["boost_term"] = round(boost_total, 3)
+    boost_pts = _boost_points(record.title, record.abstract, boost_terms)
+    if boost_pts:
+        breakdown["boost_term"] = boost_pts
 
     # --- Recency ---
     recency_pts = _recency_points(
@@ -146,7 +182,7 @@ def score_record(record: Record, ranking: dict[str, Any], today: date | None = N
         breakdown["recency"] = recency_pts
 
     # --- Journal tier ---
-    tier_pts, tier_label = _journal_tier_points(record.journal, ranking.get("journal_tiers", {}))
+    tier_pts, _ = _journal_tier_points(record.journal, ranking.get("journal_tiers", {}))
     if tier_pts:
         breakdown["journal_tier"] = round(tier_pts, 3)
 
