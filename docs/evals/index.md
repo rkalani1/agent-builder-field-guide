@@ -1,6 +1,6 @@
 # Evals
 
-> **Last verified:** 2026-05-06 · **Drift risk:** low
+> **Last verified:** 2026-09-08 · **Drift risk:** low
 
 Evaluation — the practice of systematically measuring whether your agent does what you intend — is not optional. It is the primary mechanism by which you know whether a change made things better or worse, and it is the first line of defense against silent regressions.
 
@@ -24,6 +24,7 @@ This section gives you practical, actionable guidance on building and operating 
 
 - [Building eval sets](eval-sets.md) — how to define cases, what schema to use, how to version and expand your dataset over time.
 - [Red-team workflows](red-team.md) — adversarial testing categories specific to agents, with concrete test procedures and remediation guidance.
+- [AutoMedBench-Lite](automedbench-lite.md) — a five-stage process eval for medical, scientific, and regulated-domain agent work.
 
 ## A minimum viable eval program
 

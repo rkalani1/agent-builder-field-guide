@@ -4,6 +4,9 @@ All notable changes to this guide are documented here. Format loosely follows [K
 
 ## [Unreleased] — Design-system refinement
 
+### Added
+- AutoMedBench-Lite: a five-stage (S1–S5) process-eval pack for medical, scientific, and regulated-domain agent workflows, with a Field Guide page under Evaluation & Safety, a repo-local rubric, and three starter tasks.
+
 ### Changed (homepage rebuild)
 - The homepage now focuses on four ecosystems — Claude, Gemini, ChatGPT/Codex, and Grok — with a new "Pick your ecosystem" card row pairing each ecosystem's setup guide, mastery track, and highest-leverage agent surface. Perplexity and GitHub Copilot mentions were removed from the homepage (their coverage elsewhere on the site is unchanged), the repo-maintenance worked example now pairs Claude Code with Codex CLI, and the hero lede and site meta description name the four ecosystems.
 - Post-rebuild verification pass: the worked examples now claim only artifacts their linked recipes contain (the CLAUDE.md/AGENTS.md scaffold and Monday-playbook claims are gone); the examples index says thirteen examples plus the learning path, matching its file count and the homepage. Design fixes: card links wrap as whole units (no stranded "→"), mobile starter-route cards lose their stray top rule and double-height link leading while keeping enlarged tap targets, blockquotes share the prose measure, and the sidebar's active-item rail no longer bends around the pill corner and over the label.
