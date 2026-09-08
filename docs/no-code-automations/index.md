@@ -151,7 +151,7 @@ If any single run fails, do not schedule. Fix the prompt, repeat the three-run d
 
 Each example below is intentionally subscription-native. Each one also shows the **manual fallback** you can use without scheduled actions.
 
-### Example 1 — Daily morning meeting prep `Sub`
+### Example 1 — Daily morning meeting prep `Sub` {#example-1-daily-morning-meeting-prep-sub}
 
 Prompt to schedule:
 
@@ -185,7 +185,7 @@ Limit total length to 250 words. Cite the textbook chapter or paper if you use o
 - ChatGPT / Gemini: scheduled task, weekday-only.
 - **Manual fallback**: calendar reminder at 6:30; paste the prompt each morning.
 
-### Example 3 — Weekly learning plan `Sub`
+### Example 3 — Weekly learning plan `Sub` {#example-3-weekly-learning-plan-sub}
 
 Prompt to schedule:
 
@@ -198,7 +198,7 @@ Output: 5 study blocks, each 25 minutes, with a topic, a source, and a self-chec
 - Claude Cowork or ChatGPT Task. Weekly cadence.
 - **Manual fallback**: Sunday calendar reminder; paste prompt.
 
-### Example 4 — Research watch `Sub`
+### Example 4 — Research watch `Sub` {#example-4-research-watch-sub}
 
 Prompt to schedule:
 

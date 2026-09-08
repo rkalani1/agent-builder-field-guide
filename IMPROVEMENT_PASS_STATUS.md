@@ -9,7 +9,7 @@ This file is a single-page snapshot taken at the start of the v0.3 productioniza
 | Field | Value |
 |---|---|
 | Starting commit | `764b9c61b8d017ea477d390e43bf5b2dcd228706` ("v0.2.0: Productionization pass") |
-| Live URL | https://example.github.io/agents-automations/ |
+| Live URL | https://rkalani1.github.io/agents-automations/ |
 | Source branch | `main` |
 | Build source | GitHub Actions (`build_type=workflow`) |
 | Last successful deployment | 2026-05-06 (run 25426535611, build 25 s, deploy 12 s) |

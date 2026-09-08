@@ -1,6 +1,6 @@
-# ChatGPT Projects and Custom Instructions
+# ChatGPT Projects
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
 > **Official sources:** [Projects in ChatGPT](https://help.openai.com/en/articles/10169521-projects-in-chatgpt), [Creating and editing GPTs](https://help.openai.com/en/articles/8554397)
 
 ---
@@ -9,7 +9,7 @@
 
 ChatGPT Projects are persistent workspaces inside chatgpt.com that group related conversations, uploaded reference files, and custom instructions under a single named container. The model draws on all of that context across every new chat you start inside the project.
 
-Projects are not the same as Custom GPTs. A Custom GPT is a separately published assistant that any ChatGPT user (within your visibility setting) can open from the GPT Store or a direct link. A Project is a private or team workspace tied to your account — it accumulates context over time and is built for ongoing, evolving work rather than a fixed, reusable tool. The [official FAQ](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) summarizes the distinction: GPTs are "static content, curated by an expert and discoverable," while Projects are "a live context hub for recurring shared work around a topic."
+Projects are not the same as Custom GPTs. A Custom GPT is a separately published assistant that any ChatGPT user (within your visibility setting) can open from the GPT Store or a direct link. A Project is a private or team workspace tied to your account — it accumulates context over time and is built for ongoing, evolving work rather than a fixed, reusable tool. The [official FAQ](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) draws the distinction in similar terms: GPTs are static, expert-curated, and discoverable, while a Project acts as a live context hub for ongoing shared work around a topic (the article's exact wording changes as it is revised).
 
 ---
 
@@ -17,7 +17,7 @@ Projects are not the same as Custom GPTs. A Custom GPT is a separately published
 
 - Researchers who return to the same topic weekly and want the model to remember prior summaries, documents, and terminology decisions.
 - Writers and analysts maintaining a long-running body of work where tone and vocabulary matter.
-- Small teams (Business, Enterprise, Edu plans) that need a shared reference space without standing up custom infrastructure.
+- Teams on any plan that need a shared reference space without standing up custom infrastructure (collaborator and file limits are higher on paid tiers).
 - Anyone who wants the equivalent of a persistent system prompt without API access.
 
 ---
@@ -26,7 +26,7 @@ Projects are not the same as Custom GPTs. A Custom GPT is a separately published
 
 - A ChatGPT account (any plan, including Free).
 - Files to upload must be in a supported format: PDF, DOCX, spreadsheet, image, plain text, or code files. See the [help article](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) for the current list.
-- For shared projects: a paid plan (Plus, Pro, Go, Business, Enterprise, or Edu).
+- For shared projects: available on all plans, including Free, per OpenAI's October 2025 rollout announcement; collaborator and file limits vary by plan — see the [Projects help article](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) for current limits.
 
 ---
 
@@ -42,7 +42,7 @@ Projects are not the same as Custom GPTs. A Custom GPT is a separately published
 
 ### Optional: connect external sources
 
-You can paste a Google Drive file/folder link or a Slack channel link into the Sources area to add live context. You will be prompted to connect and approve the app. Note per the [docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt): "The Google Drive app does not support sync when added within a project. You can still use the app to search and access relevant files, but content will not be synced in advance for retrieval." Connector/integration availability is fast-moving; verify current state in the app.
+You can paste a Google Drive file/folder link or a Slack channel link into the Sources area to add live context. You will be prompted to connect and approve the app. Whether connected-app content is synced in advance for retrieval (as opposed to searched on demand) has changed over time and appears to depend on plan and workspace configuration — check the [Projects help article](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) and verify current behavior in the app. Connector/integration availability is fast-moving.
 
 ### Move existing chats into the project
 
@@ -128,7 +128,7 @@ When you create a new project you can choose between **project-only memory** and
 - **Deleting a project is permanent and immediate for all members.** "This permanently deletes all files, chats, and instructions in that project and cannot be undone," per the [docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt). Export or copy anything you want to keep before deletion.
 - **App connectors are fast-moving.** The set of supported connector apps changes frequently. Always verify current state in the app rather than relying on this guide.
 - **Rate limits follow plan tier.** There is no separate rate limit for project chats; they consume from your plan's message quota the same as ordinary chats.
-- **Training data:** For Free, Plus, and Pro accounts, project content may be used for model training if "Improve the model for everyone" is enabled. Business, Enterprise, and Edu accounts are excluded from training by default.
+- **Training data:** For Free, Go, Plus, and Pro accounts, project content may be used for model training if "Improve the model for everyone" is enabled. Business, Enterprise, and Edu accounts are excluded from training by default.
 
 ---
 
@@ -139,7 +139,7 @@ When you create a new project you can choose between **project-only memory** and
 | File limits by plan (5 / 25 / 40) | [Confirmed — official docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) |
 | Project instructions override global Custom Instructions | [Confirmed — official docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) |
 | Sharing sets memory to project-only permanently | [Confirmed — official docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) |
-| Google Drive connector does not sync in projects | [Confirmed — official docs](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) |
+| Connected-app sync behavior inside projects | **Not re-verified** — the help article has been revised since 2026-05-06 and sync behavior may have changed; verify in the app and the help article |
 | Model performance on structured table extraction from abstracts | **Practical inference** — not specifically documented; results vary by model and abstract quality |
 | Terminology file reliably expands abbreviations | **Practical inference** — the model uses uploaded files, but retrieval accuracy for specific short strings is not guaranteed |
 

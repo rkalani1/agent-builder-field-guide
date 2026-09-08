@@ -94,7 +94,7 @@ If you add a new page that fits any of those categories, mark it `Drift risk: hi
 
 If you find a page that names a model, a price, or a rate limit that is wrong:
 
-1. Open a [Source drift issue](https://github.com/example/agents-automations/issues/new?template=source_drift.yml).
+1. Open a [Source drift issue](https://github.com/rkalani1/agents-automations/issues/new?template=source_drift.yml).
 2. Or, file a PR that updates the page **and** updates `Last verified:` and any new sources.
 
 ## Why we don't just bake current model names into the prose

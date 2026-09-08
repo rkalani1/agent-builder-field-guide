@@ -1,6 +1,11 @@
 # Claude Mastery & Interactive Workbench
 
+> **Last verified:** 2026-07-18 (page structure; embedded product claims not individually re-verified) · **Drift risk:** high — the standalone Learn Claude site is the maintained version of this material
+
 A practical, step-by-step track and interactive playground for getting full value from Claude.
+
+!!! info "The canonical Claude track lives on the standalone site"
+    The maintained beginner-to-expert Claude guide — setup paths, Projects, memory, Skills, connectors, and Claude Code — is **[Learn Claude](https://rkalani1.github.io/claude/)**. This page embeds a snapshot of that material as an interactive workbench; where the two disagree, the standalone site is current.
 
 ---
 
@@ -8,7 +13,7 @@ A practical, step-by-step track and interactive playground for getting full valu
 
 <section class="hero hero-workbench" id="start" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <h1 id="hero-title">Learn Claude</h1>
+          <p class="hero-display" id="hero-title">Learn Claude</p>
           <p class="lede">Start with one real task. Copy a strong prompt, choose the right Claude surface, and improve the result.</p>
           <p style="margin:0 0 1rem;color:#6b617c;font-size:0.95rem;line-height:1.5;">Use non-sensitive examples here. Do not paste PHI, patient identifiers, learner records, credentials, confidential data, or restricted research data into public demos or exported prompt packs.</p>
           <div class="official-links" aria-label="Official Claude links">

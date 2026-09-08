@@ -364,5 +364,5 @@ Switch your **AI in section 1**, your **comfort level**, or **Mode** at the top 
 
 - [Mastery](../mastery/index.md) — beginner-to-expert tracks for each major AI.
 - [Surface router](../surface-router/index.md) — the underlying decision matrix in long form.
-- [Recipes](../recipes/index.md) — 41 worked examples you can clone.
+- [Recipes](../recipes/index.md) — 45 worked examples you can clone.
 - [Starter kits](../starter-kits.md) — copyable scaffolding (Developer Mode).

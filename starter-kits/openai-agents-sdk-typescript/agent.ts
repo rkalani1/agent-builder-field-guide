@@ -17,36 +17,38 @@ import * as path from "path";
 // ---------------------------------------------------------------------------
 // SAFETY GATE: exit immediately unless explicitly approved
 // ---------------------------------------------------------------------------
-const APPROVED = process.env.OPERATOR_APPROVED_TO_RUN === "1";
+export function runSafetyGate() {
+  const APPROVED = process.env.OPERATOR_APPROVED_TO_RUN === "1";
 
-if (!APPROVED) {
-  console.log("=".repeat(60));
-  console.log("DRY-RUN MODE — This script will NOT make any API calls.");
-  console.log("Set OPERATOR_APPROVED_TO_RUN=1 to enable live execution.");
-  console.log("=".repeat(60));
-  console.log();
-  console.log("What this script WOULD do if enabled:");
-  console.log("  1. Read OPENAI_API_KEY from process.env.");
-  console.log("  2. Register the readNotes() function as a tool.");
-  console.log("  3. Create an Agent with the summarization system prompt.");
-  console.log("  4. Run the agent against ./sandbox/notes/.");
-  console.log("  5. Print the resulting summary to stdout.");
-  console.log();
-  console.log("Sandbox directory that would be used: ./sandbox/");
-  console.log("No files would be created, modified, or deleted.");
-  console.log("No network calls would be made except to the OpenAI API.");
-  process.exit(0);
-}
+  if (!APPROVED) {
+    console.log("=".repeat(60));
+    console.log("DRY-RUN MODE — This script will NOT make any API calls.");
+    console.log("Set OPERATOR_APPROVED_TO_RUN=1 to enable live execution.");
+    console.log("=".repeat(60));
+    console.log();
+    console.log("What this script WOULD do if enabled:");
+    console.log("  1. Read OPENAI_API_KEY from process.env.");
+    console.log("  2. Register the readNotes() function as a tool.");
+    console.log("  3. Create an Agent with the summarization system prompt.");
+    console.log("  4. Run the agent against ./sandbox/notes/.");
+    console.log("  5. Print the resulting summary to stdout.");
+    console.log();
+    console.log("Sandbox directory that would be used: ./sandbox/");
+    console.log("No files would be created, modified, or deleted.");
+    console.log("No network calls would be made except to the OpenAI API.");
+    process.exit(0);
+  }
 
 // ---------------------------------------------------------------------------
-// API KEY CHECK
-// ---------------------------------------------------------------------------
-const apiKey = process.env.OPENAI_API_KEY;
-if (!apiKey) {
-  console.error("ERROR: OPENAI_API_KEY environment variable is not set.");
-  console.error("Set it to your OpenAI API key before running this script.");
-  console.error("Example: export OPENAI_API_KEY=sk-REPLACE_ME");
-  process.exit(1);
+  // API KEY CHECK
+  // ---------------------------------------------------------------------------
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error("ERROR: OPENAI_API_KEY environment variable is not set.");
+    console.error("Set it to your OpenAI API key before running this script.");
+    console.error("Example: export OPENAI_API_KEY=sk-REPLACE_ME");
+    process.exit(1);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -58,16 +60,43 @@ if (!apiKey) {
 // ---------------------------------------------------------------------------
 // SANDBOX ENFORCEMENT
 // ---------------------------------------------------------------------------
-const SANDBOX_DIR = path.resolve("./sandbox");
+export const SANDBOX_DIR = path.resolve("./sandbox");
 
-function safePath(relativePath: string): string {
+export function safePath(relativePath: string): string {
   const resolved = path.resolve(SANDBOX_DIR, relativePath);
-  if (!resolved.startsWith(SANDBOX_DIR + path.sep) && resolved !== SANDBOX_DIR) {
+
+  let realResolved: string;
+  try {
+    realResolved = fs.realpathSync(resolved);
+  } catch (err: any) {
+    // If the file doesn't exist, resolve as much of the path as possible
+    if (err.code === 'ENOENT') {
+      let currentPath = resolved;
+      while (!fs.existsSync(currentPath)) {
+        const parent = path.dirname(currentPath);
+        if (parent === currentPath) {
+          break;
+        }
+        currentPath = parent;
+      }
+      const realCurrentPath = fs.existsSync(currentPath) ? fs.realpathSync(currentPath) : currentPath;
+      const relativeFromCurrent = path.relative(currentPath, resolved);
+      realResolved = relativeFromCurrent === ''
+        ? realCurrentPath
+        : path.resolve(realCurrentPath, relativeFromCurrent);
+    } else {
+      throw err;
+    }
+  }
+
+  const realSandbox = fs.existsSync(SANDBOX_DIR) ? fs.realpathSync(SANDBOX_DIR) : SANDBOX_DIR;
+
+  if (!realResolved.startsWith(realSandbox + path.sep) && realResolved !== realSandbox) {
     throw new Error(
       `Path '${relativePath}' resolves outside sandbox directory '${SANDBOX_DIR}'. Access denied.`
     );
   }
-  return resolved;
+  return realResolved;
 }
 
 // ---------------------------------------------------------------------------
@@ -81,7 +110,7 @@ function safePath(relativePath: string): string {
  * @throws Error if path resolves outside the sandbox.
  * @throws Error if the file does not exist.
  */
-function readNotes(filePath: string): string {
+export function readNotes(filePath: string): string {
   const safe = safePath(filePath);
   if (!fs.existsSync(safe)) {
     throw new Error(`File not found in sandbox: ${filePath}`);
@@ -117,12 +146,7 @@ const SYSTEM_PROMPT = `You are a note summarization assistant. Read the plain-te
 via the read_notes tool and produce a structured summary (300-500 words) of key themes, decisions, \
 and action items. Do not add information not present in the source files. Output format: markdown.`;
 
-// ---------------------------------------------------------------------------
-// MAIN (illustrative — wire to actual SDK Runner when enabling)
-// ---------------------------------------------------------------------------
-async function main(): Promise<void> {
-  const notesDir = path.join(SANDBOX_DIR, "notes");
-
+export function getValidNoteFiles(notesDir: string): string[] {
   if (!fs.existsSync(notesDir)) {
     console.error(`ERROR: Sandbox notes directory not found: ${notesDir}`);
     console.error("Create ./sandbox/notes/ and add .txt files before running.");
@@ -139,6 +163,16 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  return noteFiles;
+}
+
+// ---------------------------------------------------------------------------
+// MAIN (illustrative — wire to actual SDK Runner when enabling)
+// ---------------------------------------------------------------------------
+async function main(): Promise<void> {
+  const notesDir = path.join(SANDBOX_DIR, "notes");
+  const noteFiles = getValidNoteFiles(notesDir);
+
   const fileList = noteFiles.join(", ");
   const userMessage = `Please summarize the following note files from sandbox/notes/: ${fileList}`;
 
@@ -150,7 +184,10 @@ async function main(): Promise<void> {
   console.log("\nUser message:", userMessage);
 }
 
-main().catch((err) => {
-  console.error("Agent error:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  runSafetyGate();
+  main().catch((err) => {
+    console.error("Agent error:", err);
+    process.exit(1);
+  });
+}

@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** high
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
 > **Official sources:** [xAI overview](https://docs.x.ai/overview), [xAI models](https://docs.x.ai/developers/models), [xAI API console](https://console.x.ai), [Grok consumer (grok.com)](https://grok.com), [Grok on X](https://x.com/i/grok)
 
 # Grok / xAI platform overview
@@ -13,7 +13,7 @@ This page covers the Grok and xAI ecosystem as a platform for building AI agents
 
 **Grok consumer chat** (grok.com / Grok mobile app) is a chat product aimed at end users. You sign in with an account on [grok.com](https://grok.com) or use the Grok app on mobile. Interaction is through a browser or app UI. There is no programmatic API on this surface. Features and model tiers can vary by account tier and country of access. This surface is suitable for exploratory conversations and manual tasks, not for automated agents.
 
-**Grok on X** is the Grok integration inside the X social product, accessible at [x.com/i/grok](https://x.com/i/grok). It requires an active X premium subscription. Access is through the X interface. Like the consumer chat, this surface has no developer API, and capabilities depend on your X subscription tier. It is relevant if your workflow is centered on X content, but it does not support function calling or structured outputs.
+**Grok on X** is the Grok integration inside the X social product, accessible at [x.com/i/grok](https://x.com/i/grok). Per mid-2026 reporting, it is available to X users with usage limits; Premium/Premium+ subscriptions raise the limits, and the @grok in-reply feature is reportedly Premium-only as of March 2026 — verify current gating at [help.x.com](https://help.x.com/en/using-x/about-grok). Access is through the X interface. Like the consumer chat, this surface has no developer API, and capabilities depend on your X subscription tier. It is relevant if your workflow is centered on X content, but it does not support function calling or structured outputs.
 
 **xAI API** (documented at [docs.x.ai](https://docs.x.ai/overview)) is the developer-facing REST endpoint. This is the surface relevant to agent builders. It is OpenAI-compatible in its interface conventions — you can reuse much of the OpenAI Python SDK by redirecting the base URL — but this compatibility is partial and not a guarantee of feature parity. The xAI API supports tool calling (function calling), structured outputs, image input, and multi-turn conversations. It requires an API key obtained from the [xAI Console](https://console.x.ai). All code examples in this guide target this surface.
 
@@ -38,7 +38,7 @@ The prerequisites differ by surface.
 
 **Grok consumer chat** requires an account on [grok.com](https://grok.com). Free and paid tiers exist. Some capabilities, models, and features are gated by tier or region. No API key is involved.
 
-**Grok on X** requires an X account with an active premium subscription. Access is through [x.com/i/grok](https://x.com/i/grok). No API key is involved.
+**Grok on X** requires an X account. Free access carries usage limits; Premium tiers raise them (verify current gating at [help.x.com](https://help.x.com/en/using-x/about-grok)). Access is through [x.com/i/grok](https://x.com/i/grok). No API key is involved.
 
 **xAI API** requires:
 
@@ -61,7 +61,7 @@ No further configuration is needed. You cannot add custom tools, inject system p
 
 ### Grok on X setup
 
-1. Ensure you have an active X premium subscription.
+1. Sign in to an X account. Free access carries usage limits; an X Premium subscription raises them (verify current gating at [help.x.com](https://help.x.com/en/using-x/about-grok)).
 2. Navigate to [x.com/i/grok](https://x.com/i/grok) while signed in to your X account.
 3. Interact through the X interface.
 
@@ -175,11 +175,11 @@ For a complete walkthrough of this pattern, see the [first Grok task quickstart]
 
 ## Customization
 
-**System prompt placement.** On the xAI API, you pass a system prompt as a message with `"role": "system"`. Unlike some other providers, the xAI API does not enforce strict role-ordering constraints — you can mix system, user, and assistant roles in any sequence, per the [models documentation](https://docs.x.ai/developers/models). In practice, placing system content first remains the clearest convention.
+**System prompt placement.** On the xAI API, you pass a system prompt as a message with `"role": "system"`. Unlike some other providers, the xAI API has not enforced strict role-ordering constraints — earlier versions of xAI's docs stated that system, user, and assistant roles can be mixed in any sequence, but the current docs page stating this could not be re-verified; treat it as a practical inference and test it. In practice, placing system content first remains the clearest convention.
 
 **Function calling availability by surface.** Tool calling (function calling) is only available through the xAI API. It is not available on Grok consumer chat or Grok on X. On the API, you define tools as JSON Schema objects and pass them in the `tools` array of your request. The model decides whether to invoke a tool, returns a `tool_call` object when it does, and expects you to execute the function locally and return the result. See the [function calling recipe](../recipes/grok-tool-calling.md) for a complete working example.
 
-**Structured outputs availability.** Structured outputs via `response_format` are an API-only capability. They require Grok 4 family models, per the [structured outputs documentation](https://docs.x.ai/developers/model-capabilities/text/structured-outputs). The consumer chat and X surfaces return free-form text only.
+**Structured outputs availability.** Structured outputs via `response_format` are an API-only capability. They are supported on the currently served models (the Grok 4 family; the docs historically listed support as `grok-2-1212` and later) — verify the supported-models note in the [structured outputs documentation](https://docs.x.ai/developers/model-capabilities/text/structured-outputs). The consumer chat and X surfaces return free-form text only.
 
 **Built-in tools.** The xAI API also offers server-side tools that execute on xAI infrastructure rather than on your machine: web search, X post search, code execution, file attachment search, and others. These are available as named entries in the `tools` array (for example, `{"type": "web_search"}`). Pricing is per-call and separate from token costs.
 
@@ -189,7 +189,7 @@ For a complete walkthrough of this pattern, see the [first Grok task quickstart]
 
 **Region availability of consumer surfaces.** Grok consumer chat and Grok on X have region-dependent availability. If you are building for end users in multiple countries, check current availability at [grok.com](https://grok.com) because coverage can change. The xAI API does not have the same consumer-facing regional restrictions, but you should review xAI's terms of service for your use case.
 
-**Model naming and deprecation.** The xAI model lineup evolves rapidly. At the time of writing, `grok-4.3` is the recommended model for reasoning and agentic workloads, and several earlier identifiers (`grok-4`, `grok-4-fast`, `grok-4-1-fast`, and others) are slated for deprecation as of May 2026, per the [models page](https://docs.x.ai/developers/models). Always read the model name from an environment variable (`XAI_MODEL`) rather than hard-coding a model identifier, so you can update without changing source code. Using the alias `grok-4.3` without a date suffix pins you to the latest stable version of that model family.
+**Model naming and deprecation.** The xAI model lineup evolves rapidly, and mid-2026 xAI announcements describe newer flagship models shipped since this page was last fully verified — check the [models page](https://docs.x.ai/developers/models) for the current recommended model for reasoning and agentic workloads rather than relying on any name printed here. `grok-4.3` remains a served model. Several earlier identifiers (`grok-4`, `grok-4-fast`, `grok-4-1-fast`, and others) were retired on 2026-05-15, per the [May 15 retirement notice](https://docs.x.ai/developers/migration/may-15-retirement); requests to retired IDs are reportedly redirected to (and billed as) `grok-4.3`. Always read the model name from an environment variable (`XAI_MODEL`) rather than hard-coding a model identifier, so you can update without changing source code. Using the alias `grok-4.3` without a date suffix pins you to the latest stable version of that model family.
 
 **OpenAI-compatible, but verify.** The xAI API uses the same request shape as the OpenAI API and can be accessed with the OpenAI Python SDK by setting `base_url="https://api.x.ai/v1"`. However, feature parity is not guaranteed. Some OpenAI-specific parameters may be silently ignored or may behave differently. Test any feature you depend on against the xAI API directly, and consult [docs.x.ai](https://docs.x.ai/overview) for authoritative behavior.
 
@@ -205,13 +205,13 @@ For a complete walkthrough of this pattern, see the [first Grok task quickstart]
 |---|---|---|
 | xAI API is OpenAI-compatible via `base_url` redirect | [xAI overview](https://docs.x.ai/overview) | Confirmed by docs |
 | Grok 4.3 has a 1M token context window | [xAI models](https://docs.x.ai/developers/models) | Confirmed by docs |
-| Structured outputs require Grok 4 family models | [Structured outputs guide](https://docs.x.ai/developers/model-capabilities/text/structured-outputs) | Confirmed by docs |
+| Structured outputs are supported on currently served models (historically `grok-2-1212` and later) | [Structured outputs guide](https://docs.x.ai/developers/model-capabilities/text/structured-outputs) | Practical inference — re-verify the supported-models note |
 | Tool calling is API-only, not available on consumer surfaces | [Function calling guide](https://docs.x.ai/developers/tools/function-calling) | Confirmed by docs |
 | Consumer chat has no programmatic API | grok.com inspection | Practical inference |
-| Grok on X requires X premium subscription | [x.com/i/grok](https://x.com/i/grok) | Confirmed by surface |
+| Grok on X is available with usage limits; @grok in-reply reportedly Premium-only since March 2026 | [help.x.com](https://help.x.com/en/using-x/about-grok) | Practical inference — official page not reachable for re-verification 2026-07-18 |
 | `additionalProperties` defaults to `false` in schema enforcement | [Structured outputs guide](https://docs.x.ai/developers/model-capabilities/text/structured-outputs) | Confirmed by docs |
-| Role-ordering is flexible (no strict system-first requirement) | [xAI models](https://docs.x.ai/developers/models) | Confirmed by docs |
-| Maximum 200 tools per request | [Function calling guide](https://docs.x.ai/developers/tools/function-calling) | Confirmed by docs |
+| Role-ordering is flexible (no strict system-first requirement) | Earlier xAI docs versions; current docs page not re-verified | Practical inference |
+| Maximum 200 tools per request | Third-party reports; not found in indexed official docs | Practical inference — re-verify against the [function calling guide](https://docs.x.ai/developers/tools/function-calling) |
 
 ---
 

@@ -1,0 +1,192 @@
+# =====================================================================
+# Literature-monitoring configuration
+# ---------------------------------------------------------------------
+# This file is SAFE TO COMMIT: it contains NO secrets. API keys and SMTP
+# credentials are read only from the environment / .env (see .env.example).
+#
+# Edit the `topics` list to change what gets monitored, and the `ranking`
+# table to change how items are scored. Everything here is plain data --
+# the scoring logic in rank.py simply reads these weights.
+# =====================================================================
+
+defaults:
+  date_window_days: 7      # default look-back window when no explicit dates given
+  max_results: 50          # per-topic esearch retmax (overridable per topic)
+  tldr_count: 8            # number of items in the TL;DR section
+
+output:
+  dir: "digests"           # where dated YYYY-MM-DD.md notes are written
+  tags:                    # Obsidian frontmatter tags
+    - literature-digest
+    - stroke
+    - neuroepidemiology
+
+# Optional preprint coverage (medRxiv / bioRxiv). OFF by default because a
+# weekly window can pull a large collection that is then keyword-filtered.
+preprints:
+  enabled: false
+  servers:
+    - medrxiv
+    # - biorxiv
+
+# Optional email delivery. OFF by default. Credentials come from env only.
+email:
+  enabled: false
+  subject: "Stroke / Neuroepi Literature Digest"
+
+# =====================================================================
+# Ranking — every point is traceable to a weight below (no ML, fully
+# explainable). See rank.py for how each component is computed.
+# =====================================================================
+ranking:
+  weights:
+    title_keyword: 3.0      # per topic-keyword found in the TITLE
+    abstract_keyword: 1.0   # per topic-keyword found only in the ABSTRACT
+    mesh_match: 2.5         # per topic MeSH term present on the record
+  recency:
+    max_points: 6.0         # points for a paper published "today"
+    halflife_days: 14       # points halve every 14 days of age
+  # Score at/above which an item is flagged "needs review" in the digest.
+  needs_review_threshold: 14.0
+
+  # Globally high-value phrases (study designs, landmark concepts). Matched
+  # case-insensitively anywhere in title+abstract.
+  boost_terms:
+    "randomized controlled trial": 3.0
+    "randomised controlled trial": 3.0
+    "meta-analysis": 2.0
+    "systematic review": 1.5
+    "thrombectomy": 2.0
+    "tenecteplase": 2.0
+    "guideline": 1.5
+    "mendelian randomization": 2.0
+
+  # Journal-tier boosts. Keys are the point value (as a string); values are
+  # name fragments matched case-insensitively against the journal name.
+  journal_tiers:
+    "5":
+      - "N Engl J Med"
+      - "Lancet"
+      - "JAMA"
+      - "Lancet Neurol"
+      - "Nat Med"
+      - "BMJ"
+    "3":
+      - "Stroke"
+      - "Neurology"
+      - "Ann Neurol"
+      - "Circulation"
+      - "Eur Heart J"
+      - "JAMA Neurol"
+      - "Brain"
+    "1":
+      - "Int J Stroke"
+      - "J Stroke"
+      - "Cerebrovasc Dis"
+      - "J Am Heart Assoc"
+      - "Front Neurol"
+
+# =====================================================================
+# Topics — each is an independent PubMed search profile.
+#   query    : a full PubMed/Entrez query string (boolean + field tags + MeSH)
+#   keywords : terms used for transparent relevance scoring (title/abstract)
+#   mesh     : MeSH descriptors that, if present, boost the score
+#   max_results / date_window_days : optional per-topic overrides
+# =====================================================================
+topics:
+  - name: "Ischemic Stroke Subtypes"
+    query: >-
+      (ischemic stroke[Title/Abstract] OR ischaemic stroke[Title/Abstract] OR
+      "Brain Ischemia"[Mesh] OR "Ischemic Stroke"[Mesh]) AND
+      (subtype*[Title/Abstract] OR TOAST[Title/Abstract] OR cardioembolic[Title/Abstract] OR
+      "large artery"[Title/Abstract] OR lacunar[Title/Abstract] OR
+      "embolic stroke of undetermined source"[Title/Abstract] OR ESUS[Title/Abstract])
+    keywords:
+      - ischemic stroke
+      - cardioembolic
+      - lacunar
+      - large artery atherosclerosis
+      - ESUS
+      - embolic stroke of undetermined source
+      - TOAST
+      - cryptogenic
+    mesh:
+      - Ischemic Stroke
+      - Brain Ischemia
+      - Stroke
+
+  - name: "Atrial Fibrillation & Stroke"
+    query: >-
+      ("Atrial Fibrillation"[Mesh] OR atrial fibrillation[Title/Abstract]) AND
+      ("Stroke"[Mesh] OR stroke[Title/Abstract] OR cardioembol*[Title/Abstract] OR
+      anticoagul*[Title/Abstract] OR "left atrial appendage"[Title/Abstract])
+    keywords:
+      - atrial fibrillation
+      - anticoagulation
+      - DOAC
+      - left atrial appendage
+      - cardioembolic
+      - apixaban
+      - rivaroxaban
+      - stroke prevention
+    mesh:
+      - Atrial Fibrillation
+      - Anticoagulants
+      - Stroke
+
+  - name: "Stroke Proteomics / Metabolomics"
+    query: >-
+      ("Stroke"[Mesh] OR stroke[Title/Abstract] OR cerebrovascular[Title/Abstract]) AND
+      ("Proteomics"[Mesh] OR "Metabolomics"[Mesh] OR proteomic*[Title/Abstract] OR
+      metabolomic*[Title/Abstract] OR biomarker*[Title/Abstract] OR
+      "mass spectrometry"[Title/Abstract] OR olink[Title/Abstract])
+    keywords:
+      - proteomics
+      - metabolomics
+      - biomarker
+      - mass spectrometry
+      - Olink
+      - plasma proteome
+      - metabolite
+    mesh:
+      - Proteomics
+      - Metabolomics
+      - Biomarkers
+
+  - name: "DASH Diet / Hypertension & Stroke"
+    query: >-
+      ("Hypertension"[Mesh] OR hypertension[Title/Abstract] OR "blood pressure"[Title/Abstract] OR
+      "DASH diet"[Title/Abstract] OR "Dietary Approaches to Stop Hypertension"[Title/Abstract] OR
+      "Diet, Sodium-Restricted"[Mesh]) AND
+      ("Stroke"[Mesh] OR stroke[Title/Abstract] OR cerebrovascular[Title/Abstract] OR
+      "cardiovascular"[Title/Abstract])
+    keywords:
+      - DASH diet
+      - hypertension
+      - blood pressure
+      - sodium
+      - dietary
+      - antihypertensive
+    mesh:
+      - Hypertension
+      - Blood Pressure
+      - Diet, Sodium-Restricted
+
+  - name: "Cerebral Small Vessel Disease"
+    query: >-
+      ("Cerebral Small Vessel Diseases"[Mesh] OR "small vessel disease"[Title/Abstract] OR
+      "white matter hyperintensit*"[Title/Abstract] OR "cerebral microbleed*"[Title/Abstract] OR
+      lacune*[Title/Abstract] OR "enlarged perivascular spaces"[Title/Abstract] OR
+      CADASIL[Title/Abstract])
+    keywords:
+      - small vessel disease
+      - white matter hyperintensity
+      - cerebral microbleed
+      - lacune
+      - perivascular space
+      - CADASIL
+      - leukoaraiosis
+    mesh:
+      - Cerebral Small Vessel Diseases
+      - White Matter
+      - Stroke, Lacunar

@@ -85,7 +85,7 @@ The sandbox repo must be a separate directory from your production codebase. Bef
 
 ```python
 # coding_sprint.py
-import argparse, os, subprocess
+import argparse, os, shlex, subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 from agents import Agent, Runner, function_tool, handoff
@@ -97,7 +97,7 @@ SANDBOX = ""  # set at runtime
 @function_tool
 def read_file(path: str) -> str:
     full = Path(SANDBOX) / path
-    if not str(full.resolve()).startswith(str(Path(SANDBOX).resolve())):
+    if not full.resolve().is_relative_to(Path(SANDBOX).resolve()):
         return "ERROR: path outside sandbox"
     try:
         return full.read_text(encoding="utf-8")
@@ -107,7 +107,7 @@ def read_file(path: str) -> str:
 @function_tool
 def write_file(path: str, content: str) -> str:
     full = Path(SANDBOX) / path
-    if not str(full.resolve()).startswith(str(Path(SANDBOX).resolve())):
+    if not full.resolve().is_relative_to(Path(SANDBOX).resolve()):
         return "ERROR: path outside sandbox"
     full.parent.mkdir(parents=True, exist_ok=True)
     full.write_text(content, encoding="utf-8")
@@ -115,8 +115,19 @@ def write_file(path: str, content: str) -> str:
 
 @function_tool
 def run_tests(test_command: str) -> dict:
+    try:
+        args = shlex.split(test_command)
+    except ValueError as e:
+        return {"stdout": "", "stderr": f"Error parsing command: {e}", "exit_code": 1}
+
+    # Exact-command allowlist: only `pytest ...` or `npm test` — any other
+    # npm subcommand (install, run, exec, ...) is rejected.
+    ALLOWED_PREFIXES = (["pytest"], ["npm", "test"])
+    if not any(args[: len(prefix)] == prefix for prefix in ALLOWED_PREFIXES):
+        return {"stdout": "", "stderr": "Command not allowed. Only 'pytest' or 'npm test' are permitted.", "exit_code": 1}
+
     result = subprocess.run(
-        test_command, shell=True, cwd=SANDBOX,
+        args, shell=False, cwd=SANDBOX,
         capture_output=True, text=True, timeout=60
     )
     return {"stdout": result.stdout[-2000:], "stderr": result.stderr[-1000:],
@@ -183,7 +194,8 @@ def main():
 
     result = Runner.run_sync(
         planner_agent,
-        f"Task: {args.task}\nSandbox: {args.sandbox}"
+        f"Task: {args.task}\nSandbox: {args.sandbox}",
+        max_turns=20,
     )
     print(result.final_output)
 

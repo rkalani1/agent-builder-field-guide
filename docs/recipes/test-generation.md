@@ -49,7 +49,7 @@ Use Codex's `--approval-mode suggest` (or Claude Code's equivalent) to review ea
 | Outputs | A new or appended `tests/test_<module_name>.py` file with pytest test functions |
 | Tools | Local filesystem read (source module); local filesystem write (tests/ directory) |
 | Stop conditions | All public functions and classes in the module have at least one test case |
-| Error handling | If a function's purpose is ambiguous from signature and docstring alone, generate a skeleton test with a `# TODO: add assertions` comment |
+| Error handling | If a function's purpose is ambiguous from signature and docstring alone, generate a skeleton test with a `# To-Do: add assertions` comment |
 | HITL gates | Human reviews the generated test file before running pytest |
 | Owner | Engineer responsible for the module |
 | Review cadence | Run manually after each significant feature addition; re-verify that generated tests still pass after refactors |
@@ -102,7 +102,7 @@ Rules:
 7. Do not use mocks unless the function has an external dependency (network, database). If mocking is needed, use pytest-mock and add a comment explaining why.
 8. If a function's purpose is unclear from its signature and docstring, generate a skeleton:
    def test_<name>_TODO():
-       # TODO: clarify function purpose before writing assertions
+       # To-Do: add assertions
        pass
 9. Add a module-level docstring to the test file explaining what is being tested.
 10. Do not run the tests. Print a summary of test functions generated.
@@ -130,6 +130,10 @@ def calculate_discount(price: float, discount_pct: float) -> float:
 def _internal_helper(x):
     """Not part of public API."""
     return x * 2
+
+def process_data(data):
+    # No docstring, ambiguous generic name and generic parameter
+    pass
 ```
 
 ## Expected output
@@ -177,9 +181,16 @@ def test_calculate_discount_negative_pct_raises():
 def test_calculate_discount_over_100_raises():
     with pytest.raises(ValueError):
         calculate_discount(100.0, 101.0)
+
+
+# ── process_data ─────────────────────────────────────────────────────────────
+
+def test_process_data_TODO():
+    # To-Do: add assertions
+    pass
 ```
 
-Summary: generated 7 test functions for 2 public functions. `_internal_helper` skipped (private).
+Summary: generated 8 test functions for 3 public functions. `_internal_helper` skipped (private).
 
 ## Eval cases
 

@@ -1,6 +1,6 @@
 # Recipes
 
-This section is a practitioner-focused catalog of 41 agent recipes for the Agents and Automations. Each recipe is a self-contained, copy-pasteable blueprint that covers platform selection, permissions, a filled agent spec, setup steps, a ready-to-use prompt, eval cases, red-team probes, and a safe-launch checklist.
+This section is a practitioner-focused catalog of 45 agent recipes for the Agents and Automations. Each recipe is a self-contained, copy-pasteable blueprint that covers platform selection, permissions, a filled agent spec, setup steps, a ready-to-use prompt, eval cases, red-team probes, and a safe-launch checklist.
 
 Recipes are vendor-neutral where possible. Where a specific platform is recommended, at least one alternate is listed. No recipe requires production credentials to read, and all examples use synthetic data.
 
@@ -74,6 +74,8 @@ Each recipe is rated by drift risk (low / medium / high), reflecting how quickly
 | Incident response summarizer | [incident-response-summarizer.md](incident-response-summarizer.md) | Turn an incident timeline into a structured post-mortem draft |
 | Cost-monitoring agent | [cost-monitoring.md](cost-monitoring.md) | Parse usage exports and flag spend above threshold |
 | Agent portfolio ranking agent | [agent-portfolio-ranking.md](agent-portfolio-ranking.md) | Score and rank a set of deployed agents by reliability and value |
+| Word-to-PPT blueprint | [word-to-ppt.md](word-to-ppt.md) | Turn a Word outline into a slide deck; synthetic/educational content only |
+| Medical infographics guide | [medical-infographics.md](medical-infographics.md) | Design educational infographics from published data; not clinical decision support |
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Last verified:** 2026-05-06 · **Drift risk:** low–medium
 
-The repository ships nine **starter kits** under [`starter-kits/`](https://github.com/example/agents-automations/tree/main/starter-kits) on GitHub. Each kit is a copy-pastable project that gives you a working starting point for one platform or pattern.
+The repository ships nine **starter kits** under [`starter-kits/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits) on GitHub. Each kit is a copy-pastable project that gives you a working starting point for one platform or pattern.
 
 ## What every kit contains
 
@@ -22,15 +22,15 @@ The repository ships nine **starter kits** under [`starter-kits/`](https://githu
 
 | Kit | Best for |
 |---|---|
-| [`universal-agent-spec/`](https://github.com/example/agents-automations/tree/main/starter-kits/universal-agent-spec) | A vendor-neutral baseline. Copy this when starting any new agent. |
-| [`claude-code-agent/`](https://github.com/example/agents-automations/tree/main/starter-kits/claude-code-agent) | A repo-aware coding/refactor agent run in [Claude Code](platforms/claude-code.md). |
-| [`codex-agent/`](https://github.com/example/agents-automations/tree/main/starter-kits/codex-agent) | A repo-aware coding agent run in [OpenAI Codex CLI](platforms/codex.md). |
-| [`gemini-antigravity-agent/`](https://github.com/example/agents-automations/tree/main/starter-kits/gemini-antigravity-agent) | A project-scoped agent for [Google Antigravity](platforms/antigravity.md). |
-| [`openai-agents-sdk-python/`](https://github.com/example/agents-automations/tree/main/starter-kits/openai-agents-sdk-python) | A Python service that uses the [OpenAI Agents SDK](platforms/openai-api.md) with one tool. |
-| [`openai-agents-sdk-typescript/`](https://github.com/example/agents-automations/tree/main/starter-kits/openai-agents-sdk-typescript) | The same shape, in TypeScript. |
-| [`mcp-server-python/`](https://github.com/example/agents-automations/tree/main/starter-kits/mcp-server-python) | A minimal MCP server using the official [Python SDK](https://github.com/modelcontextprotocol/python-sdk). |
-| [`mcp-server-typescript/`](https://github.com/example/agents-automations/tree/main/starter-kits/mcp-server-typescript) | A minimal MCP server using the official [TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk). |
-| [`local-script-agent/`](https://github.com/example/agents-automations/tree/main/starter-kits/local-script-agent) | A local Python script agent with manual-only scheduler examples. |
+| [`universal-agent-spec/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/universal-agent-spec) | A vendor-neutral baseline. Copy this when starting any new agent. |
+| [`claude-code-agent/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/claude-code-agent) | A repo-aware coding/refactor agent run in [Claude Code](platforms/claude-code.md). |
+| [`codex-agent/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/codex-agent) | A repo-aware coding agent run in [OpenAI Codex CLI](platforms/codex.md). |
+| [`gemini-antigravity-agent/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/gemini-antigravity-agent) | A project-scoped agent for [Google Antigravity](platforms/antigravity.md). |
+| [`openai-agents-sdk-python/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/openai-agents-sdk-python) | A Python service that uses the [OpenAI Agents SDK](platforms/openai-api.md) with one tool. |
+| [`openai-agents-sdk-typescript/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/openai-agents-sdk-typescript) | The same shape, in TypeScript. |
+| [`mcp-server-python/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/mcp-server-python) | A minimal MCP server using the official [Python SDK](https://github.com/modelcontextprotocol/python-sdk). |
+| [`mcp-server-typescript/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/mcp-server-typescript) | A minimal MCP server using the official [TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk). |
+| [`local-script-agent/`](https://github.com/rkalani1/agents-automations/tree/main/starter-kits/local-script-agent) | A local Python script agent with manual-only scheduler examples. |
 
 ## How to use a kit
 

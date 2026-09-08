@@ -2,6 +2,9 @@
 
 > **Last verified:** 2026-06-01 · **Drift risk:** low
 
+!!! warning "Educational example only"
+    This recipe is a workflow pattern for education, not a clinical tool. Its outputs are not clinical decision support and must not inform real patient care. Use only synthetic or published, non-identifiable content — never PHI or restricted research data.
+
 This recipe details the exact workflow to transform detailed, text-heavy lecture notes or Word documents into highly structured, engaging PowerPoint presentation cards using Claude.
 
 ---

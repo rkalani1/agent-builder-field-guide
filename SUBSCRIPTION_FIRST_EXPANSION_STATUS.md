@@ -9,7 +9,7 @@ This file is a single-page snapshot of the v0.5 subscription-first expansion. It
 | Field | Value |
 |---|---|
 | Starting commit | `6bfe5fbcf87e6b88126f479ab9a1057beaa7b6c7` ("v0.4.0: Subscription-first expansion") |
-| Live URL | https://example.github.io/agents-automations/ |
+| Live URL | https://rkalani1.github.io/agents-automations/ |
 | Source branch | `v0.5-subscription-first-expansion` (PR target: `main`) |
 | Build source | GitHub Actions (`build_type=workflow`) |
 
@@ -66,7 +66,7 @@ All v0.3 and v0.4 work stays in place. Task Builder routing is extended; previou
 The v0.5 pass is complete only when:
 
 1. `mkdocs build --strict` exits 0. ✅
-2. The Pages production deployment from `main` succeeds. ✅ (Run: <https://github.com/example/agents-automations/actions/runs/25432608523>)
+2. The Pages production deployment from `main` succeeds. ✅ (Run: <https://github.com/rkalani1/agents-automations/actions/workflows/deploy.yml>)
 3. The Task Builder defaults to Beginner Mode and never recommends API/CLI/MCP/local-scripts in any mode except Developer. ✅
 4. A user can pick AI app + comfort + jobs before getting a recommendation. ✅
 5. Every provider mastery page renders with Beginner / Intermediate / Advanced / Expert layers, a guided exercise, a level-up ladder, and free-vs-paid annotations. ✅

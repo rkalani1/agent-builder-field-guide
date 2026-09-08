@@ -84,7 +84,7 @@ If your assistant touches APIs / data / external services, write a system prompt
 ## Make it robust
 
 - **Eval set**: 5 inputs the assistant should handle well; 2 it should refuse. Score each release.
-- **Red-team**: every assistant gets prompt-injection probes (jailbreak persona override, exfiltration via URL, scope creep). See [evals/red-team/](https://github.com/example/agents-automations/tree/main/evals/red-team).
+- **Red-team**: every assistant gets prompt-injection probes (jailbreak persona override, exfiltration via URL, scope creep). See [evals/red-team/](https://github.com/rkalani1/agents-automations/tree/main/evals/red-team).
 - **Drift check**: monthly, run the eval set. Adjust instructions when scores drop.
 
 ## What good output looks like

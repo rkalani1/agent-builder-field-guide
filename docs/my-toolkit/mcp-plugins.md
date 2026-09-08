@@ -1,8 +1,10 @@
 # Custom AI Toolkit
 
-This section provides a catalog and replication guide for this custom clinical and research AI configuration. These tools are optimized for vascular neurology, neuroepidemiological data science, and academic research workflows.
+> **Last verified:** 2026-07-18 · **Drift risk:** high
 
-Sharing this guide helps colleagues replicate your exact setup of custom CLI plugins and MCP (Model Context Protocol) servers.
+This section provides an example catalog of clinical and research AI tools, oriented toward vascular neurology, neuroepidemiological data science, and academic research workflows.
+
+This is one example toolkit of custom CLI plugins and MCP (Model Context Protocol) servers. Treat it as a starting point and adapt the selection to your own needs rather than copying it wholesale.
 
 ---
 
@@ -49,10 +51,10 @@ These are the core plugins loaded by Claude Code for dev workflows:
 ---
 
 ## 🔧 Configured MCP Servers (27 Total)
-Model Context Protocol (MCP) servers allow Claude to interact with databases, local files, and web APIs. The active configuration is saved in:
-`C:\Users\rkala\AppData\Roaming\Claude\claude_desktop_config.json`
+Model Context Protocol (MCP) servers allow Claude to interact with databases, local files, and web APIs. The configuration is saved in:
+`%APPDATA%\Claude\claude_desktop_config.json` (Windows) / `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac)
 
-Here are the key servers to share with your colleague:
+Here are the key servers in this example toolkit:
 
 ### 1. Research & Literature Servers
 * **PubMed (`pubmed`)**: Primary access to search PubMed abstracts and retrieve metadata.
@@ -71,9 +73,12 @@ Here are the key servers to share with your colleague:
 
 ---
 
-## ⚙️ How to Replicate This Setup
+## ⚙️ How to Set Up a Similar Toolkit
 
-Have your colleague follow these steps to install the same tools:
+!!! warning "Third-party servers and marketplaces run code with your permissions"
+    Unpinned third-party MCP servers and plugin marketplaces execute arbitrary code with your permissions. Before you install anything below: pin versions to a reviewed release, prefer official or scoped packages, review the source, and grant least privilege. See [MCP security](../mcp/security.md).
+
+Follow these steps to set up a comparable toolkit:
 
 ### Step 1: Install Node.js
 Many MCP servers run via `npx`. Ensure Node.js (v18+) is installed on the machine.

@@ -92,5 +92,5 @@ When you edit any of these pages, bump the `Last verified:` date and re-check th
 
 ## How to contribute an audit
 
-1. Open a [Source drift issue](https://github.com/example/agents-automations/issues/new?template=source_drift.yml).
+1. Open a [Source drift issue](https://github.com/rkalani1/agents-automations/issues/new?template=source_drift.yml).
 2. After review, file a PR that updates the affected page **and** adds a row above with the new date and outcome.

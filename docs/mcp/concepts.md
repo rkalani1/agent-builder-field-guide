@@ -1,9 +1,11 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
-> **Official sources:** [MCP Specification 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18), [MCP Specification 2025-03-26](https://modelcontextprotocol.io/specification/2025-03-26)
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
+> **Official sources:** [MCP Specification 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25), [MCP Specification 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18), [MCP Specification 2025-03-26](https://modelcontextprotocol.io/specification/2025-03-26)
 
 # MCP Concepts
 
-The [Model Context Protocol specification](https://modelcontextprotocol.io/specification/2025-06-18) defines a small vocabulary of roles and primitives. Getting these terms straight before writing any code saves a lot of confusion later.
+The [Model Context Protocol specification](https://modelcontextprotocol.io/specification/2025-11-25) defines a small vocabulary of roles and primitives. Getting these terms straight before writing any code saves a lot of confusion later.
+
+The current released spec revision is **2025-11-25** (which added OAuth/OIDC discovery improvements, icons, URL elicitation, tool calls in sampling, and experimental tasks on top of 2025-06-18). A further revision dated **2026-07-28** is in release-candidate stage as of this writing — re-check the spec index after that date.
 
 ## Roles: Host, Client, Server
 
@@ -19,7 +21,7 @@ The direction of capability flow matters. Servers offer things to clients (tools
 
 ## Transports
 
-Transports define the physical channel over which JSON-RPC messages travel. As of the [2025-06-18 spec](https://modelcontextprotocol.io/specification/2025-06-18), three transports are defined.
+Transports define the physical channel over which JSON-RPC messages travel. As of the [2025-11-25 spec](https://modelcontextprotocol.io/specification/2025-11-25), two standard transports are defined: stdio and Streamable HTTP. An older HTTP+SSE transport survives only as backwards-compatibility guidance.
 
 ### stdio
 
@@ -27,13 +29,13 @@ The host spawns the server as a child process and communicates over standard inp
 
 stdio is the right choice for local servers. It requires no networking, no port management, and no authentication tokens. The filesystem server example in [Installing an MCP server](install.md) uses stdio.
 
-### HTTP with Server-Sent Events (SSE)
+### HTTP with Server-Sent Events (SSE) — historical
 
-An older HTTP transport where the client sends POST requests and the server streams responses back over an SSE connection. This transport is supported by the 2025-03-26 spec and remains common in existing deployments, but the 2025-06-18 spec marks it as being superseded by Streamable HTTP.
+An older HTTP transport where the client sends POST requests and the server streams responses back over an SSE connection. It was defined in the 2024-11-05 spec revision and replaced by Streamable HTTP in the 2025-03-26 revision. It remains common in existing deployments, and current spec revisions retain backwards-compatibility guidance for it, but it is no longer one of the standard transports.
 
 ### Streamable HTTP
 
-Introduced as the preferred production transport in 2025-06-18. The client sends POST requests to a single endpoint (default path `/mcp`). The server can respond with either a plain JSON body (for short responses) or an SSE stream (for long-running operations). Streamable HTTP supports both stateful and stateless modes. The Python SDK exposes this via `mcp.run(transport="streamable-http")`.
+Introduced in the 2025-03-26 revision as the replacement for HTTP+SSE, and the preferred production transport since. The client sends POST requests to a single endpoint (default path `/mcp`). The server can respond with either a plain JSON body (for short responses) or an SSE stream (for long-running operations). Streamable HTTP supports both stateful and stateless modes. The Python SDK exposes this via `mcp.run(transport="streamable-http")`.
 
 ## Server-side primitives
 
@@ -51,7 +53,7 @@ Prompts are reusable message templates. A server can expose a prompt like `summa
 
 Tools are functions the model can call. They are the most commonly used primitive and the one most likely to cause harm if misused. Each tool has a name, a description (written for the model), and a JSON Schema input definition. When the model decides to call a tool, the host asks the user for permission (in interactive clients), the client sends a `tools/call` request to the server, and the server returns a result.
 
-As of the 2025-06-18 spec, tool results can be structured (typed JSON) or unstructured (text). Servers built against earlier spec versions return unstructured results only; the SDK maintains backward compatibility automatically.
+Since the 2025-06-18 revision, tool results can be structured (typed JSON) or unstructured (text). Servers built against earlier spec versions return unstructured results only; the SDK maintains backward compatibility automatically.
 
 ## Client-side primitives
 
@@ -82,7 +84,7 @@ One practical implication: if you are debugging a server, you can test it manual
 
 ## Security and trust model
 
-The spec dedicates significant space to trust. Key principles from [the 2025-06-18 specification](https://modelcontextprotocol.io/specification/2025-06-18):
+The spec dedicates significant space to trust. Key principles from [the current specification](https://modelcontextprotocol.io/specification/2025-11-25) (unchanged in substance since the 2025-06-18 revision):
 
 - Users must explicitly consent to data access and operations.
 - Tool descriptions and annotations are considered untrusted unless obtained from a server the host has verified.

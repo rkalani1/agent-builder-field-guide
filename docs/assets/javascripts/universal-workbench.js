@@ -759,6 +759,7 @@ Provide:
     "systemPrompt": "You are a concise researcher utilizing real-time X search results."
   }
 }`
+    }
     
   };
 
@@ -836,6 +837,9 @@ Provide:
       const active = button.getAttribute(attribute) === value;
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-selected", active ? "true" : "false");
+      if (button.getAttribute("role") === "tab") {
+        button.setAttribute("tabindex", active ? "0" : "-1");
+      }
     });
   }
 
@@ -851,18 +855,14 @@ Provide:
 
   async function copyText(text, target) {
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.error("Failed to copy text: ", err);
+      }
     }
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "absolute";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand("copy");
-    document.body.removeChild(textarea);
-    return copied;
+    return false;
   }
 
   // Model-specific UI updating function
@@ -886,36 +886,66 @@ Provide:
 
     // 2. Render official app links
     if (appLinksContainer) {
-      appLinksContainer.innerHTML = data.officialLinks.map((link, idx) => {
-        const cls = idx === 0 ? "button primary" : "button";
-        return `<a class="${cls}" href="${link.url}" target="_blank">${link.text}</a>`;
-      }).join("");
+      appLinksContainer.innerHTML = "";
+      data.officialLinks.forEach((link, idx) => {
+        const a = document.createElement("a");
+        a.className = idx === 0 ? "button primary" : "button";
+        a.href = link.url;
+        a.target = "_blank";
+        a.textContent = link.text;
+        appLinksContainer.appendChild(a);
+      });
     }
 
     // 3. Render setup cards
     if (setupCardsContainer) {
-      setupCardsContainer.innerHTML = data.setupCards.map((card, idx) => {
+      setupCardsContainer.innerHTML = "";
+      data.setupCards.forEach((card, idx) => {
+        const li = document.createElement("li");
+        li.className = "setup-card";
+
+        const h3 = document.createElement("h3");
+        h3.textContent = card.title;
+
+        const pDesc = document.createElement("p");
+        pDesc.textContent = card.desc;
+
+        const pLinks = document.createElement("p");
+        pLinks.className = "card-links";
+        pLinks.innerHTML = card.links; // links is expected to contain safe html tags like <a>
+
         if (idx === 1) {
           // Add personalization instructions textarea
-          return `<li class="setup-card">
-            <div class="prompt-head compact-head"><h3>${card.title}</h3><button class="button small copy" data-copy-target="setup-personal-instr" type="button">Copy</button></div>
-            <p>${card.desc}</p>
-            <p class="card-links">${card.links}</p>
-            <textarea id="setup-personal-instr" readonly rows="8">Help me write custom instructions for ${data.name}.
-Ask me four questions, one at a time, about:
-- Tone and formality I prefer.
-- Detail level I want by default.
-- When you should ask before answering.
-- Topics or formats to avoid.
-After I answer, propose a short, edit-ready instructions block. Keep it under 120 words.</textarea>
-          </li>`;
+          const headDiv = document.createElement("div");
+          headDiv.className = "prompt-head compact-head";
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "button small copy";
+          copyBtn.setAttribute("data-copy-target", "setup-personal-instr");
+          copyBtn.type = "button";
+          copyBtn.textContent = "Copy";
+
+          headDiv.appendChild(h3);
+          headDiv.appendChild(copyBtn);
+
+          const textarea = document.createElement("textarea");
+          textarea.id = "setup-personal-instr";
+          textarea.readOnly = true;
+          textarea.rows = 8;
+          textarea.value = `Help me write custom instructions for ${data.name}.\nAsk me four questions, one at a time, about:\n- Tone and formality I prefer.\n- Detail level I want by default.\n- When you should ask before answering.\n- Topics or formats to avoid.\nAfter I answer, propose a short, edit-ready instructions block. Keep it under 120 words.`;
+
+          li.appendChild(headDiv);
+          li.appendChild(pDesc);
+          li.appendChild(pLinks);
+          li.appendChild(textarea);
+        } else {
+          li.appendChild(h3);
+          li.appendChild(pDesc);
+          li.appendChild(pLinks);
         }
-        return `<li class="setup-card">
-          <h3>${card.title}</h3>
-          <p>${card.desc}</p>
-          <p class="card-links">${card.links}</p>
-        </li>`;
-      }).join("");
+        setupCardsContainer.appendChild(li);
+      });
+
       // Bind copy listener to setup-card textarea
       const copyBtn = setupCardsContainer.querySelector(".copy");
       if (copyBtn) {
@@ -971,10 +1001,11 @@ After I answer, propose a short, edit-ready instructions block. Keep it under 12
         return `<button type="button" class="${cls}" data-surface="${s.key}">${s.name}</button>`;
       }).join("");
       // Bind event listeners to new buttons
-      labSurfaceSelector.querySelectorAll("[data-surface]").forEach(btn => {
+      const surfaceButtons = Array.from(labSurfaceSelector.querySelectorAll("[data-surface]"));
+      surfaceButtons.forEach(btn => {
         btn.addEventListener("click", () => {
           activeSurface = btn.getAttribute("data-surface");
-          setActiveChoice(Array.from(labSurfaceSelector.querySelectorAll("[data-surface]")), "data-surface", activeSurface);
+          setActiveChoice(surfaceButtons, "data-surface", activeSurface);
           renderOptimizedPrompt();
         });
       });
@@ -1075,21 +1106,41 @@ After I answer, propose a short, edit-ready instructions block. Keep it under 12
       return true;
     });
 
+    toolkitGrid.innerHTML = "";
+
     if (filteredTools.length === 0) {
-      toolkitGrid.innerHTML = `<div style="grid-column: 1/-1; padding: 2rem; text-align: center; color: var(--muted);">No toolkit components configured in this category.</div>`;
+      const emptyDiv = document.createElement("div");
+      emptyDiv.style.cssText = "grid-column: 1/-1; padding: 2rem; text-align: center; color: var(--muted);";
+      emptyDiv.textContent = "No toolkit components configured in this category.";
+      toolkitGrid.appendChild(emptyDiv);
       return;
     }
 
-    toolkitGrid.innerHTML = filteredTools.map(tool => {
-      const badgesHtml = tool.tags.map(tag => `<span class="toolkit-badge">${tag}</span>`).join("");
-      return `
-        <div class="toolkit-card">
-          <h3>${tool.title}</h3>
-          <p>${tool.desc}</p>
-          <div class="toolkit-list">${badgesHtml}</div>
-        </div>
-      `;
-    }).join("");
+    filteredTools.forEach(tool => {
+      const card = document.createElement("div");
+      card.className = "toolkit-card";
+
+      const title = document.createElement("h3");
+      title.textContent = tool.title;
+      card.appendChild(title);
+
+      const desc = document.createElement("p");
+      desc.textContent = tool.desc;
+      card.appendChild(desc);
+
+      const list = document.createElement("div");
+      list.className = "toolkit-list";
+
+      tool.tags.forEach(tag => {
+        const badge = document.createElement("span");
+        badge.className = "toolkit-badge";
+        badge.textContent = tag;
+        list.appendChild(badge);
+      });
+
+      card.appendChild(list);
+      toolkitGrid.appendChild(card);
+    });
   }
 
   // Model-agnostic surfaces listing and filtering
@@ -1439,9 +1490,17 @@ Rules:
     if (missionTitle) missionTitle.textContent = activeM.title;
     if (missionSurface) {
       const surface = (surfaceMappings[activeModel] && surfaceMappings[activeModel][activeMission]) || "Chat";
-      missionSurface.innerHTML = `<strong>Best ${data.name} surface:</strong> ${surface}`;
+      missionSurface.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = `Best ${data.name} surface:`;
+      missionSurface.append(strong, " ", surface);
     }
-    if (missionNext) missionNext.innerHTML = `<strong>Next move:</strong> ${activeM.next}`;
+    if (missionNext) {
+      missionNext.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Next move:";
+      missionNext.append(strong, " ", activeM.next);
+    }
     if (missionPrompt) {
       let promptText = activeM.text;
       // Tailor XML tags specifically for Claude
@@ -1461,7 +1520,12 @@ Rules:
     const fix = data.fixData[fixKey] || data.fixData.vague;
 
     if (fixTitle) fixTitle.textContent = fix.title;
-    if (fixNext) fixNext.innerHTML = `<strong>Use when:</strong> ${fix.next}`;
+    if (fixNext) {
+      fixNext.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Use when:";
+      fixNext.append(strong, " ", fix.next);
+    }
     if (fixPrompt) fixPrompt.value = fix.prompt;
   }
 
@@ -1526,6 +1590,21 @@ After the answer:
       activeModel = tab.getAttribute("data-model") || "chatgpt";
       setActiveChoice(modelTabs, "data-model", activeModel);
       renderModelWorkbench();
+    });
+  });
+
+  // Arrow-key navigation for the model tablist (roving tabindex)
+  modelTabs.forEach((tab, index) => {
+    tab.addEventListener("keydown", (event) => {
+      let next = null;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % modelTabs.length;
+      else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + modelTabs.length) % modelTabs.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = modelTabs.length - 1;
+      if (next === null) return;
+      event.preventDefault();
+      modelTabs[next].focus();
+      modelTabs[next].click();
     });
   });
 

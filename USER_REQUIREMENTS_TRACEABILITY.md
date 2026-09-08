@@ -40,7 +40,7 @@ The site-rendered version of this file lives at [`docs/product-requirements/user
 | 7 | ChatGPT has a full mastery track. | [`docs/mastery/chatgpt.md`](docs/mastery/chatgpt.md) | complete |
 | 8 | Gemini has a full mastery track. | [`docs/mastery/gemini.md`](docs/mastery/gemini.md) | complete |
 | 9 | Grok has a no-API path + optional dev path. | [`docs/mastery/grok.md`](docs/mastery/grok.md) — Beginner→Advanced is non-API; Expert section covers xAI API | complete |
-| 10 | Perplexity has a mastery path covering research/Spaces/sources/Pages + optional dev. | [`docs/mastery/perplexity.md`](docs/mastery/perplexity.md) | complete |
+| 10 | Perplexity has a mastery path covering research/Spaces/sources/Pages + optional dev. | Covered inside [`docs/mastery/any-ai-tool.md`](docs/mastery/any-ai-tool.md); there is no standalone `perplexity.md` page. | partial |
 | 11 | "Any AI tool" path exists. | [`docs/mastery/any-ai-tool.md`](docs/mastery/any-ai-tool.md) | complete |
 | 12 | Universal 7-mission learning path. | [`docs/learning-path/index.md`](docs/learning-path/index.md) | complete |
 | 13 | Provider capability map covering Beginner/Intermediate/Advanced/Expert/Free/Sub/Ent/Dev-API/fallback. | [`docs/capability-map/index.md`](docs/capability-map/index.md) | complete |
@@ -53,8 +53,8 @@ The site-rendered version of this file lives at [`docs/product-requirements/user
 | 20 | An expert user can convert into evals / red-team / coding-agent / agent spec / API-MCP. | Layer 6 of every example + "Make it robust" sections + Task Builder Expert-expansion panel; [`docs/agent-factory/`](docs/agent-factory/), [`docs/evals/`](docs/evals/), [`starter-kits/`](starter-kits) | complete |
 | 21 | Every page clearly separates free/subscription from developer/API. | Plan-availability tags `Free / Sub / Team / Ent / Dev / API` on every Mastery section, Capability map cell, Example layer, Task Builder output | complete |
 | 22 | Task Builder remains static/local-only with no network calls. | [`docs/assets/javascripts/task-builder.js`](docs/assets/javascripts/task-builder.js) — verified by grep | complete |
-| 23 | `mkdocs build --strict` completes. | Verified locally; CI runs the same command on PR via [`.github/workflows/`](https://github.com/example/agents-automations/tree/main/.github/workflows) | complete |
-| 24 | The live GitHub Pages site is verified after deployment. | Live at https://example.github.io/agents-automations/. Verified 2026-05-06 post-merge — homepage + all 5 new section indices return HTTP 200 with v0.5 content. Deploy run: <https://github.com/example/agents-automations/actions/runs/25432608523> | complete |
+| 23 | `mkdocs build --strict` completes. | Verified locally; CI runs the same command on PR via [`.github/workflows/`](https://github.com/rkalani1/agents-automations/tree/main/.github/workflows) | complete |
+| 24 | The live GitHub Pages site is verified after deployment. | Live at https://rkalani1.github.io/agents-automations/. Verified 2026-05-06 post-merge — homepage + all 5 new section indices return HTTP 200 with v0.5 content. Deploy run: <https://github.com/rkalani1/agents-automations/actions/workflows/deploy.yml> | complete |
 
 ## Verification commands
 

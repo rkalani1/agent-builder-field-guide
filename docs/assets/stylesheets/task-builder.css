@@ -5,13 +5,6 @@
   text-underline-offset: 0.15em;
 }
 
-.md-tabs__link,
-.md-tabs__link:hover,
-.md-tabs__link:focus {
-  color: #ffffff;
-  opacity: 1;
-}
-
 .tb-app {
   display: grid;
   grid-template-columns: 1fr;
@@ -151,6 +144,13 @@
   transition: background 120ms ease;
 }
 .tb-btn:hover { background: var(--md-code-bg-color, #f0f0f0); }
+.tb-btn:focus-visible,
+.tb-tab:focus-visible,
+.tb-field :where(input, textarea, select):focus-visible,
+.tb-checks input:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color, #4f46e5);
+  outline-offset: 3px;
+}
 .tb-btn-ghost { background: transparent; }
 .tb-btn-copy { font-size: 0.85rem; padding: 0.25rem 0.6rem; }
 
@@ -176,13 +176,19 @@
 
 .tb-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.35rem;
   border-bottom: 1px solid var(--md-default-fg-color--lightest, #ddd);
   padding-bottom: 0.35rem;
   min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
 }
 .tb-tab {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
   font: inherit;
   font-size: 0.88rem;
   padding: 0.35rem 0.75rem;
@@ -224,7 +230,32 @@
 }
 
 @media (min-width: 1100px) {
-  .tb-app { grid-template-columns: 1fr; }
+  .tb-app {
+    grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
+    align-items: start;
+    gap: 1.5rem 2rem;
+  }
+  .tb-header {
+    grid-column: 1 / -1;
+  }
+  .tb-form {
+    grid-column: 1;
+  }
+  .tb-output {
+    grid-column: 2;
+    position: sticky;
+    top: 6.25rem;
+    max-height: calc(100vh - 7.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem;
+    border: 1px solid var(--md-default-fg-color--lightest, #ddd);
+    border-top: 3px solid var(--md-primary-fg-color, #3949ab);
+    border-radius: 10px;
+    background: var(--md-default-bg-color, #fff);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    scrollbar-gutter: stable;
+  }
 }
 
 @media (max-width: 640px) {
@@ -245,5 +276,11 @@
   }
   .tb-section {
     padding: 0.85rem 0.9rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-btn {
+    transition: none;
   }
 }

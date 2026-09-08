@@ -1,0 +1,8 @@
+# Runtime dependencies (intentionally dependency-light).
+requests>=2.31
+PyYAML>=6.0
+python-dotenv>=1.0
+feedparser>=6.0        # reserved for RSS-based sources; safe to keep installed
+
+# Development / testing only:
+pytest>=7.4

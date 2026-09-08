@@ -1,11 +1,11 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium-high · **Plan annotations:** Free / Sub / Team / Ent / API
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Plan annotations:** Free / Sub / Team / Ent / API · **Partially re-verified:** 2026-07-18
 
 # Grok mastery
 
 Grok is xAI's large language model, available through three distinct surfaces that behave very differently from one another. Understanding which surface you are on matters before you build anything. Throughout this page, the three surfaces are referred to by these names:
 
 - **Grok consumer chat** — the standalone web app and mobile apps at [grok.com](https://grok.com).
-- **Grok on X** — Grok accessed from within the X (formerly Twitter) platform, tied to an X Premium subscription.
+- **Grok on X** — Grok accessed from within the X (formerly Twitter) platform. Per mid-2026 reporting it is available to X users with usage limits; Premium tiers raise the limits (verify current gating).
 - **xAI API** — the programmatic interface at [console.x.ai](https://console.x.ai), documented at [docs.x.ai](https://docs.x.ai/overview).
 
 Consumer features in Grok are actively developed and the UI changes frequently. Any consumer-side feature described here should be verified in-app before you rely on it. Developer documentation at [docs.x.ai](https://docs.x.ai/overview) is more stable.
@@ -26,10 +26,10 @@ Go to [grok.com](https://grok.com) in any modern browser. You can sign in with a
 
 ### Choosing a model
 
-Near the top of the chat panel or in the text box area, look for a model selector — a dropdown or a series of labeled buttons showing the current model (such as "Grok 3" or "Grok 3 mini"). Click it to see available model options. Each option typically includes a short description of speed vs. capability. Select the one that fits your task:
+Near the top of the chat panel or in the text box area, look for a model selector — a dropdown or a series of labeled buttons showing the current model (such as "Grok 4.3" or a fast/mini variant — model names drift; check the picker in-app). Click it to see available model options. Each option typically includes a short description of speed vs. capability. Select the one that fits your task:
 
 - Mini / faster models: lower latency, good for quick back-and-forth. Available **Free** and **Sub**.
-- Full models (e.g., Grok 3): stronger reasoning, more thorough answers. May be **Sub**-only or have tighter free-tier limits.
+- Full models (e.g., the current Grok 4.x generation): stronger reasoning, more thorough answers. May be **Sub**-only or have tighter free-tier limits.
 - Thinking / reasoning models (where available): slower, more deliberate multi-step reasoning. **Sub** and **API**.
 
 The consumer model picker does not expose the full list of API models. For the full model catalog, see [docs.x.ai/developers/models](https://docs.x.ai/developers/models).
@@ -48,13 +48,13 @@ Document attachment (PDFs, spreadsheets, text files) support is more limited tha
 
 > **Drift risk: high on all features in this section.** Grok's consumer-side feature set changes rapidly. Verify each capability below is present in your current app version before building on it.
 
-### Grok on X (X Premium integration)
+### Grok on X (X integration)
 
-If you have an X Premium subscription, Grok is accessible from within the X platform — typically via a dedicated Grok tab or icon in the X app's navigation. This surface gives you Grok with awareness of your X timeline, trending topics, and public X posts. You can ask questions like "what is being discussed about this topic on X right now" and Grok will draw on public posts.
+Grok is accessible from within the X platform — typically via a dedicated Grok tab or icon in the X app's navigation. Per mid-2026 reporting, this works for X users generally with usage limits; Premium/Premium+ subscriptions raise the limits, and the @grok in-reply feature is reportedly Premium-only as of March 2026 — verify current gating at [help.x.com](https://help.x.com/en/using-x/about-grok). This surface gives you Grok with awareness of your X timeline, trending topics, and public X posts. You can ask questions like "what is being discussed about this topic on X right now" and Grok will draw on public posts.
 
 The Grok on X surface is functionally similar to the Grok consumer chat but has tighter integration with X platform data. It is not a separate model; it is the same underlying model with additional real-time X data context.
 
-**Plan annotation:** Grok on X requires **Sub** (X Premium or Premium+ subscription on the X platform). SuperGrok subscribers on grok.com may get similar features; check current plan details in-app.
+**Plan annotation:** Grok on X is **Free** with usage quotas per mid-2026 reporting; **Sub** (X Premium or Premium+) raises limits, and some pathways (@grok in-reply) are reportedly **Sub**-only. SuperGrok subscribers on grok.com may get similar features; check current plan details in-app.
 
 ### Custom personas (where available)
 
@@ -64,13 +64,13 @@ Because this feature changes frequently, this guide cannot give you a stable cli
 
 **Plan annotation:** Persona/style controls, where available, are **Sub**. Verify in-app.
 
-### Spaces and workspaces (where available)
+### Workspaces (where available)
 
-At the time of writing, Grok consumer chat does not offer a robust project or workspace system comparable to Claude's Projects or ChatGPT's Custom GPTs. Chat history is organized chronologically. You can rename conversations by clicking the conversation title. There is no persistent shared context across separate conversations beyond any memory feature (see below).
+Per xAI announcements reported in April 2025, Grok consumer chat offers a Workspaces feature on [grok.com](https://grok.com) that groups related chats together with uploaded files and per-workspace custom instructions. Availability, naming, and capability vary by plan, region, and app version — verify in-app. Outside a workspace, chat history is organized chronologically, and you can rename conversations by clicking the conversation title.
 
-If you see a "Spaces" or "Projects" option in your current Grok version, it was introduced after this page was written. Check the in-app help for details.
+Workspaces is not a shareable "custom GPT"-style bot builder: it scopes context and instructions to your own workspace rather than publishing a configured assistant for others.
 
-**Plan annotation:** Workspaces/Spaces, if present, are likely **Sub** or **Ent**. Verify in-app.
+**Plan annotation:** Workspaces availability varies by plan; full capability (file uploads, persistent instructions) is reportedly tied to paid tiers (**Sub**). Verify in-app.
 
 ### Memory and personalization (where available)
 
@@ -99,7 +99,7 @@ This is important context for anyone coming from ChatGPT or Claude: several capa
 - **Tool calling / function calling:** The consumer Grok chat does not expose function calling. You cannot register external tools or have Grok invoke functions on your behalf from the chat UI. This requires the xAI API.
 - **Structured outputs (enforced JSON schema):** The consumer chat does not offer schema-constrained JSON output. You can ask Grok to respond in JSON format and it often will, but the output is not schema-enforced. Reliable structured output requires the xAI API.
 - **System prompts (programmatic):** The consumer chat has no exposed system prompt field (unlike AI Studio). You can approximate a system prompt by putting instructions at the top of your first user message, but this is not the same as a proper system-level instruction.
-- **Custom assistants or "GPT"-style configurable bots:** Grok does not currently offer a Gem/GPT/Project equivalent in the consumer UI with persistent instructions and knowledge files. If this changes, it will likely be a high-drift feature.
+- **Custom assistants or "GPT"-style configurable bots:** Grok does not offer a shareable Gem/GPT-store-style bot builder in the consumer UI. Workspaces (section 2, where available) covers persistent instructions and knowledge files for your own use, but there is no equivalent for publishing a configured assistant to others. This is a high-drift area — verify in-app.
 
 For any of the above, the path is: use the xAI API (section 4).
 
@@ -322,13 +322,13 @@ For production xAI API integrations:
 
 ## 5. Level up this workflow
 
-Grok's consumer-side ladder is shorter than ChatGPT's, Claude's, or Gemini's. The consumer chat has fewer configuration options, no native custom-assistant builder, and no persistent memory system as of this writing. This means the practical climb often goes directly from consumer chat to the xAI API without an intermediate "power user" tier. Plan for that transition early.
+Grok's consumer-side ladder is shorter than ChatGPT's, Claude's, or Gemini's. The consumer chat has fewer configuration options, no shareable custom-assistant builder, and a memory feature reported in beta that is region-dependent (absent in the EU/UK — verify in-app). This means the practical climb often goes directly from consumer chat to the xAI API without an intermediate "power user" tier. Plan for that transition early.
 
 1. **Visit [grok.com](https://grok.com) and send your first message.** Note the default model and the daily message quota. (Free)
 2. **Try the model picker.** Switch between available models on the same prompt and compare quality. (Free / Sub)
 3. **Attach an image.** Upload a photo and ask a question about it. Confirm image understanding works. (Free / Sub)
 4. **Test tone/persona controls (if present).** Look for any style or mode settings in the interface. If none exist, note that this gap is expected and move on. (Sub)
-5. **Use Grok on X (if you have X Premium).** Ask a question about a current trending topic. Compare the answer quality and freshness to a plain Grok consumer chat response. (Sub — X Premium required)
+5. **Use Grok on X.** Ask a question about a current trending topic. Compare the answer quality and freshness to a plain Grok consumer chat response. (Free with usage quotas per mid-2026 reporting; Sub raises limits — verify)
 6. **Establish a prompt-saving habit.** Keep a text file of your best Grok prompts — there is no native library, so this is the practical substitute. (Free)
 7. **Open the xAI console at [console.x.ai](https://console.x.ai).** Create an API key and store it in your environment. (API)
 8. **Make your first API call.** Use either the `httpx` or OpenAI-compatible Python example from section 4 with a simple prompt. Confirm you get a response. (API)
@@ -456,10 +456,10 @@ python memo_brainstorm.py
 | Voice input (mobile app) | Yes | Yes | — | — |
 | Image input in chat | Yes, limited | Yes | — | Yes |
 | Document file input | Limited / drift high | Yes (verify in-app) | — | Yes |
-| Grok on X platform | No | Yes (X Premium) | — | — |
+| Grok on X platform | Yes, quota-limited (verify in-app) | Yes, higher limits (X Premium) | — | — |
 | Persona / style controls | Limited (drift high) | Yes (verify in-app) | — | System prompt via API |
-| Persistent memory | Limited (drift high) | Yes (verify in-app) | — | Custom storage layer |
-| Workspaces / Projects | No (as of writing) | No (as of writing) | — | — |
+| Persistent memory | Beta, region-dependent (not EU/UK; drift high) | Yes, beta (region-dependent — verify in-app) | — | Custom storage layer |
+| Workspaces / Projects | Limited (verify in-app) | Yes, reported (verify in-app) | — | — |
 | Saved prompt library | No (manual workaround) | No (manual workaround) | — | — |
 | Chat sharing (public link) | Yes / Sub (drift high) | Yes | — | — |
 | Function calling | No | No | No | Yes |
@@ -467,7 +467,7 @@ python memo_brainstorm.py
 | System prompts (programmatic) | No | No | No | Yes |
 | xAI API access | No | No | — | Yes (billed) |
 | OpenAI-compatible client support | No | No | — | Yes |
-| Real-time X data context | No | Yes (Grok on X) | — | Check docs.x.ai |
+| Real-time X data context | Quota-limited (Grok on X — verify) | Yes (Grok on X) | — | Check docs.x.ai |
 
 ---
 
@@ -477,12 +477,12 @@ Because Grok's consumer surface has fewer configuration options than competing p
 
 | Feature | If unavailable in Grok | Fallback |
 |---|---|---|
-| Persistent memory across sessions | No native memory in consumer chat | Use a personal context block in a text file; paste at the start of each session. Alternatively, use Claude Projects (free tier includes persistent instructions) or ChatGPT's Memory feature |
-| Custom assistant with instructions + knowledge files | No Gem/GPT equivalent in consumer chat | Use Gemini Gems (Sub required) or ChatGPT's GPT builder (free tier allows one custom GPT) or Claude Projects for persistent instruction sets |
+| Persistent memory across sessions | Memory reported in beta, region-dependent (absent in EU/UK — verify in-app) | Use a personal context block in a text file; paste at the start of each session. Alternatively, use Claude Projects (free tier includes persistent instructions) or ChatGPT's Memory feature |
+| Custom assistant with instructions + knowledge files | No shareable Gem/GPT-store equivalent; Workspaces (where available) covers per-workspace instructions and files | Use Gemini Gems (Sub required) or ChatGPT's GPT builder (free tier allows one custom GPT) or Claude Projects for persistent instruction sets |
 | Saved prompt library | No native library | Maintain a text file of prompts manually; use a notes app (Notion, Obsidian) with a dedicated Prompts section |
 | Function calling (consumer) | Not available; must use API | If API billing is not set up, approximate tool use by instructing the model to output a JSON "action descriptor" and interpret it manually; or use ChatGPT or Claude consumer chat, which expose limited tool-use features in some plans |
 | Structured output (consumer) | Not available; must use API | Ask the model to "respond in JSON format matching this schema" — it usually complies but output is not guaranteed valid; add a json.loads try/except and retry on parse failure |
-| Grok on X (X Premium required) | Real-time X data not available | Use the xAI API with a web-search tool call if xAI adds web search; or use Perplexity for real-time web-sourced answers |
-| Deep Research equivalent | No native deep research mode | Use Gemini Advanced's Deep Research, Perplexity's research mode, or a multi-step agentic loop via the xAI API with web-search tools |
-| Agent mode / multi-step automation | No consumer agent mode | Build multi-step agents using the xAI API with function calling and your own orchestration loop; or use a hosted agent framework (LangChain, LlamaIndex, or CrewAI) with xAI as the model backend |
+| Grok on X (region- or gating-restricted) | Real-time X data not available | Use the xAI API's built-in web/X search tools (see [docs.x.ai/developers/tools/overview](https://docs.x.ai/developers/tools/overview)); or use Perplexity for real-time web-sourced answers |
+| Deep Research equivalent | DeepSearch/DeeperSearch modes exist on grok.com (introduced Feb 2025; UI naming drifts — verify in-app) | If unavailable on your plan or region, use Gemini Advanced's Deep Research, Perplexity's research mode, or a multi-step agentic loop via the xAI API with web-search tools |
+| Agent mode / multi-step automation | Scheduled Tasks/[Automations](https://x.ai/news/grok-automations) reported on the consumer surface as of mid-2026 announcements (some trigger types gated to paid tiers — verify in-app) | For programmatic multi-step agents, build on the xAI API with function calling and your own orchestration loop; or use a hosted agent framework (LangChain, LlamaIndex, or CrewAI) with xAI as the model backend |
 | xAI API (billing not set up) | API features unavailable | Use Google AI Studio's free tier with Gemini API for development and testing; the function calling and structured output interfaces are equivalent |

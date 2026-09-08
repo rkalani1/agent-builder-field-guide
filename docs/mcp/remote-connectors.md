@@ -1,11 +1,11 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18 (spec references only; the support article was unreachable, so plan, limit, and UI-path claims are unconfirmed since May 2026)
 > **Official sources:** [Custom remote MCP connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp), [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
 
 # Custom Remote Connectors
 
 A remote MCP connector lets Claude reach a server you host over the public internet rather than running a local process. This is useful when your tool logic requires server-side resources (a database, a private API, long-running compute), when you want to share the same server across multiple users, or when you are building a connector for a team.
 
-As of May 2026, remote connectors are available in beta on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector. The feature is accessed through the Claude.ai web interface and Claude Desktop — not through `claude_desktop_config.json`.
+As of May 2026, remote connectors are available in beta on Free, Pro, Max, Team, and Enterprise plans. Free users are limited to one custom connector. The feature is accessed through the Claude.ai web interface and Claude Desktop — not through `claude_desktop_config.json`. Plan availability, connector limits, and the menu paths described below are high-drift UI claims that could not be re-checked on 2026-07-18; confirm them against the [official support article](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) before relying on them.
 
 ## How remote connectors differ from local servers
 
@@ -20,7 +20,7 @@ The connector UI supports OAuth for delegated authentication. When a user adds y
 3. Claude receives an access token scoped to that user's permissions.
 4. Every tool call Claude makes to your server includes that token.
 
-To configure OAuth, you provide an OAuth Client ID and Client Secret in the "Advanced settings" panel when adding the connector. Your server must implement the standard OAuth 2.0 authorization code flow. The spec's [2025-06-18 authorization section](https://modelcontextprotocol.io/specification/2025-06-18) describes the expected token verification behavior.
+To configure OAuth, you provide an OAuth Client ID and Client Secret in the "Advanced settings" panel when adding the connector. Your server must implement the standard OAuth 2.0 authorization code flow. The authorization section of the [current spec revision (2025-11-25)](https://modelcontextprotocol.io/specification/2025-11-25) — which extended the 2025-06-18 authorization model with OIDC discovery and OAuth Client ID Metadata Documents — describes the expected token verification behavior.
 
 Bearer tokens are not exposed as a first-class auth mode in the Claude UI, but you can approximate them by using a static "client credential" OAuth grant on your server. For internal tools where you control both ends, this is a reasonable approach.
 
@@ -93,8 +93,8 @@ In Claude.ai, add `https://tools.example.com/mcp` as a custom connector. In a co
 
 ## Firewall requirements
 
-Your server must accept connections from Anthropic's published IP ranges. Check [Anthropic's IP address documentation](https://support.anthropic.com) for the current CIDR ranges and update your firewall allowlist accordingly. These ranges change occasionally, so subscribe to release notes or set a calendar reminder to recheck them quarterly.
+Your server must accept connections from Anthropic's published IP ranges. Check Anthropic's support documentation at [support.claude.com](https://support.claude.com/) for the current CIDR ranges and update your firewall allowlist accordingly — a canonical article URL for the egress IP ranges has not been re-confirmed, so treat this citation as a known drift risk and locate the current article there. These ranges change occasionally, so subscribe to release notes or set a calendar reminder to recheck them quarterly.
 
 ## Removing a connector
 
-Removing a connector is permanent in the current UI — you cannot "pause" it without deleting and re-adding. To remove: Customize > Connectors > three-dot menu next to the connector > Remove. For Team/Enterprise: Organization settings > Connectors > Remove.
+As of the May 2026 verification, removing a connector was permanent in the UI — you could not "pause" it without deleting and re-adding. To remove: Customize > Connectors > three-dot menu next to the connector > Remove. For Team/Enterprise: Organization settings > Connectors > Remove. (Verify against the [support article](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) — removal behavior and menu paths change without notice.)

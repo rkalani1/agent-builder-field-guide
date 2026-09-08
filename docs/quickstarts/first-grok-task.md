@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** high
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
 > **Official sources:** [xAI structured outputs](https://docs.x.ai/developers/model-capabilities/text/structured-outputs), [xAI models](https://docs.x.ai/developers/models), [xAI API console](https://console.x.ai)
 
 # First Grok task: extract structured fields from a research abstract
@@ -21,7 +21,7 @@ Use the **xAI API** ([docs.x.ai](https://docs.x.ai/overview)) for this task.
 
 **Why not Grok consumer chat?** The [Grok consumer chat](https://grok.com) is a browser-based interface. You can paste text and ask Grok to extract fields, but the response is free-form prose or informal JSON that the model generates without any schema enforcement. There is no way to pass a `response_format` parameter, no way to validate the output against a schema, and no way to run the task programmatically across multiple files. For a one-off manual check, consumer chat is fine. For any repeatable extraction pipeline, it is not appropriate.
 
-**Why not Grok on X?** [Grok on X](https://x.com/i/grok) has the same limitations as consumer chat: no developer API, no structured output enforcement, and access tied to an X premium subscription. It is designed for social-product interaction, not document extraction.
+**Why not Grok on X?** [Grok on X](https://x.com/i/grok) has the same limitations as consumer chat: no developer API and no structured output enforcement, with usage quotas and gating that shift over time (see the [platform overview](../platforms/grok.md)). It is designed for social-product interaction, not document extraction.
 
 **Why the xAI API?** The API exposes the `response_format` parameter with `json_schema` type, which constrains output to your schema for supported schema features, per the [xAI structured outputs documentation](https://docs.x.ai/developers/model-capabilities/text/structured-outputs). Combined with the 1 million token context window of Grok 4.3, the API is well suited to batch extraction tasks of many practical document sizes.
 
@@ -104,8 +104,10 @@ client = OpenAI(
 )
 
 # --- Schema ----------------------------------------------------------------
-# Define the fields to extract. additionalProperties must be False when using
-# xAI structured outputs, per docs.x.ai/developers/model-capabilities/text/structured-outputs
+# Define the fields to extract. additionalProperties defaults to false in xAI
+# structured outputs (setting it true is unsupported); it is set explicitly here
+# for clarity. Verify current schema rules at
+# docs.x.ai/developers/model-capabilities/text/structured-outputs
 EXTRACTION_SCHEMA = {
     "type": "object",
     "properties": {

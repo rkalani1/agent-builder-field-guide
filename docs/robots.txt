@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rkalani1.github.io/agents-automations/sitemap.xml

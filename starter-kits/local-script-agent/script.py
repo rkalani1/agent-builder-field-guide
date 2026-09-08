@@ -14,9 +14,13 @@ docs/platforms/local-scripts.md
 # 0 9 * * 1 OPERATOR_APPROVED_TO_RUN=1 /path/to/venv/bin/python /path/to/script.py >> /var/log/notes-summary.log 2>&1
 """
 
+from __future__ import annotations
+
 import os
 import sys
 import pathlib
+import itertools
+from concurrent.futures import ThreadPoolExecutor
 
 # ---------------------------------------------------------------------------
 # SAFETY GATE
@@ -78,60 +82,46 @@ and Action Items.
 # ---------------------------------------------------------------------------
 def safe_read(path: pathlib.Path) -> str:
     """Read a file only if it is inside SANDBOX_DIR."""
-    resolved = path.resolve()
-    if not str(resolved).startswith(str(SANDBOX_DIR)):
+    try:
+        resolved = path.resolve(strict=True)
+    except FileNotFoundError:
+        # If the file doesn't exist, we can't read it anyway.
+        # But for security, we want to fail fast before any symlink attacks.
+        raise PermissionError(f"File not found or invalid path: {path}")
+
+    if not resolved.is_relative_to(SANDBOX_DIR):
         raise PermissionError(
             f"Attempted to read outside sandbox: {resolved}"
         )
     return resolved.read_text(encoding="utf-8", errors="ignore")
 
 
-# ---------------------------------------------------------------------------
-# MAIN
-# ---------------------------------------------------------------------------
-def main() -> None:
-    if not NOTES_DIR.is_dir():
-        print(f"ERROR: Notes directory not found: {NOTES_DIR}", file=sys.stderr)
-        print("Create ./sandbox/notes/ and add .txt files.", file=sys.stderr)
-        sys.exit(1)
-
-    note_files = sorted(NOTES_DIR.glob("*.txt")) + sorted(NOTES_DIR.glob("*.md"))
-    note_files = note_files[:MAX_FILES]
-
-    if not note_files:
-        print("ERROR: No .txt or .md files found in ./sandbox/notes/", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"Found {len(note_files)} note file(s). Reading...")
-
-    combined = []
+def read_note_files(note_files: list[pathlib.Path]) -> tuple[str, list[str]]:
+    """Read contents of note files and return combined text and warnings."""
+    combined: list[str] = []
     warnings = []
-    for f in note_files:
+
+    def read_one(f: pathlib.Path) -> tuple[str | None, str | None]:
         try:
             content = safe_read(f)
-            combined.append(f"--- {f.name} ---\n{content}")
+            return f"--- {f.name} ---\n{content}", None
         except PermissionError as e:
-            warnings.append(str(e))
-            print(f"WARNING: {e}", file=sys.stderr)
+            return None, str(e)
         except Exception as e:
-            warnings.append(f"Skipped {f.name}: {e}")
-            print(f"WARNING: Skipped {f.name}: {e}", file=sys.stderr)
+            return None, f"Skipped {f.name}: {e}"
 
-    if not combined:
-        print("ERROR: No files could be read.", file=sys.stderr)
-        sys.exit(1)
+    with ThreadPoolExecutor() as executor:
+        for content, warning in executor.map(read_one, note_files):
+            if content is not None:
+                combined.append(content)
+            if warning is not None:
+                warnings.append(warning)
+                print(f"WARNING: {warning}", file=sys.stderr)
 
-    user_message = "\n\n".join(combined)
+    return "\n\n".join(combined), warnings
 
-    # Model is read from OPENAI_MODEL so the script doesn't go stale when
-    # vendors retire model IDs. See docs/model-freshness.md in the guide.
-    model = os.getenv("OPENAI_MODEL")
-    if not model:
-        print("ERROR: OPENAI_MODEL is not set. Pick a current model from", file=sys.stderr)
-        print("https://platform.openai.com/docs/models and export it, e.g.:", file=sys.stderr)
-        print("  export OPENAI_MODEL=<model-id>", file=sys.stderr)
-        sys.exit(1)
-
+def generate_summary(user_message: str, model: str, api_key: str) -> str:
+    """Generate a summary of the notes using the OpenAI API."""
     print(f"Calling OpenAI API for summarization with model={model}...")
     client = OpenAI(api_key=api_key)
     response = client.chat.completions.create(
@@ -142,8 +132,46 @@ def main() -> None:
         ],
         max_tokens=1024,
     )
+    return response.choices[0].message.content or ""
 
-    summary = response.choices[0].message.content or ""
+# ---------------------------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------------------------
+def main() -> None:
+    if not NOTES_DIR.is_dir():
+        print(f"ERROR: Notes directory not found: {NOTES_DIR}", file=sys.stderr)
+        print("Create ./sandbox/notes/ and add .txt files.", file=sys.stderr)
+        sys.exit(1)
+
+    note_files = list(
+        itertools.islice(
+            itertools.chain(NOTES_DIR.glob("*.txt"), NOTES_DIR.glob("*.md")),
+            MAX_FILES
+        )
+    )
+
+    if not note_files:
+        print("ERROR: No .txt or .md files found in ./sandbox/notes/", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Found {len(note_files)} note file(s). Reading...")
+
+    user_message, warnings = read_note_files(note_files)
+
+    if not user_message:
+        print("ERROR: No files could be read.", file=sys.stderr)
+        sys.exit(1)
+
+    # Model is read from OPENAI_MODEL so the script doesn't go stale when
+    # vendors retire model IDs. See docs/model-freshness.md in the guide.
+    model = os.getenv("OPENAI_MODEL")
+    if not model:
+        print("ERROR: OPENAI_MODEL is not set. Pick a current model from", file=sys.stderr)
+        print("https://platform.openai.com/docs/models and export it, e.g.:", file=sys.stderr)
+        print("  export OPENAI_MODEL=<model-id>", file=sys.stderr)
+        sys.exit(1)
+
+    summary = generate_summary(user_message, model, api_key)
 
     print("\n--- SUMMARY ---\n")
     print(summary)

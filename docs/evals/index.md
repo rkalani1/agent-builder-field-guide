@@ -1,6 +1,6 @@
 # Evals
 
-> **Last verified:** 2026-05-06 · **Drift risk:** low
+> **Last verified:** 2026-09-08 · **Drift risk:** low
 
 Evaluation — the practice of systematically measuring whether your agent does what you intend — is not optional. It is the primary mechanism by which you know whether a change made things better or worse, and it is the first line of defense against silent regressions.
 

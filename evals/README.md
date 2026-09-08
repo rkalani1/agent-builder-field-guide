@@ -59,8 +59,10 @@ evals/
 |-----|-------|-------|
 | Golden | 9 | 103 |
 | Red-team | 10 | 101 |
-| AutoMedBench-Lite | 1 pack | 3 starter tasks |
-| Total | 20+ | 207+ |
+| AutoMedBench-Lite | 5 | 3 |
+| Total | 24 | 207 |
+
+AutoMedBench-Lite counts markdown pack files and starter task documents, not JSONL cases. The 207 total is 204 JSONL cases plus 3 workflow tasks.
 
 ---
 

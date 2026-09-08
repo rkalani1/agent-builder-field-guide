@@ -1,5 +1,5 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
-> **Official sources:** [MCP Specification 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18), [Custom remote MCP connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
+> **Official sources:** [MCP Specification 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25), [MCP Specification 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18), [Custom remote MCP connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)
 
 # MCP Security
 
@@ -24,8 +24,10 @@ Tool results flow back into the conversation as user-role or tool-result content
 Prompt injection is particularly dangerous in servers that read external data — web pages, emails, documents — because an adversary who controls the external content can embed instructions in it. A filesystem server reading a malicious text file, a web-browsing tool fetching a compromised page, or an email tool processing a phishing message all face this risk.
 
 Practical mitigations:
-- Sanitize tool result content before returning it to the model. Strip or escape patterns that look like instructions ("ignore", "system:", "<<SYS>>", etc.).
-- Wrap external content in a marker that the system prompt treats as untrusted: `<external_content>` ... `</external_content>`.
+- Do not rely on keyword filtering — stripping or escaping instruction-like words ("ignore", "system:", etc.) is trivially bypassed, corrupts legitimate data that happens to contain those words, and gives a false sense of security. Treat all tool output as untrusted data instead; no reachable official MCP guidance recommends keyword deny-lists.
+- Scope each server to the least privilege it needs, and keep read capability separate from write capability, so that injected instructions have nothing consequential to invoke.
+- Require human confirmation for consequential actions (sending messages, writing files, spending money) — especially any action requested after untrusted content has entered the context.
+- Wrap external content in a marker that the system prompt treats as untrusted: `<external_content>` ... `</external_content>`. This aids delimitation but is not a hard boundary.
 - Use a separate model call to summarize untrusted content before injecting it into the main conversation.
 - In the system prompt, instruct the model to treat tool results as data, not instructions.
 
@@ -72,7 +74,7 @@ Mitigations:
 
 ## The `tool annotations are untrusted` principle
 
-The [2025-06-18 spec](https://modelcontextprotocol.io/specification/2025-06-18) states explicitly: "descriptions of tool behavior such as annotations should be considered untrusted, unless obtained from a trusted server." This means the model cannot rely on a tool's self-reported description to determine whether it is safe to call. The host (and the user) must make that determination independently.
+The [2025-06-18 spec revision](https://modelcontextprotocol.io/specification/2025-06-18) states explicitly (and the [current 2025-11-25 revision](https://modelcontextprotocol.io/specification/2025-11-25) keeps the same consent-centered security model): "descriptions of tool behavior such as annotations should be considered untrusted, unless obtained from a trusted server." This means the model cannot rely on a tool's self-reported description to determine whether it is safe to call. The host (and the user) must make that determination independently.
 
 In practice: if you are building a host application, do not show users the model's description of what a tool does and treat that as authoritative. Show them the raw tool schema from the server and, where possible, a human-reviewed description maintained by your team.
 
@@ -93,4 +95,4 @@ Before registering any MCP server in a production or shared environment:
 
 ## Reporting malicious servers
 
-If you discover a malicious MCP server, Anthropic's guidance is to report it through the [vulnerability disclosure program](https://www.anthropic.com/responsible-disclosure-policy) and select `https://github.com/modelcontextprotocol` as the asset. For npm packages, report to the npm security team as well at `security@npmjs.com`.
+If you discover a vulnerability in or a malicious server within the MCP ecosystem, the MCP project's `SECURITY.md` files direct reporters to GitHub's private Security Advisory process on the relevant [modelcontextprotocol repository](https://github.com/modelcontextprotocol) (as of 2026-07-18). For malicious npm packages, also report to the npm security team at `security@npmjs.com`.

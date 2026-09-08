@@ -85,7 +85,7 @@ def greet(name: str) -> str:
         greet("Alice") -> "Hello, Alice! Welcome."
     """
     # Input validation
-    if not name or not isinstance(name, str):
+    if not isinstance(name, str) or not name.strip():
         return "Error: name must be a non-empty string."
     if len(name) > 100:
         return "Error: name must be 100 characters or fewer."

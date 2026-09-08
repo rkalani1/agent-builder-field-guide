@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
 > **Official sources:** [Connect local MCP servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers), [Local MCP on Claude Desktop](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop)
 
 # Installing an MCP Server
@@ -78,18 +78,18 @@ The top-level `mcpServers` key is an object whose keys are arbitrary names you c
 Optional keys include:
 
 - `env` — an object of environment variables to set for the server process. Use this to pass API keys rather than hard-coding them in `args`.
-- `disabled` — set to `true` to temporarily disable a server without removing its config.
+- `disabled` — set to `true` to temporarily disable a server without removing its config. This key could not be confirmed in official Claude Desktop documentation as of 2026-07-18; treat it as unverified and check the [Claude Desktop support article](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop) before relying on it.
 
-Example with an environment variable:
+Example with an environment variable, using the official [GitHub MCP server](https://github.com/github/github-mcp-server) (the older `@modelcontextprotocol/server-github` npm package is deprecated and has been removed from the reference servers repo). The local variant runs via Docker and reads `GITHUB_PERSONAL_ACCESS_TOKEN`:
 
 ```json
 {
   "mcpServers": {
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
       "env": {
-        "GITHUB_TOKEN": "ghp_your_token_here"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_token_here"
       }
     }
   }
@@ -126,10 +126,9 @@ You can register as many servers as you need. Each gets its own key in `mcpServe
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/username/Documents"]
     },
-    "github": {
+    "memory": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "ghp_your_token" }
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
   }
 }
@@ -142,10 +141,10 @@ Claude Desktop starts each server as a separate child process. If one server fai
 Claude Code (the CLI) reads MCP config from a different location and supports project-level config files. Run:
 
 ```
-claude mcp add filesystem npx -y @modelcontextprotocol/server-filesystem /path/to/dir
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem /path/to/dir
 ```
 
-This writes the entry into the appropriate config file automatically. Use `claude mcp list` to see registered servers and `claude mcp remove <name>` to remove one. For project-scoped servers (checked into a repo), Claude Code also reads `.claude/mcp.json` in the project root.
+The `--` separates Claude's own options from the command (and its arguments) that runs the server — without it, `claude` tries to parse flags like `-y` as its own options and the command fails. This writes the entry into the appropriate config file automatically. Use `claude mcp list` to see registered servers and `claude mcp remove <name>` to remove one. For project-scoped servers (checked into a repo), Claude Code reads `.mcp.json` at the project root, and prompts for approval before using project-scoped servers from that file.
 
 ## Installing into other clients
 

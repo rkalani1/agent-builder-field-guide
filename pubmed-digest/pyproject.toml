@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stroke-literature-digest"
+version = "0.1.0"
+description = "Deterministic, hallucination-resistant PubMed/preprint literature-monitoring digest for stroke & neuroepidemiology."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "rkalani1" }]
+keywords = ["pubmed", "stroke", "neuroepidemiology", "literature", "digest", "obsidian"]
+
+dependencies = [
+    "requests>=2.31",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "feedparser>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+stroke-digest = "run:main"
+
+[tool.setuptools]
+py-modules = [
+    "run",
+    "config",
+    "models",
+    "rank",
+    "dedupe",
+    "digest",
+    "fetch_pubmed",
+    "fetch_preprints",
+    "notify_email",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

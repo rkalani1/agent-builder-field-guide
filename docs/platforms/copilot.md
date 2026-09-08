@@ -1,7 +1,7 @@
 # GitHub Copilot Cloud Agent
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
-> **Official sources:** [About GitHub Copilot cloud agent — GitHub Docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent), [GitHub Copilot requests](https://docs.github.com/en/copilot/concepts/billing/copilot-requests), [GitHub Copilot: Meet the new coding agent — GitHub Blog](https://github.blog/news-insights/product-news/github-copilot-meet-the-new-coding-agent/)
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
+> **Official sources:** [About GitHub Copilot cloud agent — GitHub Docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent), [Copilot usage-based billing for individuals](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals), [Copilot usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises), [GitHub Copilot: Meet the new coding agent — GitHub Blog](https://github.blog/news-insights/product-news/github-copilot-meet-the-new-coding-agent/)
 
 ---
 
@@ -30,14 +30,22 @@ The [GitHub Blog announcement](https://github.blog/news-insights/product-news/gi
 - For Business and Enterprise plans: an administrator must enable the Copilot cloud agent policy before it is available to repository contributors.
 - The repository should have a reasonable test suite and clear coding conventions. The agent performs better with existing context to follow.
 
+### Steering the agent with instruction files
+
+GitHub's docs present repository custom instructions as the main lever for improving cloud-agent results: add a `.github/copilot-instructions.md` file for repository-wide guidance (build and test commands, conventions), or `AGENTS.md` files for scoped guidance — the nearest `AGENTS.md` in the directory tree takes precedence. See [Adding repository custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions).
+
 ### Plan availability
 
 | Plan | Access |
 |---|---|
 | GitHub Copilot Pro | Available |
 | GitHub Copilot Pro+ | Available |
+| GitHub Copilot Max | Available; enabled by default |
+| GitHub Copilot Student | Available with limited agent usage |
 | GitHub Copilot Business | Available; administrator must enable the policy |
 | GitHub Copilot Enterprise | Available; administrator must enable the policy |
+
+The Max and Student rows follow GitHub's mid-2026 official announcements; plan lineups change, so check the current [plans overview](https://docs.github.com/en/copilot/get-started/plans) and [access management](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/access-management) pages rather than relying on this table alone.
 
 Per the [docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent), repository owners can also opt individual repositories out of the cloud agent.
 
@@ -56,19 +64,19 @@ The workflow mirrors assigning any issue to a team member on GitHub.
 
 ### Method 2: Prompt via Copilot Chat on GitHub
 
-In Copilot Chat on GitHub.com, use the `@github` mention:
+Open Copilot Chat on GitHub.com and type `/task` followed by your request. Per the [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-on-github), the session inherits the context of the chat conversation, and you can optionally pick a base branch before the agent starts. The docs' own example:
 
 ```
-@github Open a pull request to fix the bug described in issue #42
+/task Create a pull request to put backticks around file names and variables in output.
 ```
 
-Or to start a cloud task directly:
+Earlier docs and the launch blog showed an `@github Open a pull request...` mention here; as of mid-2026, the documented GitHub.com chat entry point is `/task` (the `@github` participant remains an IDE-chat concept — see Method 4).
 
-```
-@github Refactor the query generator in src/db/query.py into its own class
-```
+### Method 3: Agents panel or agents page
 
-### Method 3: Prompt via VS Code
+Per the [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/start-copilot-sessions), you can open the agents panel from the navigation bar at the top right of GitHub.com, describe the task in a prompt-first "New agent task" form, and pick the target repository (and, where configured, a custom agent) before the session starts. The same page lists further entry points, including the GitHub CLI, GitHub Mobile, and MCP-enabled IDEs.
+
+### Method 4: Prompt via VS Code
 
 From Copilot Chat in VS Code, ask Copilot to open a pull request. The agent spins up in the cloud and the work happens on GitHub, not in your local editor.
 
@@ -188,7 +196,9 @@ When the diff is correct and tests pass, mark the PR ready and merge.
 | Claim | Source |
 |---|---|
 | Agent works autonomously in GitHub Actions environment | [Confirmed — GitHub Docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) |
-| Available on Pro, Pro+, Business, Enterprise plans | [Confirmed — GitHub Docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) |
+| Available on Pro, Pro+, Max, Business, Enterprise plans; Student has limited agent usage | [Per GitHub Docs, re-checked 2026-07-18 via official-domain search](https://docs.github.com/en/copilot/get-started/plans) |
+| Billing moved to usage-based AI credits on 2026-06-01; premium requests are now legacy | [Per GitHub's official announcements, re-checked 2026-07-18 via official-domain search](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals) |
+| `/task` in Copilot Chat on GitHub.com and the agents panel are current chat entry points | [Per GitHub Docs, re-checked 2026-07-18 via official-domain search](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-on-github) |
 | Administrator must enable policy for Business/Enterprise | [Confirmed — GitHub Docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) |
 | Agent pushes to branches it created only | [Confirmed — GitHub Blog](https://github.blog/news-insights/product-news/github-copilot-meet-the-new-coding-agent/) |
 | GitHub Actions won't run on agent's PR without human approval | [Confirmed — GitHub Blog](https://github.blog/news-insights/product-news/github-copilot-meet-the-new-coding-agent/) |
@@ -202,7 +212,7 @@ When the diff is correct and tests pass, mark the PR ready and merge.
 
 ## Cost and rate-limit notes
 
-Copilot cloud agent consumes premium requests. GitHub's current billing docs say each cloud-agent session uses one premium request multiplied by the model's rate, and each real-time steering comment during an active session also uses one premium request multiplied by the model's rate. Complex tasks and frequent steering can therefore consume premium requests quickly. Check [GitHub Copilot requests](https://docs.github.com/en/copilot/concepts/billing/copilot-requests) and your usage dashboard before assigning many issues in parallel. For Business and Enterprise accounts, administrators can track adoption and pull request throughput using the Copilot usage metrics API.
+Per GitHub's June 2026 official announcements, request-based ("premium request") billing was replaced with usage-based billing as of June 1, 2026: cloud-agent sessions consume GitHub AI credits based on the model used and token usage (input, output, and cached tokens), and an agentic session makes many model calls, so complex tasks and frequent steering comments consume credits faster than simple chat. Cloud-agent sessions also use GitHub Actions minutes. Subscribers on annual Pro and Pro+ plans remain on the legacy premium-request model until their plan term ends, per the same announcements. Check the usage-based billing pages for [individuals](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals) and [organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises) and your usage dashboard before assigning many issues in parallel — the previously linked [requests page](https://docs.github.com/en/copilot/concepts/billing/copilot-requests) is now labeled "(legacy)". For Business and Enterprise accounts, administrators can track adoption and pull request throughput using the Copilot usage metrics API.
 
 ---
 

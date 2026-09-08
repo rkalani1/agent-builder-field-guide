@@ -1,15 +1,15 @@
 # Claude Code
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
-> **Official sources:** [Setup](https://code.claude.com/docs/en/setup), [Quickstart](https://code.claude.com/docs/en/quickstart)
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
+> **Official sources:** [Setup](https://code.claude.com/docs/en/setup), [Quickstart](https://code.claude.com/docs/en/quickstart), [Desktop app (Code tab)](https://code.claude.com/docs/en/desktop)
 
 ---
 
 ## What This Surface Is
 
-Claude Code is Anthropic's terminal-based coding agent. You install it as a command-line tool, open a terminal in any repository, and interact with it in natural language. Claude Code reads your project files as needed, proposes code changes, runs commands, manages git operations, and writes tests—all without you manually feeding it files or explaining the codebase structure.
+Claude Code is Anthropic's agentic coding tool. This page covers its original and most fully featured interface: the terminal CLI. You install it as a command-line tool, open a terminal in any repository, and interact with it in natural language. Claude Code reads your project files as needed, proposes code changes, runs commands, manages git operations, and writes tests—all without you manually feeding it files or explaining the codebase structure.
 
-Claude Code is not the same as Claude Desktop. Claude Desktop is a native app for general-purpose conversations with optional local tool integrations. Claude Code is purpose-built for software development workflows, operates entirely in a terminal, and has deeper integration with your shell, git, and test runners.
+The terminal is no longer the only surface. Per the [quickstart](https://code.claude.com/docs/en/quickstart), Claude Code is also available on the web (claude.ai/code), as the **Code** tab of the Claude Desktop app, in VS Code and JetBrains IDEs, in Slack, and in CI/CD with GitHub Actions and GitLab. The Desktop app has three tabs—Chat, Cowork, and Code—so "Claude Code vs. Claude Desktop" is no longer an either/or: the Desktop app embeds Claude Code as its Code tab, documented in the [desktop reference](https://code.claude.com/docs/en/desktop). The terminal CLI remains the deepest integration with your shell, git, and test runners, and it is what the rest of this page describes.
 
 ---
 
@@ -17,7 +17,7 @@ Claude Code is not the same as Claude Desktop. Claude Desktop is a native app fo
 
 - Developers who are comfortable in a terminal and want an AI that can navigate a codebase autonomously
 - Teams who want to add Claude Code to CI/CD pipelines via GitHub Actions or GitLab
-- Anyone who prefers working outside an IDE and finds chat-based interfaces slow for coding tasks
+- Anyone who prefers working outside an IDE and finds chat-based interfaces slow for coding tasks (if you would rather stay in an editor, Claude Code also runs inside VS Code and JetBrains IDEs; if you want a graphical interface, use the Desktop app's Code tab or the web)
 - Developers on any OS—Claude Code supports macOS, Linux, WSL, and native Windows
 
 ---
@@ -27,7 +27,7 @@ Claude Code is not the same as Claude Desktop. Claude Desktop is a native app fo
 - **Operating system**: macOS 13.0+, Windows 10 1809+ or Windows Server 2019+, Ubuntu 20.04+, Debian 10+, Alpine Linux 3.19+
 - **Hardware**: 4 GB RAM minimum, x64 or ARM64 processor
 - **Shell**: Bash, Zsh, PowerShell, or CMD. On native Windows, Git for Windows is strongly recommended.
-- **Account**: A Claude Pro, Max, Team, Enterprise, or Console account. The free plan does not include Claude Code access per [the setup docs](https://code.claude.com/docs/en/setup). Alternatively, access via Amazon Bedrock, Google Vertex AI, or Microsoft Foundry is supported.
+- **Account**: A Claude Pro, Max, Team, Enterprise, or Console account. The free plan does not include Claude Code access per [the setup docs](https://code.claude.com/docs/en/setup). Alternatively, access via Amazon Bedrock, Google Cloud's Agent Platform (formerly Vertex AI), or Microsoft Foundry is supported.
 - **Network**: An internet connection. Claude Code does not run fully offline.
 
 ---
@@ -70,13 +70,15 @@ brew install --cask claude-code
 winget install Anthropic.ClaudeCode
 ```
 
-**npm (Node.js 18+ required):**
+**npm (Node.js 22+ required as of v2.1.198):**
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-Native installs auto-update in the background. Homebrew, WinGet, and npm installs do not; you must run the upgrade command manually for those.
+On an older Node.js version, npm prints an `EBADENGINE` warning during install rather than failing; the install completes and `claude` still runs, since the package downloads a native binary that does not use your Node.js at runtime, per the [setup docs](https://code.claude.com/docs/en/setup).
+
+Native installs auto-update in the background, and npm installs attempt to auto-update when the npm global directory is writable. Homebrew, WinGet, apt, dnf, and apk installations do not auto-update by default; Homebrew and WinGet can opt in with `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1`, otherwise run the upgrade command manually.
 
 ### 2. Verify the installation
 
@@ -101,7 +103,7 @@ Account types supported per the [quickstart](https://code.claude.com/docs/en/qui
 
 - Claude Pro, Max, Team, or Enterprise (recommended)
 - Claude Console (API access with pre-paid credits; a "Claude Code" workspace is created automatically in the Console on first login)
-- Amazon Bedrock, Google Vertex AI, or Microsoft Foundry
+- Amazon Bedrock, Google Cloud's Agent Platform (formerly Vertex AI), or Microsoft Foundry
 
 ### 4. Open a project and start a session
 
@@ -209,7 +211,7 @@ Inside a session, type `/` to see all available commands. Commonly useful ones p
 
 ### /init
 
-Running `/init` (if available in your version) analyzes the repository and generates a starter `CLAUDE.md` file based on what it finds. This is a useful shortcut for existing projects.
+Running `/init` analyzes the repository and generates a starter `CLAUDE.md` file based on what it finds. This is a useful shortcut for existing projects.
 
 ### One-shot commands
 
@@ -232,13 +234,13 @@ The `-p` flag is useful in scripts where you want to capture Claude's output as 
 
 ## Limits and Gotchas
 
-- **Requires a paid plan.** The free Claude.ai tier does not include Claude Code access per the [setup docs](https://code.claude.com/docs/en/setup). Verify current plan eligibility at [claude.ai/upgrade](https://claude.ai/upgrade).
+- **Requires a paid plan.** The free Claude.ai tier does not include Claude Code access per the [setup docs](https://code.claude.com/docs/en/setup). Verify current plan eligibility at [claude.com/pricing](https://claude.com/pricing).
 - **Sandboxing is WSL-only.** Command execution sandboxing is supported only in WSL 2 on Windows. Native Windows runs without sandboxing. Keep this in mind when running arbitrary shell commands.
-- **Git for Windows is not optional on native Windows.** Without it, Claude Code falls back to PowerShell for shell commands, which limits what it can do. Install Git for Windows before using Claude Code on a native Windows machine.
-- **Auto-updates only apply to the native installer.** Homebrew, WinGet, apt, dnf, apk, and npm installations do not update automatically. Run the appropriate upgrade command periodically.
-- **Alpine Linux requires extra dependencies.** You must install `libgcc`, `libstdc++`, and `ripgrep`, and set `USE_BUILTIN_RIPGREP=0` in `settings.json` before installing on Alpine per the [setup docs](https://code.claude.com/docs/en/setup).
+- **Git for Windows is optional but recommended on native Windows.** Installing it enables the Bash tool by providing Git Bash. Without it, Claude Code runs shell commands through the PowerShell tool instead. If Git Bash is installed at a non-standard path, set `CLAUDE_CODE_GIT_BASH_PATH` to point Claude Code at it.
+- **Package-manager installs do not auto-update by default.** Homebrew, WinGet, apt, dnf, and apk installations require manual updates by default; Homebrew and WinGet can opt in with `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1`. Native installs auto-update in the background, and npm installs attempt to auto-update when the npm global directory is writable.
+- **Alpine Linux requires extra dependencies.** Alpine ships without `bash` or `curl`, which the install command needs, and `libgcc`, `libstdc++`, and `ripgrep` are required at runtime. Run `apk add bash curl libgcc libstdc++ ripgrep` (enable the community repository if apk cannot find ripgrep), then set `USE_BUILTIN_RIPGREP=0` in `settings.json` per the [setup docs](https://code.claude.com/docs/en/setup).
 - **Context limits apply.** Claude Code reads files as needed, but very large repositories or many open files will approach context window limits. The `/clear` command resets conversation history if you notice degraded quality.
-- **Always asks before modifying files by default.** Claude Code will not silently edit files. You can enable "Accept all" mode for a session to skip individual approvals, but this means changes will be applied without your review.
+- **Always asks before modifying files by default.** Claude Code will not silently edit files. Press Shift+Tab to cycle [permission modes](https://code.claude.com/docs/en/permission-modes): `acceptEdits` auto-approves file edits, and `plan` lets Claude propose changes without editing (some accounts also have an `auto` mode). Auto-approving edits means changes are applied without your review.
 
 ---
 
@@ -250,9 +252,10 @@ The `-p` flag is useful in scripts where you want to capture Claude's output as 
 | Homebrew and WinGet install commands | Confirmed by [setup docs](https://code.claude.com/docs/en/setup) |
 | npm install via `@anthropic-ai/claude-code` | Confirmed by [setup docs](https://code.claude.com/docs/en/setup) |
 | Free plan does not include Claude Code | Confirmed by [setup docs](https://code.claude.com/docs/en/setup) |
+| Also available on web, Desktop app (Code tab), VS Code/JetBrains, Slack | Confirmed by [quickstart](https://code.claude.com/docs/en/quickstart) and [desktop reference](https://code.claude.com/docs/en/desktop) |
 | `/login`, `/clear`, `/help`, `/resume` commands | Confirmed by [quickstart](https://code.claude.com/docs/en/quickstart) |
-| CLAUDE.md as project instructions file | Referenced indirectly; behavior is consistent with documented "custom skills" and project context patterns |
-| `/init` command generating CLAUDE.md | Practical inference; not explicitly confirmed in the pages fetched—verify with `claude /help` |
+| CLAUDE.md as project instructions file | Confirmed by [quickstart](https://code.claude.com/docs/en/quickstart) ("Customize with CLAUDE.md, skills, hooks, MCP, and more") |
+| `/init` command generating CLAUDE.md | Confirmed by [commands docs](https://code.claude.com/docs/en/commands) ("Initialize project with a CLAUDE.md guide") |
 | WSL 2 required for sandboxing | Confirmed by [setup docs](https://code.claude.com/docs/en/setup) Windows table |
 | Claude Code available in GitHub Actions | Mentioned in [quickstart](https://code.claude.com/docs/en/quickstart) ("available... in CI/CD with GitHub Actions") |
 
@@ -260,12 +263,12 @@ The `-p` flag is useful in scripts where you want to capture Claude's output as 
 
 ## Cost and Rate-Limit Notes
 
-Claude Code usage counts against your plan's usage allowance. Complex sessions with many file reads, shell commands, and multi-step tasks consume allowance faster than plain conversation. Claude Console accounts (API-based) incur per-token charges. If you hit usage limits during a session, Claude Code will notify you; you can continue after the limit resets or upgrade your plan. Specific prices are not listed here—check [claude.ai/upgrade](https://claude.ai/upgrade) for current rates.
+Claude Code usage counts against your plan's usage allowance. Complex sessions with many file reads, shell commands, and multi-step tasks consume allowance faster than plain conversation. Claude Console accounts (API-based) incur per-token charges. If you hit usage limits during a session, Claude Code will notify you; you can continue after the limit resets or upgrade your plan. Specific prices are not listed here—check [claude.com/pricing](https://claude.com/pricing) for current rates.
 
 ---
 
 ## Where to Go Next
 
-- [Claude Desktop](claude-desktop.md) — for local tool integrations outside a coding workflow
+- [Claude Desktop](claude-desktop.md) — for chat, Cowork, and local tool integrations; its Code tab embeds Claude Code
 - [Claude Projects](claude-projects.md) — for persistent system instructions in the browser interface
 - [Claude Code setup docs](https://code.claude.com/docs/en/setup) — for advanced installation options, binary integrity verification, and enterprise deployment

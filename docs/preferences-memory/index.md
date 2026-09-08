@@ -170,7 +170,7 @@ into a new Project. Include:
 Format as markdown. Keep it under 400 words. Do not include any credentials or sensitive values.
 ```
 
-### "Turn this repeated workflow into a Skill / Custom GPT / Gem"
+### "Turn this repeated workflow into a Skill / Custom GPT / Gem" {#turn-this-repeated-workflow-into-a-skill-custom-gpt-gem}
 
 ```
 Look at how I've been using you over the last few messages. Treat that as a workflow I want

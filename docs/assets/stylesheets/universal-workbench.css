@@ -1,10 +1,11 @@
-.universal-workbench /* Learn Claude — cool modern editorial aesthetic
+/* Learn Claude — cool modern editorial aesthetic
    Typography: Instrument Serif (display), .universal-workbench Geist (UI), .universal-workbench Geist Mono (eyebrow/mono)
    Palette: paper-white with electric-indigo accent, .universal-workbench OKLCH throughout */
 
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap");
+/* No external font imports: the site makes no third-party requests.
+   The font stacks below fall back to system serif/sans/mono faces. */
 
-:root {
+.universal-workbench {
   --paper:       oklch(0.985 0.003 255);
   --paper-2:     oklch(0.955 0.005 255);
   --paper-warm:  oklch(0.97 0.004 255);
@@ -187,7 +188,7 @@ main {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted-2);
-}.universal-workbench .hero::before { content: "01 — Start here"; left: 0; }.universal-workbench .hero::after { content: "Beginner-first, jargon-free"; right: 0; }.universal-workbench .hero-copy h1 {
+}.universal-workbench .hero::before { content: "01 — Start here"; left: 0; }.universal-workbench .hero::after { content: "Beginner-first, jargon-free"; right: 0; }.universal-workbench .hero-copy h1, .universal-workbench .hero-copy .hero-display {
   font-family: var(--serif);
   font-weight: 400;
   font-size: clamp(3.6rem, 11vw, 9rem);
@@ -195,7 +196,7 @@ main {
   letter-spacing: -0.025em;
   margin: 0 0 1.5rem;
   color: var(--ink);
-}.universal-workbench .hero-copy h1 em, .universal-workbench .hero-copy h1 i { font-style: italic; color: var(--rust-deep); }.universal-workbench .lede {
+}.universal-workbench .hero-copy h1 em, .universal-workbench .hero-copy h1 i, .universal-workbench .hero-copy .hero-display em, .universal-workbench .hero-copy .hero-display i { font-style: italic; color: var(--rust-deep); }.universal-workbench .lede {
   font-family: var(--serif);
   font-weight: 400;
   font-size: clamp(1.25rem, 2.2vw, 1.75rem);
@@ -774,7 +775,7 @@ details { border-radius: var(--radius); }.universal-workbench details > summary 
     flex-direction: column;
     align-items: flex-start;
     gap: 0.7rem;
-  }.universal-workbench .top-nav { gap: 1rem; }.universal-workbench .hero { grid-template-columns: 1fr; }.universal-workbench .hero::after { display: none; }.universal-workbench .hero-copy h1 { font-size: clamp(3rem, 14vw, 5rem); }.universal-workbench .task-tool { display: block; }.universal-workbench .task-options, .universal-workbench .task-result { width: 100%; }.universal-workbench .setup-grid, .universal-workbench .feature-grid { grid-template-columns: 1fr; }
+  }.universal-workbench .top-nav { gap: 1rem; }.universal-workbench .hero { grid-template-columns: 1fr; }.universal-workbench .hero::after { display: none; }.universal-workbench .hero-copy h1, .universal-workbench .hero-copy .hero-display { font-size: clamp(3rem, 14vw, 5rem); }.universal-workbench .task-tool { display: block; }.universal-workbench .task-options, .universal-workbench .task-result { width: 100%; }.universal-workbench .setup-grid, .universal-workbench .feature-grid { grid-template-columns: 1fr; }
 }@media (max-width: 720px) {.universal-workbench .surface-grid {
     display: grid;
     grid-auto-flow: column;
@@ -787,7 +788,8 @@ details { border-radius: var(--radius); }.universal-workbench details > summary 
     background: var(--line-soft);
   }.universal-workbench .surface-card { scroll-snap-align: start; }.universal-workbench .source-list { columns: 1; }
 }@media (max-width: 560px) {.universal-workbench .button { width: 100%; }.universal-workbench .button.small { width: auto; }.universal-workbench .official-links .button { width: 100%; }.universal-workbench .source-list { columns: 1; }.universal-workbench .model-fit summary { flex-direction: column; gap: 0.2rem; }.universal-workbench .glossary-grid { grid-template-columns: 1fr; }.universal-workbench .section h2 { font-size: clamp(1.7rem, 7vw, 2.4rem); }
-}.universal-workbench /* Print */
+}
+/* Print */
 @media print {
   .site-header,
   .toast,
@@ -828,17 +830,25 @@ details { border-radius: var(--radius); }.universal-workbench details > summary 
 
 /* Model Selector Bar Styles */
 .universal-workbench .model-selector-bar {
+  position: sticky;
+  top: 4.2rem;
+  z-index: 4;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5rem;
   margin-bottom: 2rem;
   padding: 0.5rem;
   background: var(--paper-warm);
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  box-shadow: 0 8px 24px oklch(0.18 0.012 265 / 0.08);
 }
 
 .universal-workbench .model-tab {
+  flex: 0 0 auto;
   font-weight: 600;
   border-radius: var(--radius);
   transition: all 180ms var(--ease);
@@ -853,4 +863,28 @@ details { border-radius: var(--radius); }.universal-workbench details > summary 
   color: #ffffff;
   border-color: var(--rust-deep);
   box-shadow: 0 4px 12px oklch(0.4 0.2 268 / 0.35);
+}
+
+/* Dark mode: follow Material's slate scheme */
+[data-md-color-scheme="slate"] .universal-workbench {
+  --paper:       oklch(0.22 0.012 265);
+  --paper-2:     oklch(0.26 0.012 265);
+  --paper-warm:  oklch(0.24 0.012 265);
+  --surface:     oklch(0.28 0.012 265);
+  --ink:         oklch(0.93 0.008 255);
+  --muted:       oklch(0.72 0.01 255);
+  --muted-2:     oklch(0.6 0.01 255);
+  --line:        oklch(0.36 0.01 265);
+  --line-soft:   oklch(0.31 0.01 265);
+  --rust:        oklch(0.74 0.16 268);
+  --rust-soft:   oklch(0.32 0.06 268);
+  --rust-deep:   oklch(0.86 0.1 268);
+}
+
+@media (max-width: 44.984375em) {
+  .universal-workbench .model-selector-bar {
+    top: 3.6rem;
+    margin-inline: -0.5rem;
+    border-radius: 0 0 6px 6px;
+  }
 }

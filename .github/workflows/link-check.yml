@@ -35,12 +35,17 @@ jobs:
         with:
           # --offline disables HTTP requests; lychee resolves only relative
           # and anchor links against the local file tree.
+          # Known false positive: lychee does not index HTML element ids
+          # inside Markdown, so the in-page '#fix-answer' anchor in
+          # docs/mastery/claude.md (a raw-HTML <section id="fix-answer">)
+          # is excluded; it is verified manually on the built site.
           args: >-
             --offline
             --no-progress
             --include-fragments
             --exclude-path _site
             --exclude-path site
+            --exclude 'claude\.md#fix-answer'
             './**/*.md'
           fail: true
           format: markdown

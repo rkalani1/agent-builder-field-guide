@@ -37,7 +37,7 @@ The same pattern applies to the architecture decision records: they live under `
   - Encourages readers to land on the categorized index first.
   - Makes the in-page search the primary discovery surface for individual recipes.
 - **Cons**
-  - The MkDocs build prints INFO-level notices for each recipe page. These must be documented as expected (see [`DEPLOYMENT_STATUS.md`](https://github.com/example/agents-automations/blob/main/DEPLOYMENT_STATUS.md) and the [changelog](../changelog.md)) so a reviewer doesn't mistake them for build problems.
+  - The MkDocs build prints INFO-level notices for each recipe page. These must be documented as expected (see [`DEPLOYMENT_STATUS.md`](https://github.com/rkalani1/agents-automations/blob/main/DEPLOYMENT_STATUS.md) and the [changelog](../changelog.md)) so a reviewer doesn't mistake them for build problems.
   - Recipes won't appear in the auto-generated "next/previous" navigation.
 
 ## How to keep this honest

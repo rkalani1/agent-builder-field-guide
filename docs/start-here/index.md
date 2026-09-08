@@ -2,6 +2,9 @@
 
 This section is the on-ramp to the field guide. Read it top-to-bottom if you are new to building with AI agents, or jump to the page that matches your situation.
 
+!!! tip "Completely new? Two faster doors"
+    If you want something practical in the next ten minutes, open the [Task Builder](../task-builder/index.md) and describe one real task, or follow the [beginner path](beginner-path.md). Come back here when you want the concepts behind the clicks.
+
 ## What's in this section
 
 | Page | What it covers |

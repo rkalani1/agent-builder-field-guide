@@ -22,9 +22,9 @@ If you don't know which AI to pick, start with [Any AI tool](any-ai-tool.md) —
 
     ---
 
-    Step-by-step setup for beginners, then Projects, Memory, Artifacts, Skills, connectors, Claude Code, and API habits.
+    The full beginner-to-expert Claude track lives on the standalone [Learn Claude](https://rkalani1.github.io/claude/) site. The in-repo page keeps the interactive workbench and quick-task prompts.
 
-    [→ Claude mastery](claude.md)
+    [→ Learn Claude (standalone site)](https://rkalani1.github.io/claude/) · [→ Claude workbench](claude.md)
 
 -   :material-chat-outline: **ChatGPT**
 

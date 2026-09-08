@@ -1,5 +1,5 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** high
-> **Official sources:** [xAI function calling](https://docs.x.ai/developers/tools/function-calling), [xAI models](https://docs.x.ai/developers/models), [xAI API console](https://console.x.ai)
+> **Last verified:** 2026-07-18 · **Drift risk:** high
+> **Official sources:** [xAI function calling](https://docs.x.ai/developers/tools/function-calling), [xAI cookbook: function calling 101](https://github.com/xai-org/xai-cookbook/blob/main/examples/function_calling_101/guide.ipynb), [xAI models](https://docs.x.ai/developers/models), [xAI API console](https://console.x.ai)
 
 # Recipe: answer a research question using xAI function calling with two local tools
 
@@ -27,7 +27,7 @@ The xAI API also supports parallel tool calls by default: the model can request 
 
 - An account on the [xAI Console](https://console.x.ai).
 - An xAI API key with sufficient quota.
-- A Grok 4 family model. The [function calling documentation](https://docs.x.ai/developers/tools/function-calling) references `grok-4.3` as the primary model for tool use.
+- A currently served model that supports function calling. Read the model name from the `XAI_MODEL` environment variable and check [docs.x.ai/developers/models](https://docs.x.ai/developers/models) for the current recommended model.
 
 ---
 
@@ -70,37 +70,41 @@ The following are the tool definitions passed in the `tools` array. Each definit
 [
   {
     "type": "function",
-    "name": "read_notes",
-    "description": "Read the full text content of a note file from the local notes folder. Use this when you need to retrieve the content of a specific note before answering.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Filename of the note to read, relative to the notes folder (e.g., 'note_001.txt'). Do not use absolute paths."
-        }
-      },
-      "required": ["path"]
+    "function": {
+      "name": "read_notes",
+      "description": "Read the full text content of a note file from the local notes folder. Use this when you need to retrieve the content of a specific note before answering.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Filename of the note to read, relative to the notes folder (e.g., 'note_001.txt'). Do not use absolute paths."
+          }
+        },
+        "required": ["path"]
+      }
     }
   },
   {
     "type": "function",
-    "name": "summarize",
-    "description": "Condense a long piece of text to its key points. Use this when a note is very long and you only need the main ideas before reasoning further.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "text": {
-          "type": "string",
-          "description": "The text to summarize."
+    "function": {
+      "name": "summarize",
+      "description": "Condense a long piece of text to its key points. Use this when a note is very long and you only need the main ideas before reasoning further.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text to summarize."
+          },
+          "max_sentences": {
+            "type": "integer",
+            "description": "Maximum number of sentences in the summary. Defaults to 3 if omitted.",
+            "default": 3
+          }
         },
-        "max_sentences": {
-          "type": "integer",
-          "description": "Maximum number of sentences in the summary. Defaults to 3 if omitted.",
-          "default": 3
-        }
-      },
-      "required": ["text"]
+        "required": ["text"]
+      }
     }
   }
 ]
@@ -168,46 +172,50 @@ client = OpenAI(api_key=API_KEY, base_url="https://api.x.ai/v1")
 TOOLS = [
     {
         "type": "function",
-        "name": "read_notes",
-        "description": (
-            "Read the full text content of a note file from the local notes folder. "
-            "Use this when you need to retrieve the content of a specific note before answering."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "path": {
-                    "type": "string",
-                    "description": (
-                        "Filename of the note to read, relative to the notes folder "
-                        "(e.g., 'note_001.txt'). Do not use absolute paths."
-                    ),
-                }
+        "function": {
+            "name": "read_notes",
+            "description": (
+                "Read the full text content of a note file from the local notes folder. "
+                "Use this when you need to retrieve the content of a specific note before answering."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": (
+                            "Filename of the note to read, relative to the notes folder "
+                            "(e.g., 'note_001.txt'). Do not use absolute paths."
+                        ),
+                    }
+                },
+                "required": ["path"],
             },
-            "required": ["path"],
         },
     },
     {
         "type": "function",
-        "name": "summarize",
-        "description": (
-            "Condense a long piece of text to its key points. "
-            "Use this when a note is very long and you only need the main ideas."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "The text to summarize.",
+        "function": {
+            "name": "summarize",
+            "description": (
+                "Condense a long piece of text to its key points. "
+                "Use this when a note is very long and you only need the main ideas."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "The text to summarize.",
+                    },
+                    "max_sentences": {
+                        "type": "integer",
+                        "description": "Maximum number of sentences in the summary. Defaults to 3.",
+                        "default": 3,
+                    },
                 },
-                "max_sentences": {
-                    "type": "integer",
-                    "description": "Maximum number of sentences in the summary. Defaults to 3.",
-                    "default": 3,
-                },
+                "required": ["text"],
             },
-            "required": ["text"],
         },
     },
 ]
@@ -217,7 +225,7 @@ def read_notes(path: str) -> str:
     """Read a note file from NOTES_DIR. Reject paths that escape the folder."""
     safe_path = (NOTES_DIR / Path(path).name).resolve()
     notes_resolved = NOTES_DIR.resolve()
-    if not str(safe_path).startswith(str(notes_resolved)):
+    if not safe_path.is_relative_to(notes_resolved):
         return "Error: path is outside the notes folder."
     if not safe_path.exists():
         available = ", ".join(p.name for p in NOTES_DIR.glob("*.txt"))

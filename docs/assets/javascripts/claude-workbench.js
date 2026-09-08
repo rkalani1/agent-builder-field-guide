@@ -542,15 +542,12 @@ Give me one polished version and one shorter version.`
     if (savedRoughPrompt) roughPrompt.value = savedRoughPrompt;
   }
 
-  function hasChoice(buttons, attribute, value) {
-    return buttons.some((button) => button.getAttribute(attribute) === value);
-  }
-
   function readChoice(key, buttons, attribute, fallback) {
+    const validChoices = Array.from(buttons).map((button) => button.getAttribute(attribute));
     const fromUrl = urlParams.get(key);
-    if (fromUrl && hasChoice(buttons, attribute, fromUrl)) return fromUrl;
+    if (fromUrl && validChoices.includes(fromUrl)) return fromUrl;
     const fromStorage = storage.get(key);
-    if (fromStorage && hasChoice(buttons, attribute, fromStorage)) return fromStorage;
+    if (fromStorage && validChoices.includes(fromStorage)) return fromStorage;
     return fallback;
   }
 
@@ -611,29 +608,22 @@ Give me one polished version and one shorter version.`
     });
   }
 
-  function copyTextFallback(text, target) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "true");
-    textarea.style.position = "absolute";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand("copy");
-    document.body.removeChild(textarea);
-    if (!copied && target && typeof target.select === "function") {
+  async function copyText(text, target) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.error("Failed to copy text: ", err);
+      }
+    }
+
+    // Fallback behavior when clipboard API is unavailable
+    if (target && typeof target.select === "function") {
       target.focus();
       target.select();
     }
-    return copied;
-  }
-
-  async function copyText(text, target) {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-    return copyTextFallback(text, target);
+    return false;
   }
 
   async function copyTemplate(targetId, button, successMessage) {
@@ -748,8 +738,20 @@ After the answer:
     selectedMission = missionData[mission] ? mission : "email";
     setActiveChoice(missionButtons, "data-mission", mission);
     if (missionTitle) missionTitle.textContent = detail.title;
-    if (missionSurface) missionSurface.innerHTML = `<strong>Best Claude surface:</strong> ${detail.surface}`;
-    if (missionNext) missionNext.innerHTML = `<strong>Next move:</strong> ${detail.next}`;
+    if (missionSurface) {
+      missionSurface.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Best Claude surface:";
+      missionSurface.appendChild(strong);
+      missionSurface.appendChild(document.createTextNode(` ${detail.surface}`));
+    }
+    if (missionNext) {
+      missionNext.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Next move:";
+      missionNext.appendChild(strong);
+      missionNext.appendChild(document.createTextNode(` ${detail.next}`));
+    }
     if (missionPrompt) missionPrompt.value = detail.prompt;
     if (options.persist !== false) persistState();
   }
@@ -759,7 +761,13 @@ After the answer:
     selectedFix = fixData[fix] ? fix : "vague";
     setActiveChoice(fixButtons, "data-fix", fix);
     if (fixTitle) fixTitle.textContent = detail.title;
-    if (fixNext) fixNext.innerHTML = `<strong>Use when:</strong> ${detail.next}`;
+    if (fixNext) {
+      fixNext.textContent = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Use when:";
+      fixNext.appendChild(strong);
+      fixNext.appendChild(document.createTextNode(` ${detail.next}`));
+    }
     if (fixPrompt) fixPrompt.value = detail.prompt;
     if (options.persist !== false) persistState();
   }
@@ -1242,52 +1250,106 @@ After the answer:
       const card = document.createElement("div");
       card.className = "toolkit-card";
       
-      const copyButtonHtml = item.install
-        ? `<button type="button" class="button small copy-inline" data-copy-text="${item.install.replace(/"/g, '&quot;')}">Copy Install Command</button>`
-        : "";
+      const surfaceBadge = document.createElement("span");
+      surfaceBadge.className = "surface-badge";
+      surfaceBadge.textContent = item.surface;
+      card.appendChild(surfaceBadge);
 
-      const useCasesHtml = item.useCases && item.useCases.length
-        ? `<div class="toolkit-list" style="margin-top: 0.5rem;">
-             ${item.useCases.map(uc => `<span class="toolkit-badge" style="font-size: 0.7rem; opacity: 0.85;">${uc}</span>`).join("")}
-           </div>`
-        : "";
+      const title = document.createElement("h3");
+      title.textContent = item.name;
+      card.appendChild(title);
 
-      const skillsHtml = item.skills && item.skills.length
-        ? `<div class="skills-section">
-             <h4>Skills / Tools</h4>
-             <div class="skills-list">
-               ${item.skills.map(s => `<code class="skill-name">${s}</code>`).join("")}
-             </div>
-           </div>`
-        : "";
+      const description = document.createElement("p");
+      description.textContent = item.description;
+      card.appendChild(description);
 
-      const automationsHtml = item.automations && item.automations.length
-        ? `<div class="automations-section" style="margin-top: 0.5rem;">
-             <h4>Recipes & Automations</h4>
-             <div class="automations-list">
-               ${item.automations.map(a => `<div class="automation-item">${a}</div>`).join("")}
-             </div>
-           </div>`
-        : "";
+      if (item.useCases && item.useCases.length) {
+        const useCasesDiv = document.createElement("div");
+        useCasesDiv.className = "toolkit-list";
+        useCasesDiv.style.marginTop = "0.5rem";
+        item.useCases.forEach(uc => {
+          const ucSpan = document.createElement("span");
+          ucSpan.className = "toolkit-badge";
+          ucSpan.style.fontSize = "0.7rem";
+          ucSpan.style.opacity = "0.85";
+          ucSpan.textContent = uc;
+          useCasesDiv.appendChild(ucSpan);
+        });
+        card.appendChild(useCasesDiv);
+      }
 
-      const detailsHtml = (skillsHtml || automationsHtml)
-        ? `<details class="card-details" style="margin-top: 0.6rem;">
-             <summary>Show Skills ${item.skills ? `(${item.skills.length})` : ''} ${item.automations ? `& Recipes (${item.automations.length})` : ''}</summary>
-             ${skillsHtml}
-             ${automationsHtml}
-           </details>`
-        : "";
+      if ((item.skills && item.skills.length) || (item.automations && item.automations.length)) {
+        const details = document.createElement("details");
+        details.className = "card-details";
+        details.style.marginTop = "0.6rem";
 
-      card.innerHTML = `
-        <span class="surface-badge">${item.surface}</span>
-        <h3>${item.name}</h3>
-        <p>${item.description}</p>
-        ${useCasesHtml}
-        ${detailsHtml}
-        <div class="card-links" style="display: flex; gap: 0.5rem; align-items: center; margin-top: auto; padding-top: 0.5rem;">
-          ${copyButtonHtml}
-        </div>
-      `;
+        const summary = document.createElement("summary");
+        const skillsCount = item.skills ? ` (${item.skills.length})` : '';
+        const automationsCount = item.automations ? ` & Recipes (${item.automations.length})` : '';
+        summary.textContent = `Show Skills${skillsCount}${automationsCount}`;
+        details.appendChild(summary);
+
+        if (item.skills && item.skills.length) {
+          const skillsSection = document.createElement("div");
+          skillsSection.className = "skills-section";
+          const skillsH4 = document.createElement("h4");
+          skillsH4.textContent = "Skills / Tools";
+          skillsSection.appendChild(skillsH4);
+
+          const skillsList = document.createElement("div");
+          skillsList.className = "skills-list";
+          item.skills.forEach(s => {
+            const skillCode = document.createElement("code");
+            skillCode.className = "skill-name";
+            skillCode.textContent = s;
+            skillsList.appendChild(skillCode);
+          });
+          skillsSection.appendChild(skillsList);
+          details.appendChild(skillsSection);
+        }
+
+        if (item.automations && item.automations.length) {
+          const automationsSection = document.createElement("div");
+          automationsSection.className = "automations-section";
+          automationsSection.style.marginTop = "0.5rem";
+
+          const automationsH4 = document.createElement("h4");
+          automationsH4.textContent = "Recipes & Automations";
+          automationsSection.appendChild(automationsH4);
+
+          const automationsList = document.createElement("div");
+          automationsList.className = "automations-list";
+          item.automations.forEach(a => {
+            const autoItem = document.createElement("div");
+            autoItem.className = "automation-item";
+            autoItem.textContent = a;
+            automationsList.appendChild(autoItem);
+          });
+          automationsSection.appendChild(automationsList);
+          details.appendChild(automationsSection);
+        }
+
+        card.appendChild(details);
+      }
+
+      const cardLinks = document.createElement("div");
+      cardLinks.className = "card-links";
+      cardLinks.style.display = "flex";
+      cardLinks.style.gap = "0.5rem";
+      cardLinks.style.alignItems = "center";
+      cardLinks.style.marginTop = "auto";
+      cardLinks.style.paddingTop = "0.5rem";
+
+      if (item.install) {
+        const copyButton = document.createElement("button");
+        copyButton.type = "button";
+        copyButton.className = "button small copy-inline";
+        copyButton.setAttribute("data-copy-text", item.install);
+        copyButton.textContent = "Copy Install Command";
+        cardLinks.appendChild(copyButton);
+      }
+
+      card.appendChild(cardLinks);
       toolkitContent.appendChild(card);
     });
 

@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** high
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
 > **Official sources:** [xAI structured outputs](https://docs.x.ai/developers/model-capabilities/text/structured-outputs), [xAI models](https://docs.x.ai/developers/models), [xAI API console](https://console.x.ai)
 
 # Recipe: classify customer feedback into structured CSV using xAI structured outputs
@@ -25,7 +25,7 @@ Structured output enforcement is an API-only feature. The [Grok consumer chat](h
 
 - An account on the [xAI Console](https://console.x.ai).
 - An xAI API key with sufficient token quota for the number of feedback files you plan to process.
-- A Grok 4 family model. Structured outputs are only available for Grok 4 family models, per the [xAI documentation](https://docs.x.ai/developers/model-capabilities/text/structured-outputs).
+- A currently served model. Structured outputs are supported on all currently served models (the Grok 4 family; the docs historically listed support as `grok-2-1212` and later) — verify the supported-models note in the [xAI documentation](https://docs.x.ai/developers/model-capabilities/text/structured-outputs).
 
 ---
 

@@ -170,6 +170,71 @@ if (!fs.existsSync(siteDir)) {
   }
 }
 
+const requirementsPath = path.join(repoRoot, "requirements.txt");
+const requirements = fs.existsSync(requirementsPath)
+  ? fs.readFileSync(requirementsPath, "utf8")
+  : "";
+if (!/^mkdocs-material==9\.7\.6\s*$/m.test(requirements)) {
+  fail("MkDocs Material must remain pinned to the browser-tested 9.7.6 release");
+}
+
+for (const group of ["Start", "Build", "Connect", "Operate", "Learn", "Reference"]) {
+  if (!new RegExp(`^  - ${group}:`, "m").test(mkdocsConfig)) {
+    fail(`Missing top-level workflow navigation group: ${group}`);
+  }
+}
+if (!/assets\/javascripts\/portal-nav\.js/.test(mkdocsConfig)) {
+  fail("Portal navigation/search readiness script is not registered");
+}
+
+const portalScriptPath = path.join(repoRoot, "docs", "assets", "javascripts", "portal-nav.js");
+if (!fs.existsSync(portalScriptPath)) {
+  fail("Portal navigation/search readiness script is missing");
+} else {
+  const script = fs.readFileSync(portalScriptPath, "utf8");
+  for (const token of [
+    "Root cause recorded 2026-07-25",
+    "replayStrandedQuery",
+    'new KeyboardEvent("keyup"',
+    '"aria-live", "polite"',
+    'event.key !== "Escape"',
+    'event.key !== "ArrowDown"',
+  ]) {
+    if (!script.includes(token)) fail(`Portal script lacks required behavior: ${token}`);
+  }
+}
+
+const sourceIndex = fs.readFileSync(path.join(repoRoot, "docs", "index.md"), "utf8");
+for (const token of [
+  "portal-actions",
+  "workflow-ribbon",
+  "starter-routes",
+  "Open the Task Builder",
+  "Start the learning path",
+  "<strong>Task</strong>",
+  "<strong>Tool</strong>",
+  "<strong>Guardrails</strong>",
+  "<strong>Test</strong>",
+  "<strong>Operate</strong>",
+]) {
+  if (!sourceIndex.includes(token)) fail(`Home page lacks required post-launch element: ${token}`);
+}
+
+const builtIndexPath = path.join(siteDir, "index.html");
+if (fs.existsSync(builtIndexPath)) {
+  const builtIndex = fs.readFileSync(builtIndexPath, "utf8");
+  const topLevelTabs = (builtIndex.match(/data-portal-tab/g) || []).length;
+  if (topLevelTabs !== 6) fail(`Expected six workflow tabs, found ${topLevelTabs}`);
+}
+
+const searchIndexPath = path.join(siteDir, "search", "search_index.json");
+if (!fs.existsSync(searchIndexPath)) {
+  fail("Built search index is missing");
+} else {
+  const searchIndex = fs.readFileSync(searchIndexPath, "utf8").toLowerCase();
+  if (!searchIndex.includes("safety")) fail("Built search index lacks the known-result probe: safety");
+}
+
 const repoContentChecks = [
   {
     root: path.join(repoRoot, "docs"),

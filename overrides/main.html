@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{#- Add Open Graph / Twitter Card metadata for rich link previews. -#}
+{% block extrahead %}
+  {%- set og_title = config.site_name -%}
+  {%- if page and page.title and not page.is_homepage -%}
+    {%- set og_title = page.title ~ " — " ~ config.site_name -%}
+  {%- endif -%}
+  {%- set og_desc = page.meta.description if (page and page.meta and page.meta.description) else config.site_description -%}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name|e }}">
+  <meta property="og:title" content="{{ og_title|e }}">
+  <meta property="og:description" content="{{ og_desc|e }}">
+  <meta property="og:url" content="{{ page.canonical_url|e }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ og_title|e }}">
+  <meta name="twitter:description" content="{{ og_desc|e }}">
+{% endblock %}

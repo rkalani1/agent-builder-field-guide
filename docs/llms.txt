@@ -1,0 +1,39 @@
+# Agents and Automations
+
+> Field guide to designing, configuring, testing, and operating AI agents and workflow automations across Claude, Gemini, ChatGPT/OpenAI, GitHub Copilot, Grok, and local scripts.
+
+All example data on this site is synthetic; nothing is drawn from real patients, clients, or users, and no content is for clinical decision-making.
+Every product page carries a "Last verified" date, links to official vendor sources, and a drift-risk rating; the source map and source audit below are the verification log.
+
+## Sections
+
+- [Start here](https://rkalani1.github.io/agents-automations/start-here/): what agents are, good and bad tasks for them, setup paths, safety baseline
+- [Platforms](https://rkalani1.github.io/agents-automations/platforms/): per-product setup pages (Claude Desktop/Code/Projects, Gemini app/CLI/AI Studio/Antigravity, ChatGPT/Custom GPTs/OpenAI API/Codex, GitHub Copilot, Grok/xAI, local scripts)
+- [MCP & connectors](https://rkalani1.github.io/agents-automations/mcp/): concepts, installing and writing MCP servers, remote connectors, security
+- [Browser & computer use](https://rkalani1.github.io/agents-automations/browser-use/): Anthropic and OpenAI computer use, the browser-use library, operating boundaries
+- [Orchestration](https://rkalani1.github.io/agents-automations/orchestration/): single-agent loops, multi-agent patterns, local-first automation, state and handoffs
+- [Evaluation & safety](https://rkalani1.github.io/agents-automations/evals/): eval sets, red-team workflows, safety checklists, human-in-the-loop, incident response
+- [Task Builder](https://rkalani1.github.io/agents-automations/task-builder/): form that assembles a task prompt for your AI app
+- [Learning path](https://rkalani1.github.io/agents-automations/learning-path/): seven tool-agnostic missions
+- [Mastery](https://rkalani1.github.io/agents-automations/mastery/): beginner-to-expert tracks per product (the full Claude track lives at https://rkalani1.github.io/claude/)
+- [Capability map](https://rkalani1.github.io/agents-automations/capability-map/): cross-product capability and plan-tier matrix
+- [Examples](https://rkalani1.github.io/agents-automations/examples/): worked examples (email, meeting prep, reports, research, apps, assistants)
+- [No-code automations](https://rkalani1.github.io/agents-automations/no-code-automations/): native scheduled tasks in subscription apps
+- [Memory & preferences](https://rkalani1.github.io/agents-automations/preferences-memory/): portable preference profiles across products
+- [Surface router](https://rkalani1.github.io/agents-automations/surface-router/): choosing the right surface for a job
+- [Quickstarts](https://rkalani1.github.io/agents-automations/quickstarts/): first read-only, file-editing, coding, browser, and MCP agents
+- [Recipes](https://rkalani1.github.io/agents-automations/recipes/): complete agent recipes with prompts, tool allowlists, evals, and safe-launch checklists
+- [Agent Factory](https://rkalani1.github.io/agents-automations/agent-factory/): repeatable process for specifying, generating, evaluating, and maintaining agents
+- [Templates](https://rkalani1.github.io/agents-automations/template-library/): agent spec, prompt, eval rubric, safety checklist, agent PRD
+- [Starter kits](https://rkalani1.github.io/agents-automations/starter-kits/): copyable starter projects per platform
+
+## Reference
+
+- [Glossary](https://rkalani1.github.io/agents-automations/glossary/)
+- [Plain-English glossary](https://rkalani1.github.io/agents-automations/glossary-plain/)
+- [Model freshness policy](https://rkalani1.github.io/agents-automations/model-freshness/): why pages avoid hard-coded model IDs
+- [Source map](https://rkalani1.github.io/agents-automations/source-map/): canonical official URLs cited across the guide
+- [Source audit](https://rkalani1.github.io/agents-automations/source-audit/): per-page verification log (dates, sources, drift risk)
+- [Decision records](https://rkalani1.github.io/agents-automations/decision-records/): ADRs, including 0002 (sourced-and-dated content model)
+- [Changelog](https://rkalani1.github.io/agents-automations/changelog/)
+- [Sitemap](https://rkalani1.github.io/agents-automations/sitemap.xml)

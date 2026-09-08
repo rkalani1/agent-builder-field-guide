@@ -1,10 +1,10 @@
 # Codex repo-editing agent
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
 
 ## Goal
 
-This recipe shows how to use [Codex CLI](https://developers.openai.com/codex/cli) to make controlled, reviewable edits to a local sandbox repository. It walks through the approval-mode progression from `read-only` (safe inspection) to `workspace-write` (applying changes), uses an `AGENTS.md` file to scope the agent's behavior, and illustrates a concrete example: adding a missing docstring to every public function in a Python module. No code is pushed to any remote.
+This recipe shows how to use [Codex CLI](https://developers.openai.com/codex/cli) to make controlled, reviewable edits to a local sandbox repository. It walks through the sandbox-mode progression from `read-only` (safe inspection) to `workspace-write` (applying changes), uses an `AGENTS.md` file to scope the agent's behavior, and illustrates a concrete example: adding a missing docstring to every public function in a Python module. No code is pushed to any remote.
 
 ## Recommended platform(s)
 
@@ -14,7 +14,7 @@ Alternates: [Claude Code](https://code.claude.com/docs/en/setup) with a `CLAUDE.
 
 ## Why this platform
 
-Codex CLI provides explicit, named approval modes that map to a clear safety progression: start with `read-only` to inspect files without risk, then move to `workspace-write` only when you are ready to apply changes. The `AGENTS.md` convention (analogous to Claude Code's `CLAUDE.md`) lets you bake project context and constraints directly into the repo so every Codex session inherits them.
+Codex CLI provides explicit, named sandbox modes that map to a clear safety progression: start with `read-only` to inspect files without risk, then move to `workspace-write` only when you are ready to apply changes. The `AGENTS.md` convention (analogous to Claude Code's `CLAUDE.md`) lets you bake project context and constraints directly into the repo so every Codex session inherits them.
 
 ## Required subscription / account / API
 
@@ -22,25 +22,25 @@ Codex CLI provides explicit, named approval modes that map to a clear safety pro
 - Install Codex CLI:
   ```
   npm install -g @openai/codex
-  codex auth login
+  codex login
   ```
 - A local git sandbox repository (never your production repo).
 
 ## Required tools / connectors
 
 - Codex CLI (`codex` command).
-- Standard shell tools (`git`, `grep`, `python`). Codex may invoke these; each invocation is gated by the chosen approval mode.
+- Standard shell tools (`git`, `grep`, `python`). Codex may invoke these; each invocation is gated by the chosen sandbox mode.
 - No external APIs or connectors needed.
 
 ## Permission model
 
-The primary safety control is the `--approval-mode` flag:
+The primary safety control is the `--sandbox` (`-s`) flag, which selects one of three sandbox modes:
 
-| Approval mode | What it allows | Use for |
+| Sandbox mode | What it allows | Use for |
 |---|---|---|
-| `read-only` | File reads and stdout shell commands only | Initial inspection, planning |
-| `workspace-write` | All file writes within the repo | Applying the edit once you're confident |
-| `full-auto` | Unrestricted (including shell) | Not recommended for this recipe |
+| `read-only` | File reads only; no writes | Initial inspection, planning |
+| `workspace-write` | File writes within the workspace directory | Applying the edit once you're confident |
+| `danger-full-access` | Unrestricted | Not recommended for this recipe |
 
 Always start a new task with `read-only` to confirm the agent understands the codebase before switching to `workspace-write`.
 
@@ -63,14 +63,14 @@ Always start a new task with `read-only` to confirm the agent understands the co
 | Error handling | If tests fail, Codex CLI reports the failure; developer decides next steps. |
 | HITL gates | (1) Developer reviews the read-only inspection output before switching to write mode. (2) Developer reviews `git diff` before committing. |
 | Owner | The developer who ran the command. |
-| Review cadence | Re-verify when Codex CLI changes its approval-mode flag names. |
+| Review cadence | Re-verify when Codex CLI changes its sandbox flag names. |
 
 ## Setup steps
 
 1. Install and authenticate Codex CLI:
    ```
    npm install -g @openai/codex
-   codex auth login
+   codex login
    ```
 2. Clone your sandbox repo:
    ```
@@ -103,12 +103,12 @@ Always start a new task with `read-only` to confirm the agent understands the co
    ```
 5. Run the inspection pass first:
    ```
-   codex --approval-mode read-only \
+   codex exec --sandbox read-only \
      "List every public function in src/utils.py that is missing a docstring."
    ```
 6. Review the output. If the plan looks correct, run the write pass:
    ```
-   codex --approval-mode workspace-write \
+   codex exec --sandbox workspace-write \
      "Add a Google-style docstring to every public function in src/utils.py \
      that is currently missing one. Then run pytest tests/ to confirm no tests break."
    ```
@@ -120,7 +120,7 @@ The `AGENTS.md` file is the persistent instruction layer. Below are the two per-
 
 Pass 1 (inspection — safe, no writes):
 ```
-codex --approval-mode read-only \
+codex exec --sandbox read-only \
   "Read src/utils.py and list: (1) every public function name, \
   (2) whether each has a docstring (yes/no), \
   (3) a one-sentence description of what the function does based on its code."
@@ -128,7 +128,7 @@ codex --approval-mode read-only \
 
 Pass 2 (apply changes):
 ```
-codex --approval-mode workspace-write \
+codex exec --sandbox workspace-write \
   "Add a Google-style docstring to every public function in src/utils.py \
   that is currently missing one. Use the function body to infer the purpose. \
   After editing, run: pytest tests/
@@ -212,7 +212,7 @@ Terminal summary: "Updated 2 functions with docstrings. pytest: 6/6 passed."
 - Mode confusion: developer uses `workspace-write` for the inspection pass, risking accidental writes. Mitigation: always use `read-only` for pass 1; treat the two-pass workflow as mandatory.
 - Over-broad docstring generation: Codex adds docstrings to private functions despite the convention. Mitigation: the `AGENTS.md` convention and the explicit "not starting with _" rule; review pass 1 output for scope.
 - Docstring content hallucination: Codex invents parameters or return values not present in the function signature. Mitigation: pass 1 output shows inferred function purpose; developer verifies before approving pass 2.
-- Approval mode flag name change: Codex CLI is under active development; flag names may change. Mitigation: run `codex --help` to confirm current flag names before use; update this recipe accordingly.
+- Sandbox flag name change: Codex CLI is under active development; flag names may change (an earlier `--approval-mode` flag and its `full-auto` value have already been removed). Mitigation: run `codex --help` to confirm current flag names before use; update this recipe accordingly.
 - Sandbox contamination: developer is in the wrong directory. Mitigation: `git remote -v` and `pwd` before every session; keep a dedicated terminal tab for the sandbox.
 
 ## Cost / usage controls
@@ -226,10 +226,10 @@ Terminal summary: "Updated 2 functions with docstrings. pytest: 6/6 passed."
 - [ ] Working in the sandbox repo (`git remote -v` and `pwd` confirm).
 - [ ] `AGENTS.md` is present at the repo root.
 - [ ] Inspection pass (`read-only`) completed and reviewed before write pass.
-- [ ] `workspace-write` mode selected for the write pass — not `full-auto`.
+- [ ] `workspace-write` mode selected for the write pass — not `danger-full-access`.
 - [ ] `git diff` reviewed before any commit.
 - [ ] No git push or external API calls proposed or approved.
 
 ## Maintenance cadence
 
-Re-verify after each Codex CLI release. Check the [Codex CLI documentation](https://developers.openai.com/codex/cli) for changes to approval-mode flag names and `AGENTS.md` conventions. Run all six eval cases on a fresh sandbox clone after any update. Update `AGENTS.md` when project conventions change.
+Re-verify after each Codex CLI release. Check the [Codex CLI documentation](https://developers.openai.com/codex/cli) for changes to sandbox flag names and `AGENTS.md` conventions. Run all six eval cases on a fresh sandbox clone after any update. Update `AGENTS.md` when project conventions change.

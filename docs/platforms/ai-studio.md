@@ -1,6 +1,6 @@
 # Google AI Studio
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** medium · **Partially re-verified:** 2026-07-18
 > **Official sources:** [Google AI Studio](https://aistudio.google.com), [Gemini API docs](https://ai.google.dev/gemini-api/docs), [API keys](https://aistudio.google.com/app/apikey), [Quickstart](https://ai.google.dev/gemini-api/docs/quickstart), [Structured outputs](https://ai.google.dev/gemini-api/docs/structured-output), [System instructions](https://ai.google.dev/gemini-api/docs/system-instructions)
 
 ---
@@ -59,10 +59,11 @@ Add this to your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent) if you w
 
 ### 3. Make a test API call
 
-Verify the key works with a minimal REST call:
+Verify the key works with a minimal REST call. Set `GEMINI_MODEL` to a current model ID from the [Gemini models page](https://ai.google.dev/gemini-api/docs/models) first — model IDs churn too fast to hard-code here (see [model freshness](../model-freshness.md)):
 
 ```bash
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
+export GEMINI_MODEL=<current-model-id>
+curl "https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent" \
   -H "x-goog-api-key: $GEMINI_API_KEY" \
   -H 'Content-Type: application/json' \
   -X POST \
@@ -87,16 +88,17 @@ A successful response returns a JSON object with `candidates[0].content.parts[0]
 pip install -q -U google-genai
 ```
 
-Equivalent quickstart call in Python per the [official docs](https://ai.google.dev/gemini-api/docs/quickstart):
+Equivalent quickstart call in Python per the [official docs](https://ai.google.dev/gemini-api/docs/quickstart), adapted to read the model ID from the environment (see [model freshness](../model-freshness.md)):
 
 ```python
+import os
 from google import genai
 
 # The client reads GEMINI_API_KEY from the environment automatically.
 client = genai.Client()
 
 response = client.models.generate_content(
-    model="gemini-3-flash-preview",
+    model=os.environ.get("GEMINI_MODEL", "REPLACE_WITH_CURRENT_MODEL"),
     contents="Explain how AI works in a few words",
 )
 print(response.text)
@@ -235,6 +237,7 @@ Click **Get code** in AI Studio to get a Python (or other language) snippet that
 ### Equivalent Python code
 
 ```python
+import os
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, Field
@@ -255,7 +258,7 @@ client = genai.Client()
 abstract_text = """[paste abstract here]"""
 
 response = client.models.generate_content(
-    model="gemini-3-flash-preview",
+    model=os.environ.get("GEMINI_MODEL", "REPLACE_WITH_CURRENT_MODEL"),
     contents=abstract_text,
     config=types.GenerateContentConfig(
         system_instruction=(
@@ -287,7 +290,7 @@ AI Studio supports function calling setup in the **Tools** panel. Define functio
 
 ### Model selection
 
-AI Studio exposes all current Gemini models. For production extraction tasks, `gemini-3-flash-preview` is a good balance of speed and accuracy. For complex reasoning tasks, `gemini-3.1-pro-preview` is the highest-capability option. Check [ai.google.dev/gemini-api/docs](https://ai.google.dev/gemini-api/docs) for the current model list and their capabilities.
+AI Studio exposes all current Gemini models. For production extraction tasks, a current flash-class model is usually a good balance of speed and accuracy; for complex reasoning tasks, pick the highest-capability pro-class model. Specific model IDs (especially `-preview` suffixed ones) churn too quickly to list here — check [ai.google.dev/gemini-api/docs/models](https://ai.google.dev/gemini-api/docs/models) for the current model list and their capabilities.
 
 ---
 
@@ -296,7 +299,7 @@ AI Studio exposes all current Gemini models. For production extraction tasks, `g
 - **Rate limits exist at the free tier.** The free API tier has lower requests-per-minute and requests-per-day limits than paid tiers. For development and testing these are usually sufficient. For production workloads or batch processing, you will need to move to a paid tier or monitor your usage carefully. Check [ai.google.dev/pricing](https://ai.google.dev/pricing) for current limits.
 - **Structured output supports a subset of JSON Schema.** The API ignores JSON Schema properties it does not support and may reject very large or deeply nested schemas. Simplify schemas if you encounter errors. See the [structured output docs](https://ai.google.dev/gemini-api/docs/structured-output) for the supported property list.
 - **API key security.** Never commit API keys to version control. Use environment variables or a secrets manager. The [AI Studio key page](https://aistudio.google.com/app/apikey) lets you delete and rotate keys at any time.
-- **Model names change.** Model identifiers like `gemini-3-flash-preview` include "preview" designations that change as models graduate to stable releases. If a model name in your code returns a 404, check [ai.google.dev/gemini-api/docs](https://ai.google.dev/gemini-api/docs) for the current stable name.
+- **Model names change.** Model identifiers — especially those with "preview" designations — change as models graduate to stable releases, and retired IDs return model-not-found errors. This page's samples read the model from the `GEMINI_MODEL` environment variable for exactly this reason. If a model name in your code returns a 404, check [ai.google.dev/gemini-api/docs/models](https://ai.google.dev/gemini-api/docs/models) for the current name.
 - **Free API keys are linked to a Google Cloud project.** Even if you are not using other Google Cloud services, creating an API key requires a project. AI Studio creates one automatically if you do not have one.
 - **Streaming is available.** For long responses, use the streaming endpoint to get partial results as they are generated. The Python SDK exposes `generate_content_stream()` for this.
 

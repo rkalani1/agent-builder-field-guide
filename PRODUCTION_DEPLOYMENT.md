@@ -51,7 +51,7 @@ These are scoped to the workflow file. No personal access token is used.
 ## Local development
 
 ```bash
-git clone https://github.com/example/agents-automations.git
+git clone https://github.com/rkalani1/agents-automations.git
 cd agents-automations
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
@@ -71,7 +71,7 @@ CI runs `mkdocs build --strict --site-dir _site`. The `--strict` flag turns warn
 
 ## Updating dependencies
 
-`requirements.txt` pins `mkdocs-material>=9.5.0`. Dependabot watches both Python and GitHub Actions versions — see [`.github/dependabot.yml`](.github/dependabot.yml).
+`requirements.txt` pins `mkdocs-material>=9.5.0`. Dependency updates are manual: bump `requirements.txt` and the action versions in [`.github/workflows/`](.github/workflows/) as needed (Dependabot is not currently configured for this repo).
 
 ## Boundaries
 

@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** high
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18 (Anthropic and browser-use claims re-checked; OpenAI's official docs were unreachable, so the OpenAI column is unconfirmed since May 2026)
 > **Official sources:** [Anthropic computer use](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool), [OpenAI computer use](https://developers.openai.com/api/docs/guides/tools-computer-use), [browser-use repo](https://github.com/browser-use/browser-use), [OpenAI CUA announcement](https://openai.com/index/computer-using-agent/)
 
 # Comparison: Browser and Computer Use Approaches
@@ -12,16 +12,16 @@ This page compares the four main approaches an agent builder might choose. Drift
 | Interface type | Full desktop + browser | Full desktop + browser | Browser only | Browser only (typically) |
 | Action model | Single action per turn (older) / batched actions | Batched `actions[]` array per turn | Goal-driven, library manages loop | Goal-driven, provider manages loop |
 | Screenshot input | Required each turn | Required each turn | Managed internally | Managed internally |
-| Models supported | Claude 4.x, Sonnet 3.7+ | gpt-5.5 / gpt-5.4 with the built-in `computer` tool; `computer-use-preview` is legacy | Any LangChain-compatible model | Provider-specific |
-| Self-hosting required | Yes (sandbox required) | Yes (sandbox required) | Yes (Playwright + Python env) | No |
+| Models supported | Claude Opus 4.5 and later incl. Sonnet 5 (`computer_20251124`); Sonnet 4.5/Haiku 4.5 and other 4.x (`computer_20250124`) | gpt-5.5 / gpt-5.4 with the built-in `computer` tool; `computer-use-preview` is legacy | Multiple providers via browser-use's own chat classes (`ChatOpenAI`, `ChatAnthropic`, `ChatGoogle`, `ChatOllama`, `ChatBrowserUse`, ...) | Provider-specific |
+| Self-hosting required | Yes (sandbox required) | Yes (sandbox required) | Yes (Python env + local Chromium) | No |
 | Cost model | API tokens + input image tokens | API tokens + input image tokens | API tokens for the LLM + your infra | Subscription or per-minute billing |
 | Open source | No | No | Yes (MIT) | No |
-| Coordinate scaling | Required for pre-4.7 models | Not required (1:1 at `detail: original`) | Handled by library | Handled by provider |
+| Coordinate scaling | Resize + rescale needed when the screen exceeds the model's image limit (2576 px long edge on Sonnet 5/Opus 4.8/4.7; 1568 px on earlier models) | Not required (1:1 at `detail: original`) | Handled by library | Handled by provider |
 | DOM access | No (vision only) | No (vision only, plus code-exec harness option) | Yes (DOM + vision hybrid) | Varies |
 
 ## Anthropic computer use
 
-Anthropic introduced computer use in [October 2024](https://www.anthropic.com/news/3-5-models-and-computer-use) as a beta capability. The current interface is the `computer_20251124` tool type, supported by Claude Opus 4.7 and later models.
+Anthropic introduced computer use in [October 2024](https://www.anthropic.com/news/3-5-models-and-computer-use) as a beta capability. The current interface is the `computer_20251124` tool type, supported from Claude Opus 4.5 onward (including Sonnet 5 and Opus 4.8).
 
 Strengths:
 - Full desktop automation (not just browser). Can control any GUI application running in the sandbox.
@@ -30,13 +30,13 @@ Strengths:
 
 Weaknesses:
 - Every turn requires a screenshot round-trip to the API. Latency accumulates on multi-step tasks.
-- Coordinate scaling is required for models before Claude Opus 4.7 — the API downsamples images and Claude returns coordinates in the downsampled space, which must be scaled back to screen space before executing clicks.
+- Coordinates come back in the pixel space of the image sent, so whenever a screenshot is downsized to fit the model's image limit (1568 px long edge on most models; 2576 px on Sonnet 5, Opus 4.8, and Opus 4.7), they must be scaled back to screen space before executing clicks.
 - Sandbox setup (Docker + X virtual framebuffer + window manager) is non-trivial to configure for first-timers.
 - The beta flag and tool type version string change with new model releases, requiring code updates.
 
 ## OpenAI computer use
 
-OpenAI announced the Computer-Using Agent in [January 2025](https://openai.com/index/computer-using-agent/) and shipped it in the Responses API. The current production model is `gpt-5.5` with tool type `computer`.
+OpenAI announced the Computer-Using Agent in [January 2025](https://openai.com/index/computer-using-agent/) and shipped it in the Responses API. As of the May 2026 verification, the production model was `gpt-5.5` with tool type `computer`; OpenAI's docs could not be re-checked on 2026-07-18, so verify the current model and tool type against the [official guide](https://developers.openai.com/api/docs/guides/tools-computer-use).
 
 Strengths:
 - Batched actions: the model can return multiple actions (click, then type) in a single `computer_call`, reducing round trips.
@@ -56,7 +56,7 @@ Weaknesses:
 Strengths:
 - Highest abstraction level among the four approaches: you write `agent.run()` and get results.
 - DOM-aware: the library can extract structured DOM information in addition to visual screenshots, making it more reliable on data-heavy web pages than pure vision approaches.
-- Works with any LangChain-compatible model, including current OpenAI, Claude, Gemini, and open-source models exposed through LangChain adapters.
+- Ships its own multi-provider LLM interface (`ChatOpenAI`, `ChatAnthropic`, `ChatGoogle`, `ChatGroq`, `ChatOllama`, `ChatBrowserUse`, and more) covering current OpenAI, Claude, Gemini, and open-source models; raw LangChain model objects require the adapter in the repo's examples.
 - Active development; MCP integration was added (the `MCPClient` class lets agents use MCP servers alongside browser actions).
 - Docker image available (`browseruse/browseruse`) for containerized deployment.
 
@@ -64,7 +64,7 @@ Weaknesses:
 - Browser-only. Cannot automate desktop GUI applications.
 - The LLM manages reasoning; you get less visibility into intermediate steps than you do with a raw action loop.
 - The library's internals evolve quickly. Breaking changes across minor versions are common; pin versions for production use.
-- Requires a local Playwright-controlled browser, which has its own headless/headful configuration surface.
+- Requires a local Chromium/Chrome browser (driven via CDP), which has its own headless/headful configuration surface.
 - As of 2025, browser-use migrated from Playwright to a direct Chrome DevTools Protocol (CDP) implementation for lower-level control. Code written against older versions may need updates.
 
 ## Hosted browser agents

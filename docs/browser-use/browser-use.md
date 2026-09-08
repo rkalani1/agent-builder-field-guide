@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18 (API shapes checked against the official repo; the docs site was unreachable, so install-flow wording is hedged)
 > **Official sources:** [browser-use repo](https://github.com/browser-use/browser-use), [browser-use on PyPI](https://pypi.org/project/browser-use/)
 
 # browser-use Python Library
@@ -7,25 +7,24 @@
 
 ## Installation
 
-Install from PyPI:
+Install from PyPI (Python 3.11 or later):
 
 ```
 pip install browser-use
 ```
 
-Then install the browser binary. The library currently uses a Chrome DevTools Protocol (CDP) client as its primary browser driver. You can install Chromium via Playwright's installer:
-
-```
-playwright install chromium --with-deps --no-shell
-```
-
-Note: as of 2025, browser-use migrated from Playwright to a direct CDP implementation for lower-level browser control. The Playwright installer is still a convenient way to get a Chromium binary. If you already have Chrome or Chromium installed at a standard path, the library can use it directly.
-
 With uv:
 
 ```
 uv pip install browser-use
-uvx playwright install chromium --with-deps --no-shell
+```
+
+As of the mid-2026 official README, the quickstart stops there: the library uses a Chrome DevTools Protocol (CDP) client as its browser driver and provisions or attaches to a Chromium/Chrome binary itself. If you already have Chrome or Chromium installed at a standard path, the library can use it directly. (The official docs site could not be re-checked on 2026-07-18; verify against [docs.browser-use.com](https://docs.browser-use.com/) if a browser binary is not found.)
+
+For older pinned versions that still used Playwright as the driver, install Chromium via Playwright's installer:
+
+```
+playwright install chromium --with-deps --no-shell
 ```
 
 For the interactive CLI (similar to `claude` on the command line):
@@ -67,27 +66,31 @@ OPENAI_MODEL=REPLACE_WITH_CURRENT_MODEL
 
 ## Using with other model providers
 
-The `llm` parameter accepts any LangChain-compatible chat model. To use Claude:
+browser-use ships its own multi-provider chat-model classes (it migrated off LangChain), and the `llm` parameter expects one of them. To use Claude:
 
 ```python
-from langchain_anthropic import ChatAnthropic
+import os
+from browser_use import Agent, ChatAnthropic
 
 agent = Agent(
     task="Find the current price of AAPL on Yahoo Finance and return it.",
-    llm=ChatAnthropic(model="claude-opus-4-7"),
+    llm=ChatAnthropic(model=os.getenv("ANTHROPIC_MODEL", "REPLACE_WITH_CURRENT_MODEL")),
 )
 ```
 
 To use an open-source model via Ollama:
 
 ```python
-from langchain_ollama import ChatOllama
+import os
+from browser_use import Agent, ChatOllama
 
 agent = Agent(
     task="Open example.com and return the page title.",
-    llm=ChatOllama(model="llama3.2"),
+    llm=ChatOllama(model=os.getenv("LOCAL_MODEL", "REPLACE_WITH_CURRENT_MODEL")),
 )
 ```
+
+The library also exposes `ChatBrowserUse` (the class used in the official quickstart) alongside `ChatOpenAI`, `ChatGoogle`, `ChatGroq`, and others in `browser_use.llm`. A raw LangChain model object does not satisfy the library's chat-model interface; if you need to bridge one, use the `ChatLangchain` adapter in the repo's examples directory.
 
 The quality of the browser agent degrades significantly with less capable models. For production use, choose a current frontier-class OpenAI or Claude model. Smaller models tend to get stuck in loops or fail to complete multi-step navigation.
 
@@ -164,18 +167,20 @@ The `Agent.run()` method accepts a `max_steps` parameter (default varies by vers
 result = await agent.run(max_steps=25)
 ```
 
-You can also hook into the loop with callbacks:
+You can also hook into the loop with callbacks. `Agent(...)` accepts `register_new_step_callback` (called with the browser state summary, the model's output, and the step number) and `register_done_callback`; `Agent.run()` additionally accepts `on_step_start` / `on_step_end` hook functions that receive the `Agent` instance:
 
 ```python
-async def on_step(agent_state):
-    print(f"Step: {agent_state.n_steps}, Action: {agent_state.last_action}")
+async def log_step(browser_state_summary, agent_output, step_number):
+    print(f"Step {step_number}: {agent_output}")
 
 agent = Agent(
     task="...",
     llm=ChatOpenAI(model=os.environ["OPENAI_MODEL"]),
-    on_step=on_step,
+    register_new_step_callback=log_step,
 )
 ```
+
+Note: the `Agent` constructor accepts `**kwargs` and silently ignores unknown keyword arguments, so a misspelled callback parameter fails silently rather than raising an error. Verify hook names and signatures against the version you have pinned.
 
 ## Persistent browser sessions
 
@@ -197,10 +202,10 @@ await session.close()
 
 ## Version notes and stability
 
-browser-use is under active development and releases frequently. The library's internal architecture changed significantly in 2025 when it migrated from Playwright to a CDP-first approach. For production deployments, pin to a specific version:
+browser-use is under active development and releases frequently. The library's internal architecture changed significantly in 2025 when it migrated from Playwright to a CDP-first approach. For production deployments, pin to the specific version you tested (the release line was 0.13.x as of 2026-07-18 — check PyPI for the current release):
 
 ```
-pip install browser-use==0.7.8
+pip install browser-use==<version-you-tested>
 ```
 
 Check the [PyPI release history](https://pypi.org/project/browser-use/#history) and the repository changelog before upgrading. The `main` branch frequently contains breaking changes; install from tagged releases.

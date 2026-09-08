@@ -1,6 +1,6 @@
 # OpenAI Agents SDK tool-calling agent
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
 
 ## Goal
 
@@ -58,9 +58,9 @@ Both tools are implemented as decorated Python functions in the script below.
    python -m venv .venv
    source .venv/bin/activate   # Windows: .venv\Scripts\activate
    ```
-2. Install the pinned SDK version:
+2. Install the pinned SDK version (0.18.3 was the latest release at last verification):
    ```
-   pip install "openai-agents==0.0.9" python-dotenv
+   pip install "openai-agents==0.18.3" python-dotenv
    ```
    Check [the SDK releases page](https://github.com/openai/openai-agents-python/releases) for the latest version and update the pin accordingly.
 3. Create a `.env` file:
@@ -85,7 +85,7 @@ Both tools are implemented as decorated Python functions in the script below.
 
 ```python
 # notes_agent.py
-# Requires: openai-agents==0.0.9, python-dotenv
+# Requires: openai-agents==0.18.3, python-dotenv
 # SDK docs: https://github.com/openai/openai-agents-python
 
 import argparse
@@ -203,16 +203,16 @@ is completing the onboarding documentation by Friday.
 ## Failure modes
 
 - Tool result passed as prompt context: the SDK passes tool results back to the model; if the notes file contains adversarial text, the model processes it. Mitigation: prompt injection probe above; treat file content as untrusted.
-- Model skips tool calls: if the model decides not to call `read_notes`, it will produce an empty or hallucinated summary. Mitigation: system prompt says "Call read_notes" as a numbered instruction; use `temperature=0` for deterministic behavior.
-- SDK version drift: the `@function_tool` API has changed across minor releases. Mitigation: pin the version with `==0.0.9` in `requirements.txt` and update the pin intentionally.
+- Model skips tool calls: if the model decides not to call `read_notes`, it will produce an empty or hallucinated summary. Mitigation: system prompt says "Call read_notes" as a numbered instruction; reduce randomness with `Agent(..., model_settings=ModelSettings(temperature=0))`.
+- SDK version drift: the `@function_tool` API has changed across minor releases. Mitigation: pin the version with `==0.18.3` in `requirements.txt` and update the pin intentionally.
 - Encoding error on Windows: default encoding differs by platform. Mitigation: always pass `encoding="utf-8"` to `read_text`.
 - `summarize` tool as a no-op: in this recipe, `summarize` returns the text unmodified for the outer agent to process. If you need an independent summarization step, implement a real inner model call.
 
 ## Cost / usage controls
 
 - A 1,000-word file is typically a small request; calculate dollar cost from the selected model's current pricing.
-- Log `result.usage` for token tracking.
-- Set `max_tokens=512` on the agent if you want a strict output length cap.
+- Log `result.context_wrapper.usage` for token tracking.
+- Cap output length with `Agent(..., model_settings=ModelSettings(max_tokens=512))` if you want a strict limit.
 
 ## Safe launch checklist
 

@@ -33,4 +33,4 @@ The [Security](security.md) page is not optional reading — MCP servers execute
 
 ## Spec versions covered
 
-These pages primarily reference the [2025-06-18 specification](https://modelcontextprotocol.io/specification/2025-06-18), which introduced Streamable HTTP as the preferred production transport and structured tool outputs. Where behavior differs from the earlier [2025-03-26 revision](https://modelcontextprotocol.io/specification/2025-03-26), differences are called out inline.
+The current specification revision is [2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25). These pages cite the [2025-06-18 revision](https://modelcontextprotocol.io/specification/2025-06-18) — which introduced Streamable HTTP as the preferred production transport and structured tool outputs — where a quoted behavior was verified against that text; differences from earlier revisions are called out inline.

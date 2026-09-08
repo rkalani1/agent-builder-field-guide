@@ -1,6 +1,6 @@
 # OpenAI Codex CLI
 
-> **Last verified:** 2026-05-06 · **Drift risk:** high — this tool is rapidly evolving; verify every detail against the current docs before relying on it
+> **Last verified:** 2026-07-18 · **Drift risk:** high — this tool is rapidly evolving; verify every detail against the current docs before relying on it
 > **Official sources:** [Codex CLI — developers.openai.com](https://developers.openai.com/codex/cli), [openai/codex on GitHub](https://github.com/openai/codex)
 
 ---
@@ -9,7 +9,7 @@
 
 Codex CLI is an open-source, terminal-based coding agent that runs on your local machine. You point it at a code repository, give it a natural-language task, and it reads your files, proposes or applies edits, and optionally executes shell commands — all from an interactive terminal UI (TUI). It is built in Rust for speed and is available on macOS, Linux, and Windows (natively in PowerShell or via WSL2 for a Linux-native environment).
 
-Codex CLI is separate from the Codex cloud surface in ChatGPT (see below). The CLI runs locally with access to your filesystem. The cloud surface runs in a remote environment.
+Codex CLI is separate from Codex Web, OpenAI's cloud-based coding agent at chatgpt.com/codex (see below). The CLI runs locally with access to your filesystem. Codex Web runs in a remote environment.
 
 This is the right tool when you want an AI coding assistant that operates directly inside your repository, respects your local toolchain, and does not require a browser.
 
@@ -100,11 +100,11 @@ Approval modes control how much autonomy Codex has before requiring your confirm
 
 | Mode | File reads | File writes | Shell commands | Best for |
 |---|---|---|---|---|
-| `read-only` (Suggest) | Automatic | Requires approval | Requires approval | Code review, exploring an unfamiliar codebase |
-| `workspace-write` (Auto Edit) | Automatic | Automatic within working directory | Requires approval | Active development in a tracked repo |
-| `danger-full-access` (Full Auto) | Automatic | Automatic anywhere | Automatic | Sandboxed / containerized environments only |
+| `read-only` | Automatic | Requires approval | Requires approval | Code review, exploring an unfamiliar codebase |
+| `workspace-write` | Automatic | Automatic within working directory | Requires approval | Active development in a tracked repo |
+| `danger-full-access` | Automatic | Automatic anywhere | Automatic | Sandboxed / containerized environments only |
 
-To switch modes during a session, use the `/approval` slash command inside the TUI and select the mode from the menu.
+To switch modes during a session, use the `/permissions` slash command inside the TUI and select the mode from the menu.
 
 To set a default mode in your configuration file (`~/.codex/config.toml`):
 
@@ -158,7 +158,7 @@ codex
 
 **Step 2 — Set approval mode to `workspace-write`:**
 
-In the TUI, run `/approval` and select `workspace-write`. This allows Codex to write files automatically but requires your approval for shell commands.
+In the TUI, run `/permissions` and select `workspace-write`. This allows Codex to write files automatically but requires your approval for shell commands.
 
 **Step 3 — Give the task:**
 
@@ -184,9 +184,9 @@ Verify the tests pass before committing.
 
 ---
 
-## The Codex cloud surface in ChatGPT
+## Codex Web and other Codex surfaces
 
-Codex also appears as a cloud-based coding task runner inside ChatGPT. This is a distinct product from the CLI: it runs tasks in a remote environment managed by OpenAI rather than on your local machine. You can launch a cloud task and apply the resulting diff from within the CLI using the **Codex Cloud Tasks** feature. For tasks that require a persistent local environment or access to private files, the CLI remains the appropriate tool. The cloud surface is linked from the [Codex CLI docs](https://developers.openai.com/codex/cli) and is evolving separately from the CLI.
+Codex also runs as **Codex Web**, OpenAI's cloud-based coding agent at [chatgpt.com/codex](https://chatgpt.com/codex). This is a distinct product from the CLI: it runs tasks in a remote environment managed by OpenAI rather than on your local machine. You can launch a cloud task and apply the resulting diff from within the CLI using the **Codex Cloud Tasks** feature. Per the [openai/codex README](https://github.com/openai/codex), there is also a Codex desktop App (launched with `codex app`) and an IDE extension as additional surfaces. For tasks that require a persistent local environment or access to private files, the CLI remains the appropriate tool. Codex Web and the other surfaces are evolving separately from the CLI.
 
 ---
 
@@ -211,7 +211,7 @@ Codex also appears as a cloud-based coding task runner inside ChatGPT. This is a
 | Three sandbox modes (`read-only`, `workspace-write`, `danger-full-access`) | [Confirmed — reference docs](https://developers.openai.com/codex/cli/reference) |
 | `codex login --with-api-key` reads from stdin | [Confirmed — reference docs](https://developers.openai.com/codex/cli/reference) |
 | `codex login status` exits 0 when logged in | [Confirmed — reference docs](https://developers.openai.com/codex/cli/reference) |
-| `AGENTS.md` used for custom instructions | [Confirmed — Agents SDK announcement](https://openai.com/index/the-next-evolution-of-the-agents-sdk/) |
+| `AGENTS.md` used for custom instructions | [Confirmed — Codex AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) |
 | One task per session is more reliable than compound instructions | **Practical inference** — consistent with documented best practices but not explicitly stated |
 | Large repositories produce slower/less accurate results | **Practical inference** — follows from how context windows work; not documented specifically |
 

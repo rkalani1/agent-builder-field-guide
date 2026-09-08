@@ -1,6 +1,6 @@
 # Gemini CLI
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** medium · **Partially re-verified:** 2026-07-18
 > **Official sources:** [google-gemini/gemini-cli on GitHub](https://github.com/google-gemini/gemini-cli), [Gemini CLI documentation](https://geminicli.com/docs/get-started/installation/), [Hands-on with Gemini CLI codelab](https://codelabs.developers.google.com/gemini-cli-hands-on)
 
 ---
@@ -69,7 +69,7 @@ brew install gemini-cli
 npx @google/gemini-cli
 ```
 
-Note: Corporate networks with strict proxy settings may encounter issues with the npm postinstall script downloading a ripgrep binary. If you see a timeout during `npm install`, set your proxy environment variables before running npm, or use the Homebrew method. See the [GitHub issues tracker](https://github.com/google-gemini/gemini-cli/issues) for current workarounds.
+Note: ripgrep has been bundled with Gemini CLI since v0.40.0 (2026-04-28, per the official changelog), so the npm postinstall no longer downloads a ripgrep binary — a step that strict corporate proxies used to block. If you are installing an older version and see a timeout during `npm install`, set your proxy environment variables before running npm, or use the Homebrew method. See the [GitHub issues tracker](https://github.com/google-gemini/gemini-cli/issues) for current workarounds.
 
 ### 3. First-run authentication
 
@@ -83,7 +83,7 @@ On first launch, you will be prompted to choose a theme and an authentication me
 
 **Option A: Sign in with Google account (recommended for personal use)**
 
-Select **Sign in with Google** when prompted. The CLI opens a browser tab for Google OAuth. Authenticate with your Google account, accept the terms, and return to the terminal. The free tier via a personal Google account allows approximately 60 requests per minute and 1,000 requests per day (per [third-party documentation](https://docs.warp.dev/guides/external-tools/how-to-set-up-gemini-cli/) drawing on Google's published limits—verify current limits at [ai.google.dev](https://ai.google.dev)).
+Select **Sign in with Google** when prompted. The CLI opens a browser tab for Google OAuth. Authenticate with your Google account, accept the terms, and return to the terminal. The free tier via a personal Google account allows approximately 60 requests per minute and 1,000 requests per day (per the [official README](https://github.com/google-gemini/gemini-cli); limits can change, so re-check there for current values).
 
 Credentials are stored locally in `~/.gemini/` and you will not need to authenticate again on subsequent runs.
 
@@ -221,23 +221,30 @@ Gemini CLI supports MCP servers via the `settings.json` file. Add an `mcpServers
 }
 ```
 
+Caution: `"trust": true` bypasses all tool-call confirmations for that server (the default is `false`). Per the [official MCP server docs](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md), use it only for servers you completely control. For a remote-hosted server like this one, prefer `"trust": false` so each tool call — including write-capable GitHub operations authenticated with your PAT — requires confirmation.
+
 Secrets like `GITHUB_PAT` can be stored in `~/.gemini/.env` and Gemini CLI will load them automatically.
 
-### Rules and workflows
+### Custom commands and skills
 
-Beyond `GEMINI.md`, Gemini CLI supports structured rules and workflow files. These are stored in `.agents/rules/` and `.agents/workflows/` within your workspace (workspace scope) or `~/.gemini/` (global scope). Rules constrain behavior; workflows define multi-step procedures that can be triggered with a slash command.
+Beyond `GEMINI.md` (the documented home for rules-style persistent instructions), Gemini CLI supports two structured extension points per the official docs:
+
+- **Custom commands**: reusable slash commands defined as TOML files, stored in `~/.gemini/commands/` (user scope) or `<project>/.gemini/commands/` (project scope). See the [custom commands docs](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/custom-commands.md).
+- **Skills**: modular instruction sets stored in `.gemini/skills/`, with an `.agents/skills/` alias that takes precedence within a tier. See the [skills docs](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md).
+
+Note: `.agents/rules/` and `.agents/workflows/` are [Antigravity](antigravity.md) conventions — Gemini CLI does not read those directories.
 
 ---
 
 ## Limits and Gotchas
 
-- **Free tier rate limits apply with Google account auth.** Approximately 60 requests per minute and 1,000 per day based on available documentation. Use an API key or Vertex AI for higher limits.
+- **Free tier rate limits apply with Google account auth.** Approximately 60 requests per minute and 1,000 per day per the [official README](https://github.com/google-gemini/gemini-cli). Use an API key or Vertex AI for higher limits.
 - **Node.js 20+ is required.** Older Node versions will fail. This is a common source of install failures for developers on older LTS versions.
 - **Not pre-installed outside Google Cloud Shell and Cloud Workstations.** You must install it manually on your own machine.
-- **Corporate network proxy issues.** The npm postinstall downloads a ripgrep binary from GitHub. Strict proxy environments may block this. Using Homebrew or the `npx` method avoids this step.
+- **Corporate network proxy issues (older versions only).** Before v0.40.0 (2026-04-28), the npm postinstall downloaded a ripgrep binary from GitHub, which strict proxy environments could block. Since v0.40.0, ripgrep is bundled with the CLI, so this gotcha applies only when installing older versions.
 - **Open source means breaking changes can ship.** Gemini CLI is under active development. Check the [releases page](https://github.com/google-gemini/gemini-cli/releases) before updating in production workflows. Consider pinning a version in CI.
 - **Authentication token is stored locally.** The Google OAuth token is stored in `~/.gemini/`. On shared machines, treat this directory as sensitive.
-- **MCP integration is newer.** The MCP server support is confirmed by community documentation and GitHub issues, but the configuration format may change. Verify against the current README before deploying MCP integrations.
+- **MCP configuration format may change.** MCP server support and the `mcpServers` settings format are documented in the [official MCP server docs](https://geminicli.com/docs/tools/mcp-server/), but the CLI is under active development. Verify against the current docs before deploying MCP integrations, and treat `trust: true` as an opt-out of every tool-call confirmation for that server.
 
 ---
 
@@ -250,9 +257,11 @@ Beyond `GEMINI.md`, Gemini CLI supports structured rules and workflow files. The
 | Google account OAuth on first run | Confirmed by [codelab](https://codelabs.developers.google.com/gemini-cli-hands-on) |
 | API key via `GEMINI_API_KEY` env variable | Confirmed by codelab and community documentation |
 | Vertex AI via env variables + ADC | Confirmed by [Warp docs](https://docs.warp.dev/guides/external-tools/how-to-set-up-gemini-cli/) and community documentation |
-| ~60 RPM / 1000 RPD free tier limit | Confirmed per [Warp docs drawing on Google published limits](https://docs.warp.dev/guides/external-tools/how-to-set-up-gemini-cli/); verify at ai.google.dev |
-| GEMINI.md project context file | Confirmed by codelab and Antigravity codelab (same pattern used by Google's agent tools) |
-| MCP server support via settings.json | Confirmed by community docs and GitHub issues; configuration format may shift |
+| ~60 RPM / 1000 RPD free tier limit | Confirmed by [official README](https://github.com/google-gemini/gemini-cli) (re-checked 2026-07-18) |
+| GEMINI.md project context file | Confirmed by [official docs](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md) |
+| MCP server support via settings.json | Confirmed by [official MCP server docs](https://geminicli.com/docs/tools/mcp-server/) (`trust` defaults to `false`) |
+| Custom commands (TOML in `~/.gemini/commands/` or `<project>/.gemini/commands/`) and skills (`.gemini/skills/`, alias `.agents/skills/`) | Confirmed by official docs ([custom commands](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/custom-commands.md), [skills](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md)) |
+| ripgrep bundled since v0.40.0 (no postinstall download) | Confirmed by [official changelog](https://github.com/google-gemini/gemini-cli/blob/main/docs/changelogs/index.md) (v0.40.0, 2026-04-28) |
 | Settings stored in `~/.gemini/settings.json` | Confirmed by codelab |
 | Homebrew install method | Confirmed by [official installation docs](https://geminicli.com/docs/get-started/installation/) |
 

@@ -1,6 +1,6 @@
 # Gemini App
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** medium · **Partially re-verified:** 2026-07-18
 > **Official sources:** [gemini.google.com](https://gemini.google.com), [Create and use Gems](https://support.google.com/gemini/answer/15146780?hl=en), [Tips for writing Gem instructions](https://support.google.com/gemini/answer/15235603?hl=en)
 
 ---
@@ -13,8 +13,10 @@ Gemini App is Google's consumer-facing AI interface at [gemini.google.com](https
 - **Workspace integration**: connect Google Drive, Gmail, Docs, and other Workspace apps to give Gemini access to your data.
 - **Google Search grounding**: Gemini can search the web during a conversation and cite sources.
 - **Memory (Saved Info)**: Gemini can remember personal facts and preferences across conversations.
+- **Scheduled actions**: recurring or one-time prompts that Gemini runs automatically at a set time (per the [Scheduled actions help article](https://support.google.com/gemini/answer/16316416); plan-tier availability varies — verify there).
+- **Deep Research**: an agentic multi-step research mode that browses, synthesizes, and cites sources (per the [Deep Research help article](https://support.google.com/gemini/answer/15719111)).
 
-The web app is accessible with a personal Google account. A Google One AI Premium subscription or a Google Workspace subscription unlocks higher-tier models and additional features.
+The web app is accessible with a personal Google account. A Google AI Pro or Google AI Ultra subscription (the plan family that, per Google's plan pages as of mid-2026, replaced the earlier Google One AI Premium branding) or a Google Workspace subscription unlocks higher-tier models and additional features.
 
 ---
 
@@ -31,7 +33,7 @@ The web app is accessible with a personal Google account. A Google One AI Premiu
 
 - A Google account (personal Gmail or Google Workspace)
 - Access to [gemini.google.com](https://gemini.google.com) in a supported browser
-- For advanced models and full Workspace integration: a Google One AI Premium subscription or a qualifying Google Workspace plan
+- For advanced models and full Workspace integration: a Google AI Pro or Google AI Ultra subscription, or a qualifying Google Workspace plan
 - For Gems: no additional prerequisites beyond a standard account, though Gem sharing requires Workspace
 
 ---
@@ -173,12 +175,15 @@ Gems can be shared with other users in your organization or externally. Sharing 
 | Drive files stay in sync when updated | Confirmed by support article: "Gemini will use the most recent version of the file" |
 | Instruction categories: Persona, Task, Context, Format | Confirmed by [Gems tips support article](https://support.google.com/gemini/answer/15235603?hl=en) |
 | Advanced models restricted to paid tiers | Practical inference based on Google's published model availability; verify at gemini.google.com |
+| Paid tiers named Google AI Pro / Google AI Ultra (Google One AI Premium retired) | Official plan pages surfaced via search 2026-07-18 (support.google.com, gemini.google/subscriptions); pages not directly re-fetched — verify before relying on plan names |
+| Scheduled actions feature (recurring/scheduled prompts) | Official [help article](https://support.google.com/gemini/answer/16316416) tracked in this guide's source map; not directly re-fetched 2026-07-18 — verify tier availability there |
+| Deep Research feature (multi-step agentic research) | Official [help article](https://support.google.com/gemini/answer/15719111) surfaced via search 2026-07-18; not directly re-fetched — verify details there |
 
 ---
 
 ## Cost and Rate-Limit Notes
 
-The Gemini App is free to use with a personal Google account, with access to standard Gemini models. Higher-tier models (currently Gemini 3.1 Pro) require a Google One AI Premium subscription. Google Workspace plans include Gemini access at varying levels depending on the tier. Rate limits exist at the free tier; heavy usage may result in temporary throttling. Specific pricing is not listed here—check [one.google.com](https://one.google.com) and [workspace.google.com](https://workspace.google.com) for current plans.
+The Gemini App is free to use with a personal Google account, with access to standard Gemini models. Higher-tier models require a Google AI Pro or Google AI Ultra subscription (as of mid-2026 official plan pages; these plans replaced the earlier Google One AI Premium branding). Google Workspace plans include Gemini access at varying levels depending on the tier. Rate limits exist at the free tier; heavy usage may result in temporary throttling. Specific pricing is not listed here—check [gemini.google/subscriptions](https://gemini.google/subscriptions), [one.google.com](https://one.google.com), and [workspace.google.com](https://workspace.google.com) for current plans.
 
 ---
 

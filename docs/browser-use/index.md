@@ -22,7 +22,7 @@ The capability comes with commensurate risk. An agent that can click through you
 
 **Model-native computer use** (Anthropic and OpenAI) — the model provider exposes a tool that accepts a screenshot and returns actions. Your code executes the actions, captures a new screenshot, and feeds it back. The model drives the loop.
 
-**Library-based browser automation** (browser-use) — an open-source Python library that wraps Playwright with an LLM agent loop. You specify a goal string. The library handles screenshot capture, DOM extraction, action execution, and context management. You supply the model via a LangChain-compatible interface.
+**Library-based browser automation** (browser-use) — an open-source Python library that wraps Playwright with an LLM agent loop. You specify a goal string. The library handles screenshot capture, DOM extraction, action execution, and context management. You supply the model via the library's own chat-model classes (e.g. `ChatAnthropic`, `ChatOpenAI` from `browser_use`).
 
 **Hosted browser agents** — cloud services that provide a managed browser sandbox with an agent loop. These abstract away the infrastructure entirely but come with latency and data-sovereignty tradeoffs.
 

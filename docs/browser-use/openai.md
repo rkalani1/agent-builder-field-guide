@@ -1,9 +1,10 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** high
 > **Official sources:** [OpenAI computer use](https://developers.openai.com/api/docs/guides/tools-computer-use), [OpenAI CUA announcement](https://openai.com/index/computer-using-agent/)
+> **Drift note (2026-07-18):** the official OpenAI sources for this page could not be re-checked (unreachable from the audit environment). Treat every product-surface detail below — model name, tool type, action schema, `detail`/megapixel limits, migration steps — as a May 2026 snapshot and confirm against the linked official guide before relying on it.
 
 # OpenAI Computer Use
 
-OpenAI announced the Computer-Using Agent (CUA) in [January 2025](https://openai.com/index/computer-using-agent/) and shipped it as a built-in tool in the Responses API. The current production model is `gpt-5.5` with the `computer` tool type. An earlier `computer-use-preview` model existed but is now legacy.
+OpenAI announced the Computer-Using Agent (CUA) in [January 2025](https://openai.com/index/computer-using-agent/) and shipped it as a built-in tool in the Responses API. As of the May 2026 verification, the production model was `gpt-5.5` with the `computer` tool type; an earlier `computer-use-preview` model existed but was legacy. Verify the current model name against the [official guide](https://developers.openai.com/api/docs/guides/tools-computer-use).
 
 ## How the Responses API computer tool works
 
@@ -51,14 +52,16 @@ From the [OpenAI computer use documentation](https://developers.openai.com/api/d
 
 ```python
 import base64
+import os
 from openai import OpenAI
 
 client = OpenAI()
+MODEL = os.getenv("OPENAI_MODEL", "REPLACE_WITH_CURRENT_MODEL")
 
 def computer_use_loop(task: str, page) -> object:
     # Initial request
     response = client.responses.create(
-        model="gpt-5.5",
+        model=MODEL,
         tools=[{"type": "computer"}],
         input=task,
     )
@@ -81,7 +84,7 @@ def computer_use_loop(task: str, page) -> object:
 
         # Send result back, linking via previous_response_id
         response = client.responses.create(
-            model="gpt-5.5",
+            model=MODEL,
             tools=[{"type": "computer"}],
             previous_response_id=response.id,
             input=[
@@ -161,17 +164,17 @@ The [OpenAI documentation](https://developers.openai.com/api/docs/guides/tools-c
 
 ## The CUA research background
 
-The [CUA announcement](https://openai.com/index/computer-using-agent/) describes the system as combining GPT-4o's vision capabilities with reinforcement learning for GUI interaction. Benchmark results at announcement: 38.1% on OSWorld (full OS automation), 58.1% on WebArena (web browsing agents), 87% on WebVoyager (live web tasks). Human performance on OSWorld is 72.4%, indicating meaningful remaining headroom.
+The [CUA announcement](https://openai.com/index/computer-using-agent/) describes the system as combining GPT-4o's vision capabilities with reinforcement learning for GUI interaction. Benchmark results from the January 2025 announcement (historical figures for the original CUA model, not current models): 38.1% on OSWorld (full OS automation), 58.1% on WebArena (web browsing agents), 87% on WebVoyager (live web tasks). Human performance on OSWorld was reported as 72.4%, indicating meaningful remaining headroom at the time.
 
 The model processes raw pixel data rather than relying on OS-specific accessibility APIs, which gives it flexibility across operating systems and applications at the cost of precision on dense UI elements.
 
 ## Migration from computer-use-preview
 
-If you have code written against the legacy `computer-use-preview` model:
+If you have code written against the legacy `computer-use-preview` model (as documented at the May 2026 verification — confirm current steps against the official guide):
 
 | Old | New |
 |-----|-----|
-| `model="computer-use-preview"` | `model="gpt-5.5"` |
+| `model="computer-use-preview"` | current production model (set via `OPENAI_MODEL`; `gpt-5.5` as of May 2026) |
 | `tools=[{"type": "computer_use_preview", "display_width": 1024, "display_height": 768, "environment": "browser"}]` | `tools=[{"type": "computer"}]` |
 | Single `action` on each `computer_call` | Batched `actions[]` array |
 | `truncation: "auto"` required | Not required |

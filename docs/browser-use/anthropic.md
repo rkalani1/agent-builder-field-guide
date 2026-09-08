@@ -1,4 +1,4 @@
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** high (computer use surfaces change with each model release)
 > **Official sources:** [Anthropic computer use tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool), [Anthropic computer use launch](https://www.anthropic.com/news/3-5-models-and-computer-use)
 
 # Anthropic Computer Use
@@ -11,14 +11,14 @@ There are two current tool type strings:
 
 | Tool type | Beta header | Supported models |
 |-----------|-------------|-----------------|
-| `computer_20251124` | `computer-use-2025-11-24` | Claude Opus 4.7, Opus 4.6, Sonnet 4.6, Opus 4.5 |
-| `computer_20250124` | `computer-use-2025-01-24` | Sonnet 4.5, Haiku 4.5, Opus 4.1, Sonnet 4, Opus 4, Sonnet 3.7 (deprecated) |
+| `computer_20251124` | `computer-use-2025-11-24` | Claude Sonnet 5, Opus 4.8, Opus 4.7, Opus 4.6, Sonnet 4.6, Opus 4.5 |
+| `computer_20250124` | `computer-use-2025-01-24` | Sonnet 4.5, Haiku 4.5, Opus 4.1 (deprecated), Sonnet 4 (retired except Bedrock/Google Cloud), Opus 4 (retired except Google Cloud) |
 
-Use the latest tool type with the latest supported model unless you have a specific reason to use an older version. The `computer_20250124` version and its beta header are deprecated.
+Use the latest tool type with the latest supported model unless you have a specific reason to use an older version. The `computer_20250124` tool version itself is not marked deprecated, but several of the models it supports are deprecated or retired; use `computer_20251124` with a current model.
 
 ## Action types
 
-`computer_20250124` supports:
+All tool versions support:
 
 - `screenshot` — capture the current display state
 - `left_click` — click at `[x, y]`
@@ -26,7 +26,7 @@ Use the latest tool type with the latest supported model unless you have a speci
 - `key` — press a key or key combination (for example, `"ctrl+s"`, `"Return"`)
 - `mouse_move` — move cursor to `[x, y]`
 
-`computer_20251124` adds:
+`computer_20250124` and later add:
 
 - `scroll` — scroll in any direction with amount control
 - `left_click_drag` — click and drag between two coordinate pairs
@@ -35,11 +35,14 @@ Use the latest tool type with the latest supported model unless you have a speci
 - `left_mouse_down`, `left_mouse_up` — fine-grained control for drag operations
 - `hold_key` — hold a key down for a specified duration (seconds)
 - `wait` — pause between actions
-- `zoom` — view a specific region at full resolution (requires `enable_zoom: true` in the tool definition; available in `computer_20251124` only)
+
+`computer_20251124` adds only one new action:
+
+- `zoom` — view a specific region at full resolution (requires `enable_zoom: true` in the tool definition and takes a `region` parameter `[x1, y1, x2, y2]`)
 
 ## Coordinate system
 
-Screenshots are sent to the API as base64-encoded images. For most models (before Claude Opus 4.7), the API constrains images to a maximum of 1568 pixels on the longest edge and approximately 1.15 megapixels total. This means a 1512x982 screen gets downsampled before analysis.
+Screenshots are sent to the API as base64-encoded images. For models before Claude Opus 4.7, the API constrains images to a maximum of 1568 pixels on the longest edge and approximately 1.15 megapixels total. This means a 1512x982 screen gets downsampled before analysis.
 
 Claude analyzes the smaller image and returns click coordinates in that downsampled space. Your code must scale those coordinates back up to screen space before executing them:
 
@@ -63,7 +66,7 @@ def to_screen_coords(x: int, y: int) -> tuple[int, int]:
     return int(x / scale), int(y / scale)
 ```
 
-Claude Opus 4.7 supports up to 2576 pixels on the long edge, and its coordinates are 1:1 with image pixels, so no scaling is required for that model.
+Claude Sonnet 5, Opus 4.8, and Opus 4.7 support up to 2576 pixels on the long edge. On all models, coordinates come back in the pixel space of the image you actually sent, so rescaling is only needed when your screen exceeds the model's image limit and you downsize the screenshot.
 
 ## API parameters
 

@@ -2,13 +2,13 @@
 
 > **Last verified:** 2026-05-06 · **Drift risk:** medium
 
-This section contains five hands-on quickstarts for building your first AI agents. Each one is scoped to a single, well-defined use case and is designed to be completable in 30 to 60 minutes by someone comfortable with a terminal and a text editor but not necessarily familiar with agent frameworks.
+This section contains six hands-on quickstarts for building your first AI agents. Each one is scoped to a single, well-defined use case and is designed to be completable in 30 to 60 minutes by someone comfortable with a terminal and a text editor but not necessarily familiar with agent frameworks.
 
 The quickstarts are vendor-neutral where possible. Where a specific tool is recommended, the reasoning is given explicitly, and alternatives are noted.
 
 ---
 
-## The five quickstarts
+## The six quickstarts
 
 ### 1. [First Read-Only Agent](./first-read-only-agent.md)
 **Use case:** Summarize a folder of Markdown notes into a one-pager.

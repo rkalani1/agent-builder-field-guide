@@ -1,15 +1,20 @@
 # Claude Desktop
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
-> **Official sources:** [Download Claude Desktop](https://claude.ai/download), [Local MCP servers on Claude Desktop](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop), [Custom connectors via remote MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp), [Connectors overview](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
+> **Official sources:** [Download Claude Desktop](https://claude.com/download), [Desktop app reference (Chat, Cowork, Code tabs)](https://code.claude.com/docs/en/desktop), [Local MCP servers on Claude Desktop](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop), [Custom connectors via remote MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp), [Connectors overview](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities), [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 
 ---
 
 ## What This Surface Is
 
-Claude Desktop is the installable application version of Claude for macOS and Windows. It gives you the same Claude models you get on claude.ai, wrapped in a native app that can integrate with tools and data sources running on your local machine.
+Claude Desktop is the installable application version of Claude for macOS and Windows, with a Linux beta (see Limits and Gotchas). It gives you the same Claude models you get on claude.ai, wrapped in a native app that can integrate with tools and data sources running on your local machine.
 
-The key capability that distinguishes it from the web interface is support for desktop extensions—packaged MCP (Model Context Protocol) servers that Claude can call during a conversation. With an extension active, Claude can read and write local files, query a local database, call a shell command, or talk to an API on your behalf. The app manages permissions, credentials, and the connection lifecycle.
+The app is organized into three tabs, per the [official desktop reference](https://code.claude.com/docs/en/desktop): **Chat** for conversations, **Cowork** for Dispatch and longer agentic work, and **Code** for software development (an embedded [Claude Code](claude-code.md)). This page focuses on the Chat tab and its desktop extensions—packaged MCP (Model Context Protocol) servers that Claude can call during a conversation. With an extension active, Claude can read and write local files, query a local database, call a shell command, or talk to an API on your behalf. The app manages permissions, credentials, and the connection lifecycle.
+
+### The Cowork and Code tabs
+
+- **Cowork** is the desktop app's workspace for longer agentic work: instead of a single chat exchange, Claude works through multi-step tasks against your files. Per mid-2026 official announcements, Cowork launched in the desktop app in early 2026 and has since expanded to other surfaces. Plan availability and how file-access permissions are scoped are documented in the official [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork) article and on the [Cowork product page](https://claude.com/product/cowork)—verify current details there.
+- **Code** embeds Claude Code for software development; see [Claude Code](claude-code.md) and the [desktop reference](https://code.claude.com/docs/en/desktop).
 
 ---
 
@@ -17,7 +22,7 @@ The key capability that distinguishes it from the web interface is support for d
 
 - People who want Claude to access local files or apps without running a cloud server
 - Developers who want to prototype MCP-based tools before deploying them
-- Teams on Pro, Max, Team, or Enterprise plans who want Anthropic-reviewed connectors from the directory
+- Teams on Pro, Max, Team, or Enterprise plans who want connectors from the official directory
 - Anyone who finds the browser interface insufficient for tasks that require persistent local context
 
 ---
@@ -25,7 +30,7 @@ The key capability that distinguishes it from the web interface is support for d
 ## Prerequisites
 
 - macOS 12 or later, or Windows 10 1809 or later
-- A Claude account: Pro, Max, Team, or Enterprise (the Free plan does not include tool use via desktop extensions as of this writing—verify current plan limits at [claude.ai/upgrade](https://claude.ai/upgrade))
+- A Claude account: Pro, Max, Team, or Enterprise (the Free plan does not include tool use via desktop extensions as of this writing—verify current plan limits at [claude.com/pricing](https://claude.com/pricing))
 - Node.js, Python, or a compiled binary if you plan to run a custom MCP server locally
 
 ---
@@ -34,7 +39,7 @@ The key capability that distinguishes it from the web interface is support for d
 
 ### 1. Download and install
 
-Go to [claude.ai/download](https://claude.ai/download) and download the package for your operating system. Run the installer. No special permissions are needed beyond what a standard app installation requires.
+Go to [claude.com/download](https://claude.com/download) (claude.ai/download redirects there) and download the package for your operating system. Run the installer. No special permissions are needed beyond what a standard app installation requires.
 
 ### 2. Log in
 
@@ -46,7 +51,7 @@ Navigate to **Settings > Extensions**. This is where you manage both directory e
 
 ### 4. Browse and install a directory extension
 
-Click **Browse extensions** to see Anthropic-reviewed tools. Each listing shows what the extension can read and write, and which platforms it is available on. Click **Install** on any extension you want. Configure any required settings (such as API keys) through the form that appears. The extension becomes available in your conversations immediately.
+Click **Browse extensions** to see the connectors directory. Note that listings are not all reviewed to the same depth: per the official directory documentation, **verified** connectors are reviewed by Anthropic, while **community** connectors pass automated checks but are not reviewed in depth—check the badge on each listing. Each listing shows what the extension can read and write, and which platforms it is available on. Click **Install** on any extension you want. Configure any required settings (such as API keys) through the form that appears. The extension becomes available in your conversations immediately.
 
 ### 5. Verify a connection
 
@@ -60,7 +65,7 @@ The filesystem MCP server is the canonical first example. It lets Claude read an
 
 ### Installing a custom desktop extension
 
-As of early 2026, Claude Desktop uses packaged `.mcpb` files for custom extensions rather than manual JSON editing of a config file. The older `claude_desktop_config.json` pattern, which was the standard approach in 2024 and early 2025, has been superseded by the `.mcpb` packaging format. If you have documentation referencing `claude_desktop_config.json`, treat it as potentially outdated and check current docs.
+As of early 2026, the packaged `.mcpb` file is the primary documented path for custom extensions, rather than manual JSON editing of a config file. The older `claude_desktop_config.json` pattern, which was the standard approach in 2024 and early 2025, is treated by the desktop docs as the manual, older path—but it has not clearly disappeared: the MCP project docs still describe [connecting local servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers) to Claude Desktop via that config file. Treat the two paths as coexisting and verify against current docs before assuming either is gone.
 
 To install a custom extension:
 
@@ -81,7 +86,7 @@ Summarize all markdown files in ~/Documents/project-notes, grouped by topic.
 
 Claude will call the filesystem tool to list files, read each one, and return a structured summary. It will ask for approval before any write operations.
 
-For reference, the old JSON config format (now superseded but still referenced in many tutorials) looked like this:
+For reference, the older JSON config format (still documented by the MCP project and referenced in many tutorials) looks like this:
 
 ```json
 {
@@ -126,9 +131,9 @@ You can have multiple extensions installed and selectively enable them per conve
 
 ## Limits and Gotchas
 
-- **Linux is not the primary target.** The support article mentions macOS and Windows. A Linux version may exist but its feature parity—particularly for desktop extensions—is not guaranteed. Verify before relying on it for production workflows.
+- **Linux is in beta.** Claude Desktop for Linux is available in beta for Ubuntu and Debian (x64 and arm64) via apt or a .deb package, per the [official Linux page](https://code.claude.com/docs/en/desktop-linux). Given the beta label, verify feature parity—particularly for desktop extensions—before relying on it for production workflows.
 - **Custom connectors are cloud-side, not local-side.** Remote MCP connectors (added via a URL) reach your MCP server from Anthropic's cloud infrastructure, not from your local machine. Your server must be reachable over the public internet. This is different from desktop extensions, which run locally. Per the [remote MCP docs](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp), servers behind a corporate firewall will fail unless you allowlist Anthropic's IP ranges.
-- **The `.mcpb` packaging requirement is new.** Documentation on the web still refers to `claude_desktop_config.json`. The official docs as of 2026-05-06 describe this as the older path; the current method uses the developer section of the Extensions settings panel.
+- **The `.mcpb` packaging path is newer than most tutorials.** Documentation on the web still refers to `claude_desktop_config.json`. The desktop docs describe the JSON config as the older, manual path and steer custom extensions through the developer section of the Extensions settings panel, but the MCP project docs still document the config file for local servers—check which route your Claude Desktop version supports.
 - **Free plan users have limited connector access.** The free plan limits custom connectors to one. Directory extensions may have their own plan requirements. Check individual extension listings.
 - **Context window still applies.** Enabling many connectors adds tool definitions to the context window and can reduce the space available for conversation content.
 
@@ -138,25 +143,27 @@ You can have multiple extensions installed and selectively enable them per conve
 
 | Claim | Status |
 |-------|--------|
-| Download at claude.ai/download | Confirmed by official download page |
+| Download at claude.com/download (claude.ai/download redirects) | Confirmed: 301 redirect observed 2026-07-18 |
+| Three tabs: Chat, Cowork, Code | Confirmed by [desktop reference](https://code.claude.com/docs/en/desktop) (fetched 2026-07-18) |
 | Desktop extensions installed via .mcpb files | Confirmed by support article |
-| Older `claude_desktop_config.json` now deprecated in favor of .mcpb | Confirmed: docs call JSON config "manual" and describe it as the older path |
+| `.mcpb` is the primary documented custom-extension path | Mixed: desktop docs call the JSON config the older manual path, but [MCP project docs](https://modelcontextprotocol.io/docs/develop/connect-local-servers) still document `claude_desktop_config.json`—verify |
 | Settings path: Settings > Extensions | Confirmed by support article |
 | Tool permission options (Always allow, Needs approval, Blocked) | Confirmed by connectors support article |
 | Free plan limits custom connectors to one | Confirmed by connectors overview article |
-| Linux parity not guaranteed | Practical inference; Linux mentioned in Claude Code docs but not prominently in Desktop docs |
+| Directory distinguishes verified (Anthropic-reviewed) from community connectors | Reported by official directory documentation surfaced in search 2026-07-18; direct fetch blocked—verify on the [directory](https://claude.com/connectors) |
+| Linux desktop app in beta (Ubuntu/Debian, apt/.deb, x64/arm64) | Confirmed by [official Linux page](https://code.claude.com/docs/en/desktop-linux) (linked from desktop reference, fetched 2026-07-18) |
 
 ---
 
 ## Cost and Rate-Limit Notes
 
-Claude Desktop itself does not carry an additional fee. Costs come from the underlying Claude plan. Pro and Max plans include a usage allowance; very heavy tool-use sessions (many file reads, many model calls) may consume your allowance faster than plain conversation. Team and Enterprise plans have separate per-seat or enterprise pricing. Check [claude.ai/upgrade](https://claude.ai/upgrade) for current plan details—specific prices are not documented here.
+Claude Desktop itself does not carry an additional fee. Costs come from the underlying Claude plan. Pro and Max plans include a usage allowance; very heavy tool-use sessions (many file reads, many model calls) may consume your allowance faster than plain conversation. Team and Enterprise plans have separate per-seat or enterprise pricing. Check [claude.com/pricing](https://claude.com/pricing) for current plan details—specific prices are not documented here.
 
 ---
 
 ## Where to Go Next
 
-- [Claude Code](claude-code.md) — if you want a terminal-based workflow for coding tasks
+- [Claude Code](claude-code.md) — for coding workflows in the terminal or via the desktop app's Code tab
 - [Claude Projects](claude-projects.md) — if you want persistent system instructions and file context without tool use
 - [Custom remote MCP connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) — if you want to connect a cloud-hosted MCP server
-- [Connectors directory](https://claude.ai/connectors) — to browse Anthropic-reviewed integrations
+- [Connectors directory](https://claude.com/connectors) — to browse verified and community connectors (also reachable in-product under **Settings > Connectors**)

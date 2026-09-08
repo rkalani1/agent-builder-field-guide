@@ -1,6 +1,6 @@
 # GitHub Copilot cloud agent task
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** high · **Partially re-verified:** 2026-07-18
 
 ## Goal
 
@@ -8,7 +8,7 @@ This recipe walks through assigning a GitHub issue to the [GitHub Copilot cloud 
 
 ## Recommended platform(s)
 
-Primary: [GitHub Copilot cloud agent](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) (available on Copilot Pro, Pro+, Business, and Enterprise; Business/Enterprise organizations may also need an administrator to enable the policy).
+Primary: [GitHub Copilot cloud agent](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) (per official announcements as of mid-2026, available on all paid Copilot plans — Pro, Pro+, Max, Business, and Enterprise — with limited agent usage on Copilot Student; Business/Enterprise organizations may also need an administrator to enable the policy).
 
 Alternates: [Claude Code](https://code.claude.com/docs/en/setup) with a local sandbox; [Codex CLI](https://developers.openai.com/codex/cli) with workspace-write mode.
 
@@ -18,7 +18,7 @@ GitHub Copilot cloud agent works entirely in the cloud — it does not require a
 
 ## Required subscription / account / API
 
-- GitHub Copilot Pro, Pro+, Business, or Enterprise plan. Business and Enterprise organizations may need an administrator to enable Copilot cloud agent before repository contributors can use it. Check [the about page](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) for current availability and exclusions.
+- A paid GitHub Copilot plan (Pro, Pro+, Max, Business, or Enterprise, per official announcements as of mid-2026; Copilot Student includes limited agent usage). Business and Enterprise organizations may need an administrator to enable Copilot cloud agent before repository contributors can use it. Check [the about page](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) and the [plans overview](https://docs.github.com/en/copilot/get-started/plans) for current availability and exclusions.
 - The repository must be accessible to Copilot (public or within an organization that has enabled Copilot for repositories).
 - No local API keys required; authentication is handled through your GitHub account.
 
@@ -36,9 +36,9 @@ GitHub Copilot cloud agent works entirely in the cloud — it does not require a
 | Branch create/push | A new branch created by the agent | Agent pushes to its own branch; cannot push to `main` directly. |
 | PR create | The assigned repository | Agent opens a PR for human review. |
 | Issue comment | The assigned issue | Agent updates the issue with its progress. |
-| Actions (CI) | Triggered by the PR | CI runs on the agent's PR like any other PR. |
+| Actions (CI) | Triggered by the PR | Actions workflows run on the agent's PR only after a human approves the workflow run. |
 
-The agent does not have admin access to the repository. It cannot merge its own PR, cannot modify branch protection rules, and cannot access secrets that are not explicitly granted to the `pull_request` event trigger. Verify the organization's Copilot policy settings before enabling the agent on sensitive repositories.
+The agent does not have admin access to the repository. It cannot merge its own PR and cannot modify branch protection rules. Which secrets are reachable from the agent's environment is governed by a separate mechanism (GitHub's customization docs describe a dedicated Actions environment for agent secrets, not the `pull_request` event trigger) — verify the current behavior against the [Copilot cloud agent docs](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) and the organization's Copilot policy settings before enabling the agent on sensitive repositories.
 
 ## Filled agent spec
 
@@ -68,8 +68,8 @@ The agent does not have admin access to the repository. It cannot merge its own 
    the valid and invalid cases.
    ```
 3. On the issue page, click "Assign" and select "Copilot" from the assignees list. If "Copilot" does not appear, the feature may not be enabled for your plan or organization — check [the about page](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent).
-4. Copilot will comment on the issue to confirm it has started working.
-5. Monitor the issue for progress comments. Copilot typically opens a PR within a few minutes for small tasks.
+4. Copilot reacts to the issue with an eyes emoji and starts a session; within a few minutes it opens a linked draft PR where progress and session logs appear.
+5. Monitor the linked draft PR and its session logs for progress. Copilot typically opens the PR within a few minutes for small tasks.
 6. When the PR is opened, review it as described in the next section.
 
 ## Reviewing the pull request
@@ -84,7 +84,7 @@ What to check in the review:
 
 1. Diff scope: does the PR touch only the files mentioned in the issue? Unexpected changes to unrelated files are a yellow flag.
 2. Test coverage: does the PR include or update tests? A PR with no tests for a feature that requires them should be reviewed closely.
-3. CI results: all CI checks must pass before merging.
+3. CI results: Actions workflows do not run on a Copilot-created PR until a human approves the workflow run — approve the workflow run on the PR first, then confirm all CI checks pass before merging.
 4. Hardcoded values: scan for any hardcoded credentials, API keys, or environment-specific values. The agent should use environment variables.
 5. Style conformance: does the code match the repository's existing style?
 
@@ -92,7 +92,10 @@ Request changes if any of the above are unsatisfactory, just as you would for a 
 
 ## Prompt / instructions
 
-Unlike code-execution recipes, Copilot cloud agent receives its instructions from the issue body and the repository's codebase. To improve agent output:
+Unlike code-execution recipes, Copilot cloud agent receives its instructions from the issue body, the repository's codebase, and any repository instruction files. To improve agent output:
+
+- Add repository instructions in `.github/copilot-instructions.md` or `AGENTS.md` (build/test commands, conventions; the nearest `AGENTS.md` in the directory tree takes precedence) — the agent reads these on every task. See [Adding repository custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions).
+- Write the issue itself against the guide below:
 
 ```
 # Issue writing guide for Copilot agent tasks
@@ -174,7 +177,7 @@ If the agent opens a PR with unexpected changes or appears to be operating outsi
 
 ## Cost / usage controls
 
-- Copilot cloud agent consumes premium requests. GitHub's current billing docs say each cloud-agent session uses one premium request multiplied by the model's rate, and real-time steering comments during an active session also consume premium requests. Check [GitHub Copilot requests](https://docs.github.com/en/copilot/concepts/billing/copilot-requests) before assigning many tasks in parallel.
+- Per GitHub's June 2026 official announcements, Copilot billing is usage-based as of June 1, 2026: cloud-agent sessions consume GitHub AI credits based on the model used and token usage, plus GitHub Actions minutes, and an agentic session makes many model calls — so complex tasks and frequent steering comments consume credits faster than simple chat. (Annual Pro/Pro+ subscribers remain on the legacy premium-request model until their plan term ends.) Check the usage-based billing pages for [individuals](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals) and [organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises) before assigning many tasks in parallel; the old [requests page](https://docs.github.com/en/copilot/concepts/billing/copilot-requests) is now labeled "(legacy)".
 - Limit the number of concurrent agent tasks to avoid unreviewed PRs accumulating.
 - Close PRs promptly after review to avoid branch proliferation.
 
@@ -185,8 +188,9 @@ If the agent opens a PR with unexpected changes or appears to be operating outsi
 - [ ] GitHub secret scanning is enabled on the repository.
 - [ ] The issue body follows the writing guide: specific file references, expected behavior, test expectations.
 - [ ] At least one human reviewer is assigned to the PR before merging.
+- [ ] Reviewers know that Actions workflows on the agent's PR only run after a human approves the workflow run, and approve it before checking CI results.
 - [ ] The revoking-access steps are known to the team before the first agent task is assigned.
 
 ## Maintenance cadence
 
-Re-verify this recipe when GitHub releases updates to Copilot cloud agent — the assignment flow, PR format, available plans, and premium-request accounting have changed multiple times. Check [the about page](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent), [GitHub Copilot requests](https://docs.github.com/en/copilot/concepts/billing/copilot-requests), and the [GitHub Copilot changelog](https://github.blog/changelog/) quarterly. Run all six eval cases on a test repository after any major GitHub Copilot release.
+Re-verify this recipe when GitHub releases updates to Copilot cloud agent — the assignment flow, PR format, available plans, and billing accounting have changed multiple times (request-based "premium request" billing was replaced by usage-based AI-credit billing in June 2026). Check [the about page](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent), the [usage-based billing docs](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals), and the [GitHub Copilot changelog](https://github.blog/changelog/) quarterly. Run all six eval cases on a test repository after any major GitHub Copilot release.

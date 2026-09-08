@@ -32,7 +32,7 @@ How to tell whether it worked: every meeting has exactly four lines, the open qu
 
 Fallback: paste the calendar text directly. Free plans on every product can do this.
 
-## Layer 2 — Project `Sub`
+## Layer 2 — Project `Sub` {#layer-2-project-sub}
 
 Build a "Daily brief" Project (Claude / ChatGPT) or Gem (Gemini) with:
 

@@ -4,7 +4,10 @@ Canonical references used across this guide. Cite these (with current dates) whe
 
 ## Anthropic — Claude
 
-- Claude Desktop download: <https://claude.ai/download>
+- Claude Desktop download: <https://claude.com/download> (formerly claude.ai/download)
+- Claude Code in the Desktop app: <https://code.claude.com/docs/en/desktop>
+- Claude Desktop for Linux (beta): <https://code.claude.com/docs/en/desktop-linux>
+- Claude pricing/plans: <https://claude.com/pricing>
 - Claude Code docs (setup): <https://code.claude.com/docs/en/setup>
 - Claude Code docs (quickstart): <https://code.claude.com/docs/en/quickstart>
 - Claude Code docs (settings & permissions): <https://code.claude.com/docs/en/settings>
@@ -70,8 +73,10 @@ Canonical references used across this guide. Cite these (with current dates) whe
 
 - MCP home: <https://modelcontextprotocol.io>
 - MCP introduction: <https://modelcontextprotocol.io/introduction>
+- MCP spec (2025-11-25, current): <https://modelcontextprotocol.io/specification/2025-11-25>
 - MCP spec (2025-06-18): <https://modelcontextprotocol.io/specification/2025-06-18>
 - MCP spec (2025-03-26): <https://modelcontextprotocol.io/specification/2025-03-26>
+- GitHub official MCP server: <https://github.com/github/github-mcp-server>
 - MCP SDKs index: <https://modelcontextprotocol.io/docs/sdk>
 - MCP Python SDK: <https://github.com/modelcontextprotocol/python-sdk>
 - MCP TypeScript SDK: <https://github.com/modelcontextprotocol/typescript-sdk>

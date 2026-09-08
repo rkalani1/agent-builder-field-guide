@@ -1,6 +1,6 @@
 # Gemini function-calling agent
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
 
 ## Goal
 
@@ -59,14 +59,15 @@ The Gemini API's [function-calling feature](https://ai.google.dev/gemini-api/doc
    ```
 2. Install the pinned SDK:
    ```
-   pip install "google-genai==1.5.0" python-dotenv
+   pip install "google-genai==2.12.1" python-dotenv
    ```
    Check [the google-genai PyPI page](https://pypi.org/project/google-genai/) for the latest release. The older `google-generativeai` package is in maintenance mode; prefer `google-genai` for new projects.
 3. Create a `.env` file:
    ```
    GEMINI_API_KEY=<your-key>
+   GEMINI_MODEL=<current-model-id>
    ```
-   Add `.env` to `.gitignore`.
+   Add `.env` to `.gitignore`. For the current model IDs, check the [Gemini models page](https://ai.google.dev/gemini-api/docs/models); see also [model freshness](../model-freshness.md) for why this guide reads model names from an environment variable instead of hard-coding them.
 4. Create a sample notes file:
    ```
    echo "Q2 planning complete. Budget approved at $2.4 M. Three new hires starting May 12." \
@@ -82,7 +83,7 @@ The Gemini API's [function-calling feature](https://ai.google.dev/gemini-api/doc
 
 ```python
 # gemini_notes_agent.py
-# Requires: google-genai==1.5.0, python-dotenv
+# Requires: google-genai==2.12.1, python-dotenv
 # Gemini function-calling docs: https://ai.google.dev/gemini-api/docs/function-calling
 
 import argparse, os
@@ -94,7 +95,9 @@ import google.genai.types as types
 load_dotenv()
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-MODEL = "gemini-2.0-flash"  # or "gemini-1.5-pro" for higher quality
+# Model IDs are retired on a rolling basis; read the ID from the environment
+# and pick a current one from https://ai.google.dev/gemini-api/docs/models
+MODEL = os.environ.get("GEMINI_MODEL", "REPLACE_WITH_CURRENT_MODEL")
 
 
 def read_notes(path: str) -> str:
@@ -131,10 +134,12 @@ USER_PROMPT_TEMPLATE = "Summarize the notes at: {path}"
 
 
 def run_agent(file_path: str) -> str:
-    # Define tools via Python function references
+    # Define tools by introspecting the Python callables.
+    # (Passing bare callables in `tools=[...]` instead would switch on the
+    # SDK's automatic function calling; this recipe keeps the loop manual.)
     tools = [types.Tool(function_declarations=[
-        types.FunctionDeclaration.from_function(read_notes),
-        types.FunctionDeclaration.from_function(summarize),
+        types.FunctionDeclaration.from_callable_with_api_option(callable=read_notes),
+        types.FunctionDeclaration.from_callable_with_api_option(callable=summarize),
     ])]
 
     config = types.GenerateContentConfig(
@@ -142,8 +147,10 @@ def run_agent(file_path: str) -> str:
         tools=tools,
     )
 
-    messages = [{"role": "user",
-                 "parts": [USER_PROMPT_TEMPLATE.format(path=file_path)]}]
+    messages = [types.Content(
+        role="user",
+        parts=[types.Part(text=USER_PROMPT_TEMPLATE.format(path=file_path))],
+    )]
 
     # Agentic loop: keep going until the model stops calling functions
     for _ in range(10):  # max 10 turns
@@ -164,7 +171,7 @@ def run_agent(file_path: str) -> str:
             )
 
         # Append the model's response to the conversation
-        messages.append({"role": "model", "parts": candidate.content.parts})
+        messages.append(candidate.content)
 
         # Execute each function call and append results
         fn_responses = []
@@ -177,7 +184,7 @@ def run_agent(file_path: str) -> str:
             fn_responses.append(types.Part.from_function_response(
                 name=fc.name, response={"result": result}
             ))
-        messages.append({"role": "user", "parts": fn_responses})
+        messages.append(types.Content(role="user", parts=fn_responses))
 
     return "Agent did not complete within the maximum number of turns."
 
@@ -197,7 +204,7 @@ if __name__ == "__main__":
 
 | Aspect | OpenAI Agents SDK | Gemini (`google-genai`) |
 |---|---|---|
-| Tool decoration | `@function_tool` auto-generates schema | `FunctionDeclaration.from_function()` introspects the function |
+| Tool decoration | `@function_tool` auto-generates schema | `FunctionDeclaration.from_callable_with_api_option()` introspects the callable |
 | System prompt | `Agent(instructions=...)` | `GenerateContentConfig(system_instruction=...)` |
 | Loop management | `Runner.run_sync()` manages the loop | Manual turn loop (10-turn cap) |
 | Tool dispatch | SDK calls functions automatically | You dispatch calls in the loop |
@@ -226,7 +233,7 @@ additional senior engineers to join by Q3.
 3. File not found — `read_notes` returns the error string; agent surfaces it without crashing.
 4. File with 10 000 characters — `summarize` caps at 4 000 chars; agent proceeds without crashing.
 5. API key missing from `.env` — `client` initialization raises an `AuthenticationError`; add a `try/except` around the client creation and print a clear message.
-6. Model name changed or deprecated — the script fails at the `generate_content` call with a model-not-found error; update `MODEL` to the current model name.
+6. Model name changed or deprecated — the script fails at the `generate_content` call with a model-not-found error; set the `GEMINI_MODEL` environment variable to a current model name.
 
 ## Red-team probes
 
@@ -237,14 +244,14 @@ additional senior engineers to join by Q3.
 ## Failure modes
 
 - Manual loop misses edge cases: the handwritten turn loop may not handle all Gemini response states (e.g., a `STOP` finish reason mixed with function calls). Mitigation: check `candidate.finish_reason` in the loop and handle unexpected states explicitly.
-- Rate limiting on free tier: Gemini free tier has low requests-per-minute limits (qualitatively: 15 RPM for Flash as of mid-2026; check the [Gemini rate limits page](https://ai.google.dev/gemini-api/docs/models/gemini) for current values). Mitigation: add exponential backoff on 429 responses.
-- `FunctionDeclaration.from_function` schema gaps: the introspection may not handle all Python type hints (e.g., `list[str]`). Mitigation: define `FunctionDeclaration` manually for complex signatures.
-- Model name deprecation: Gemini model names change frequently. Mitigation: pin the model name in a constant and update it when the model is deprecated.
+- Rate limiting on free tier: the Gemini free tier has low requests-per-minute limits; check the [Gemini rate limits page](https://ai.google.dev/gemini-api/docs/rate-limits) for current values. Mitigation: add exponential backoff on 429 responses.
+- `from_callable_with_api_option` schema gaps: the introspection may not handle all Python type hints (e.g., `list[str]`). Mitigation: define `FunctionDeclaration` manually for complex signatures.
+- Model name deprecation: Gemini model names change frequently. Mitigation: read the model name from the `GEMINI_MODEL` environment variable and update the variable when a model is retired.
 - SDK breaking change: `google-genai` is actively developed; minor releases may break the API. Mitigation: pin the version and review the changelog before upgrading.
 
 ## Cost / usage controls
 
-- Choose a current low-latency Gemini model for routine extraction tasks and verify model availability/pricing in the [Gemini model docs](https://ai.google.dev/gemini-api/docs/models/gemini).
+- Choose a current low-latency Gemini model for routine extraction tasks and verify model availability/pricing in the [Gemini model docs](https://ai.google.dev/gemini-api/docs/models).
 - Free tier has per-day and per-minute quotas; check the AI Studio dashboard for current limits.
 - Add exponential backoff on 429 errors to stay within rate limits gracefully.
 
@@ -259,4 +266,4 @@ additional senior engineers to join by Q3.
 
 ## Maintenance cadence
 
-Re-verify when `google-genai` releases a new minor or major version. Check the [Gemini function-calling documentation](https://ai.google.dev/gemini-api/docs/function-calling) for API changes after each release. Update the `MODEL` constant when the current model is deprecated. Run all six eval cases after any SDK or model update.
+Re-verify when `google-genai` releases a new minor or major version. Check the [Gemini function-calling documentation](https://ai.google.dev/gemini-api/docs/function-calling) for API changes after each release. Update the `GEMINI_MODEL` environment variable (and this page's models-doc pointer) when the current model is deprecated. Run all six eval cases after any SDK or model update.

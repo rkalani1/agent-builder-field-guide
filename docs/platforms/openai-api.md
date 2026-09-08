@@ -1,6 +1,6 @@
 # OpenAI API and Agents SDK
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-07-18 · **Drift risk:** medium
 > **Official sources:** [openai/openai-agents-python on GitHub](https://github.com/openai/openai-agents-python), [The next evolution of the Agents SDK](https://openai.com/index/the-next-evolution-of-the-agents-sdk/)
 
 ---
@@ -8,6 +8,8 @@
 ## What this surface is
 
 The OpenAI API gives you direct programmatic access to OpenAI models via HTTP. The Agents SDK (`openai-agents`) is an open-source Python library layered on top of the API that provides the scaffolding for building multi-step, multi-tool agents: a structured agent loop, tool definitions, agent-to-agent handoffs, guardrails for input and output validation, session memory, and built-in tracing. It is described in the [repository](https://github.com/openai/openai-agents-python) as "a lightweight yet powerful framework for building multi-agent workflows."
+
+Under the hood, the SDK is provider-agnostic: the [README](https://github.com/openai/openai-agents-python) describes it as supporting "the OpenAI Responses and Chat Completions APIs, as well as 100+ other LLMs." For OpenAI models the SDK's models documentation recommends `OpenAIResponsesModel`, which calls OpenAI via the newer Responses API; Chat Completions remains available as the alternative API shape and the common denominator for non-OpenAI providers.
 
 This is the right surface when you need agents that run in your own environment, call arbitrary tools (including code you write), coordinate across multiple specialized sub-agents, or integrate into a larger application. It requires writing Python code and managing your own infrastructure or sandbox.
 
@@ -24,7 +26,7 @@ This is the right surface when you need agents that run in your own environment,
 
 ## Prerequisites
 
-- Python 3.9 or newer. The SDK specifies this as a hard requirement in the [repository](https://github.com/openai/openai-agents-python).
+- Python 3.10 or newer. The SDK specifies this as a hard requirement in the [repository](https://github.com/openai/openai-agents-python).
 - An OpenAI API key. Generate one at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 - Familiarity with async Python (`asyncio`, `await`) is helpful but not strictly required — the SDK provides synchronous wrappers.
 
@@ -110,20 +112,23 @@ The `@function_tool` decorator wraps the function and exposes it to the agent. T
 
 ## Streaming
 
-The SDK supports streaming agent output. This is useful for long-running tasks or user-facing interfaces where you want to display partial results as they arrive.
+The SDK supports streaming agent output. This is useful for long-running tasks or user-facing interfaces where you want to display partial results as they arrive. `Runner.run_streamed()` returns a `RunResultStreaming`; iterate its `stream_events()` to receive events as the run progresses.
 
 ```python
 import asyncio
 from agents import Agent, Runner
+from openai.types.responses import ResponseTextDeltaEvent
 
 agent = Agent(name="Summarizer", instructions="Summarize text concisely.")
 
 async def main():
-    async with Runner.run_streamed(agent, "Summarize the water cycle in three sentences.") as stream:
-        async for event in stream.stream_events():
-            # event.type can be "text_delta", "tool_call", "tool_result", etc.
-            if event.type == "text_delta":
-                print(event.delta, end="", flush=True)
+    result = Runner.run_streamed(agent, input="Summarize the water cycle in three sentences.")
+    async for event in result.stream_events():
+        # event.type is "raw_response_event", "run_item_stream_event",
+        # or "agent_updated_stream_event". Text deltas arrive as raw
+        # Responses API events on raw_response_event.
+        if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+            print(event.data.delta, end="", flush=True)
     print()
 
 if __name__ == "__main__":
@@ -170,7 +175,7 @@ Guardrails are configurable checks that run on agent input and output. They can 
 
 ### Handoffs
 
-A handoff is a mechanism by which one agent transfers control to another. This is how you build multi-agent pipelines: a triage agent routes to a specialized agent based on the content of the input. According to the [SDK docs](https://github.com/openai/openai-agents-python): "A handoff is a specialized tool call used by the Agents SDK for transferring control between agents." The receiving agent continues the conversation with full context.
+A handoff is a mechanism by which one agent transfers control to another. This is how you build multi-agent pipelines: a triage agent routes to a specialized agent based on the content of the input. The [SDK docs](https://openai.github.io/openai-agents-python/handoffs/) explain that handoffs are represented as tools to the LLM — the model invokes a handoff the same way it would invoke a tool, and the SDK transfers control to the target agent. The receiving agent continues the conversation with full context.
 
 ```python
 from agents import Agent
@@ -189,7 +194,7 @@ classifier = Agent(
 
 ### Tracing
 
-The SDK includes automatic tracing of agent runs. Per the [repository](https://github.com/openai/openai-agents-python), tracing is extensible: you can add custom spans, disable it, or route trace data to external destinations including Logfire, AgentOps, Braintrust, Scorecard, and Keywords AI. Tracing is on by default and records the sequence of LLM calls, tool calls, and handoffs — useful for debugging loops that misbehave.
+The SDK includes automatic tracing of agent runs. Tracing is extensible: you can add custom spans, disable it, or route trace data to external destinations — the [tracing docs](https://openai.github.io/openai-agents-python/tracing/) list roughly 30 external processor integrations, including Braintrust, Pydantic Logfire, AgentOps, and Scorecard. Tracing is on by default and records the sequence of LLM calls, tool calls, and handoffs — useful for debugging loops that misbehave.
 
 ---
 
@@ -255,7 +260,7 @@ export OPENAI_API_KEY="sk-..."
 python notes_agent.py
 ```
 
-The agent will search the folder, optionally read specific files for context, and return a prose summary. The `max_turns` parameter on `Runner.run()` (default: no hard limit unless set) controls how many tool-call cycles the agent can perform before stopping.
+The agent will search the folder, optionally read specific files for context, and return a prose summary. The `max_turns` parameter on `Runner.run()` (default: 10) caps how many turns the agent can perform; exceeding it raises `MaxTurnsExceeded`. Set it explicitly to match the work you expect the agent to do.
 
 ---
 
@@ -278,7 +283,7 @@ result2 = await Runner.run(agent, "What is my name?", session=session)
 ## Limits and gotchas
 
 - **The SDK is evolving rapidly.** Check the [GitHub repository](https://github.com/openai/openai-agents-python) for current release notes before building production workflows.
-- **`max_turns` defaults are permissive.** An agent loop with poorly scoped tools can run for many turns and generate unexpected API costs. Set `max_turns` explicitly in production code.
+- **`max_turns` defaults to 10.** Exceeding the limit raises `MaxTurnsExceeded`. An agent loop with poorly scoped tools can still burn many model calls within that budget, so set `max_turns` explicitly in production code to control cost rather than relying on the default.
 - **Tool functions must be synchronous or properly awaited.** The SDK wraps sync tools automatically, but async tool functions need to be defined with `async def`.
 - **Structured output with `output_type` changes the loop exit condition.** The loop will not stop until the model produces a response that validates against the schema. If the schema is too strict or the instructions are ambiguous, the agent may loop repeatedly.
 - **Tracing is on by default** and sends data to OpenAI. If you are processing sensitive data, review the tracing configuration and disable or redirect traces as appropriate before running in production.
@@ -290,11 +295,13 @@ result2 = await Runner.run(agent, "What is my name?", session=session)
 
 | Claim | Source |
 |---|---|
-| Python 3.9+ required | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
+| Python 3.10+ required | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
 | `pip install openai-agents` | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
+| SDK supports OpenAI Responses and Chat Completions APIs (Responses recommended) | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
 | Handoffs, guardrails, tracing are core concepts | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
-| Supported trace destinations (Logfire, AgentOps, etc.) | [Confirmed — SDK README](https://github.com/openai/openai-agents-python) |
+| Supported trace destinations (Logfire, AgentOps, etc.) | [Confirmed — SDK tracing docs](https://openai.github.io/openai-agents-python/tracing/) |
 | Native sandbox execution in updated SDK | [Confirmed — Agents SDK announcement](https://openai.com/index/the-next-evolution-of-the-agents-sdk/) |
+| `max_turns` defaults to 10 (`MaxTurnsExceeded` on overrun) | [Confirmed — SDK source](https://github.com/openai/openai-agents-python) |
 | `max_turns` cost risk in production | **Practical inference** — documented parameter but cost implications are inferred from loop behavior |
 | 50-line truncation in search tool example | **Practical inference** — recommended pattern, not SDK-specified |
 

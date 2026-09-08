@@ -1,6 +1,6 @@
 # Custom GPTs
 
-> **Last verified:** 2026-05-06 · **Drift risk:** medium
+> **Last verified:** 2026-05-06 · **Drift risk:** medium · **Partially re-verified:** 2026-07-18
 > **Official sources:** [Creating and editing GPTs](https://help.openai.com/en/articles/8554397), [Projects in ChatGPT](https://help.openai.com/en/articles/10169521-projects-in-chatgpt)
 
 ---
@@ -9,7 +9,7 @@
 
 A Custom GPT is a published configuration of ChatGPT that packages a specific set of instructions, knowledge files, capability settings, and optional external API connections (Actions) into a shareable assistant. You build it through the GPT builder at [chatgpt.com/gpts](https://chatgpt.com/gpts), and you control who can access it — yourself only, anyone with a link, or anyone on the GPT Store.
 
-Custom GPTs are distinct from Projects. A GPT is a fixed, published tool: one instruction set, one set of knowledge files, deployed to whoever you share it with. A Project is a living workspace where context accumulates over time. If you are building something that will be used repeatedly by people who should not need to configure anything themselves, a Custom GPT is the right choice. If you are building a personal or team context hub that evolves, use a Project instead. The [official FAQ](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) describes GPTs as "best for reusable knowledge that spans functions and contexts" and Projects as "best for team alignment, faster onboarding, and knowledge capture."
+Custom GPTs are distinct from Projects. A GPT is a fixed, published tool: one instruction set, one set of knowledge files, deployed to whoever you share it with. A Project is a living workspace where context accumulates over time. If you are building something that will be used repeatedly by people who should not need to configure anything themselves, a Custom GPT is the right choice. If you are building a personal or team context hub that evolves, use a Project instead. The [official FAQ](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) frames GPTs as best suited to reusable knowledge that spans functions and contexts, and Projects as best suited to team alignment, faster onboarding, and knowledge capture (the article's exact wording changes as it is revised).
 
 ---
 
@@ -23,7 +23,7 @@ Custom GPTs are distinct from Projects. A GPT is a fixed, published tool: one in
 
 ## Prerequisites
 
-- A paid ChatGPT account (Plus, Pro, Business, Enterprise, or Edu). Building and editing GPTs is not available on the Free plan at the time of writing.
+- A paid ChatGPT account. Per the [help center](https://help.openai.com/en/articles/8554397), creating or editing GPTs requires a paid subscription (as of mid-2026 the paid plans are Go, Plus, Pro, Business, Enterprise, and Edu); it is not available on the Free plan, though Free users can still use published GPTs. Verify plan-specific builder access against the help article — plan lineups shift.
 - The GPT builder is only available on the web at [chatgpt.com](https://chatgpt.com). The mobile apps allow using GPTs but not building or editing them.
 - If you plan to add Actions: an HTTPS endpoint you control, with a valid TLS certificate, that accepts JSON requests. Do not use `http://` — Actions require HTTPS.
 
@@ -67,7 +67,7 @@ Four built-in capabilities you can toggle: Web Search, Image Generation, Canvas 
 
 **Actions**
 
-Actions let the GPT call external APIs you define via an OpenAPI schema. Use Actions when the GPT needs to retrieve live data or trigger operations in external systems. A GPT can use either the connected Apps system or Actions, but not both at the same time. See the Actions setup section below.
+Actions let the GPT call external APIs you define via an OpenAPI schema. Use Actions when the GPT needs to retrieve live data or trigger operations in external systems. A GPT can use either the connected Apps system or Actions, but not both at the same time — per [Apps in custom GPTs](https://help.openai.com/en/articles/20001049-apps-in-custom-gpts-for-business-accounts-beta), enabling Apps removes the Actions pane and disables existing actions. Apps inside custom GPTs is currently documented as a beta for Business accounts. See the Actions setup section below.
 
 ---
 
@@ -188,7 +188,7 @@ Key requirements:
 
 - **Knowledge file limits:** 20 files, 512 MB each, per the [docs](https://help.openai.com/en/articles/8554397). Complex layouts in PDFs reduce retrieval reliability.
 - **Actions require HTTPS.** There is no exception for local or staging endpoints. Use a tunnel tool (e.g., ngrok) for development testing, but replace with a real HTTPS endpoint before sharing the GPT.
-- **Actions and Apps are mutually exclusive.** A GPT can use one or the other, not both simultaneously.
+- **Actions and Apps are mutually exclusive.** A GPT can use one or the other, not both simultaneously; enabling Apps disables existing Actions. Apps in custom GPTs is documented as a [Business-accounts beta](https://help.openai.com/en/articles/20001049-apps-in-custom-gpts-for-business-accounts-beta).
 - **Version history is available** from the three-dot menu in the editor. If you restore an older version that had Actions configured, you may need to reconfigure authentication afterward, per the [docs](https://help.openai.com/en/articles/8554397).
 - **Mobile users cannot build GPTs.** They can use them.
 - **JSON output is not guaranteed to be valid JSON** without careful instruction engineering and testing. Use the Preview panel thoroughly. Consider adding explicit instructions to "return only valid JSON with no surrounding text."
@@ -203,7 +203,7 @@ Key requirements:
 |---|---|
 | 20 files, 512 MB each for Knowledge | [Confirmed — official docs](https://help.openai.com/en/articles/8554397) |
 | Actions require HTTPS | [Confirmed — official docs](https://help.openai.com/en/articles/8554397) |
-| Actions and Apps are mutually exclusive | [Confirmed — official docs](https://help.openai.com/en/articles/8554397) |
+| Actions and Apps are mutually exclusive | [Confirmed — official docs](https://help.openai.com/en/articles/20001049-apps-in-custom-gpts-for-business-accounts-beta) |
 | Restoring old Action versions may break auth | [Confirmed — official docs](https://help.openai.com/en/articles/8554397) |
 | Builder only on web, not mobile | [Confirmed — official docs](https://help.openai.com/en/articles/8554397) |
 | JSON output reliability with instruction engineering | **Practical inference** — valid JSON output requires explicit prompting and testing; no documented guarantee |

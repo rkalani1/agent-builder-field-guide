@@ -61,7 +61,7 @@ SANDBOX_DIR = pathlib.Path("./sandbox").resolve()
 def _safe_path(path: str) -> pathlib.Path:
     """Resolve path and reject anything outside SANDBOX_DIR."""
     resolved = (SANDBOX_DIR / path).resolve()
-    if not str(resolved).startswith(str(SANDBOX_DIR)):
+    if not resolved.is_relative_to(SANDBOX_DIR):
         raise PermissionError(
             f"Path '{path}' resolves outside sandbox directory '{SANDBOX_DIR}'. "
             "Access denied."
@@ -72,6 +72,13 @@ def _safe_path(path: str) -> pathlib.Path:
 # ---------------------------------------------------------------------------
 # TOOL DEFINITION
 # ---------------------------------------------------------------------------
+def _read_notes_impl(path: str) -> str:
+    """Core implementation for reading a note file."""
+    safe = _safe_path(path)
+    if not safe.is_file():
+        raise FileNotFoundError(f"File not found in sandbox: {path}")
+    return safe.read_text(encoding="utf-8")
+
 @function_tool
 def read_notes(path: str) -> str:
     """
@@ -87,10 +94,7 @@ def read_notes(path: str) -> str:
         PermissionError: If path resolves outside the sandbox.
         FileNotFoundError: If the file does not exist.
     """
-    safe = _safe_path(path)
-    if not safe.is_file():
-        raise FileNotFoundError(f"File not found in sandbox: {path}")
-    return safe.read_text(encoding="utf-8")
+    return _read_notes_impl(path)
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +116,8 @@ summarizer_agent = Agent(
 # ---------------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------------
-def main() -> None:
+def get_note_files() -> list[pathlib.Path]:
+    """Discover and validate note files in the sandbox directory."""
     notes_dir = SANDBOX_DIR / "notes"
     if not notes_dir.is_dir():
         print(f"ERROR: Sandbox notes directory not found: {notes_dir}", file=sys.stderr)
@@ -123,6 +128,12 @@ def main() -> None:
     if not note_files:
         print("ERROR: No .txt or .md files found in ./sandbox/notes/", file=sys.stderr)
         sys.exit(1)
+
+    return note_files
+
+
+def main() -> None:
+    note_files = get_note_files()
 
     file_list = ", ".join(f.name for f in note_files[:50])
     user_message = (

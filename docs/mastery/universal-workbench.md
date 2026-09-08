@@ -1,5 +1,7 @@
 # Universal AI Mastery & Interactive Workbench
 
+> **Last verified:** 2026-07-18 (page structure; embedded product claims not individually re-verified) · **Drift risk:** high — vendor UIs and plan features drift; the official pages linked throughout are canonical
+
 A model-agnostic playground and setup guide. Select your preferred AI model at the top, and the interactive workbench will dynamically configure its task prompts, setup checklists, toolkits, and surface recommendations for that provider.
 
 ---
@@ -16,7 +18,7 @@ A model-agnostic playground and setup guide. Select your preferred AI model at t
 
   <section class="hero hero-workbench" id="start" aria-labelledby="hero-title">
     <div class="hero-copy">
-      <h1 id="hero-title" class="dynamic-model-name">Learn ChatGPT</h1>
+      <p id="hero-title" class="dynamic-model-name hero-display">Learn ChatGPT</p>
       <p class="lede">Start with one real task. Copy a strong prompt, choose the right surface, and improve the result.</p>
       <p style="margin:0 0 1rem;color:#6b617c;font-size:0.95rem;line-height:1.5;">Use non-sensitive examples here. Do not paste PHI, patient identifiers, learner records, credentials, confidential data, or restricted research data into public demos or exported prompt packs.</p>
       <div class="official-links" aria-label="Official app links" id="app-links">

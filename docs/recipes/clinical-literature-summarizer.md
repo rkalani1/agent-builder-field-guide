@@ -37,7 +37,7 @@ ChatGPT Projects and Claude Projects support persistent system prompts with stro
 | Store or log abstract content | Subject to platform data policy | Review platform data retention policy |
 | Process real patient identifiers | NOT granted — flagged if detected | PHI must not be present in input |
 
-WARNING: This agent must never be used with real patient data, identifiable participant records, trial data containing linked identifiers, or any data covered by HIPAA, GDPR, or equivalent regulations. All input must be synthetic or publicly available (e.g., published abstracts from open-access journals). If a submitted abstract appears to contain PHI, the agent flags it and does not summarize it.
+WARNING: This agent must never be used with real patient data, identifiable participant records, trial data containing linked identifiers, or any data covered by HIPAA, GDPR, or equivalent regulations. All input must be synthetic or publicly available (e.g., published abstracts from open-access journals). If a submitted abstract appears to contain PHI, the agent flags it and does not summarize it. This recipe is an educational workflow pattern, not a clinical tool: its summaries are not clinical decision support and must not inform real patient care.
 
 ## Filled agent spec
 

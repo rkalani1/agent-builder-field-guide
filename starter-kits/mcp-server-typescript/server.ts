@@ -42,7 +42,7 @@ import {
 // ---------------------------------------------------------------------------
 const APPROVED = process.env.OPERATOR_APPROVED_TO_RUN === "1";
 
-if (!APPROVED) {
+if (!APPROVED && process.env.NODE_ENV !== "test") {
   console.error("=".repeat(60));
   console.error("DRY-RUN MODE — This MCP server will NOT start.");
   console.error("Set OPERATOR_APPROVED_TO_RUN=1 in the environment to start.");
@@ -67,7 +67,7 @@ if (!APPROVED) {
 const FORBIDDEN_CHARS = /[\n\r\x00;<>&|`$(){}\[\]]/;
 const MAX_NAME_LENGTH = 100;
 
-function validateName(name: unknown): { valid: true; name: string } | { valid: false; error: string } {
+export function validateName(name: unknown): { valid: true; name: string } | { valid: false; error: string } {
   if (typeof name !== "string" || name.length === 0) {
     return { valid: false, error: "Error: name must be a non-empty string." };
   }
@@ -155,7 +155,9 @@ async function main(): Promise<void> {
   console.error("MCP greeter-server running on stdio.");
 }
 
-main().catch((err) => {
-  console.error("Server error:", err);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== "test") {
+  main().catch((err) => {
+    console.error("Server error:", err);
+    process.exit(1);
+  });
+}

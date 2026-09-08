@@ -3,7 +3,7 @@
 > **Last verified:** 2026-05-06 · **Drift risk:** high
 > **Official sources:** [Antigravity site](https://antigravity.google/), [Antigravity documentation](https://antigravity.google/docs), [Getting Started codelab](https://codelabs.developers.google.com/getting-started-google-antigravity), [Download page](https://antigravity.google/download)
 
-**Re-verify notice**: Antigravity is a new product in active development. UI labels, feature names, configuration paths, and the installation process described here are based on the official codelab as of 2026-05-06. Before writing documentation, tutorials, or internal guides that reference Antigravity, re-check the [codelab](https://codelabs.developers.google.com/getting-started-google-antigravity) and [official docs](https://antigravity.google/docs) directly.
+**Re-verify notice**: Antigravity is a new product in active development. UI labels, feature names, configuration paths, and the installation process described here are based on the official codelab as of 2026-05-06. A re-check attempt on 2026-07-18 could not reach the official pages, but search-surfaced announcements around Google I/O 2026 suggest the product (including its tooling, availability, and plan structure) has been updated since this page's last full verification. Before writing documentation, tutorials, or internal guides that reference Antigravity, re-check the [codelab](https://codelabs.developers.google.com/getting-started-google-antigravity) and [official docs](https://antigravity.google/docs) directly.
 
 ---
 
@@ -18,7 +18,7 @@ The interface has two primary windows:
 - **Editor**: a familiar VS Code-like code editor
 - **Agent Manager**: a dashboard for spawning, monitoring, and reviewing agents
 
-Antigravity is currently available as a preview for personal Gmail accounts with a free quota.
+At this page's last full verification, Antigravity was available as a preview for personal Gmail accounts with a free quota. Availability, plan tiers, and quotas have been changing quickly — check [antigravity.google](https://antigravity.google/) for the current status before relying on this snapshot.
 
 ---
 
@@ -173,7 +173,7 @@ Skills are modular instruction sets for specific capabilities. A skill has a `SK
 
 ### Model selection
 
-The Agent Manager includes a model selection dropdown. Gemini 3 Pro is available with limited quota in the preview tier. Model availability and quota allocations will change as the product moves out of preview.
+The Agent Manager includes a model selection dropdown. At the last full verification (2026-05-06), Gemini 3 Pro was available with limited quota in the preview tier. Model availability and quota allocations change as the product evolves — check the dropdown and the [official docs](https://antigravity.google/docs) for what is currently offered.
 
 ---
 
@@ -183,7 +183,7 @@ The Agent Manager includes a model selection dropdown. Gemini 3 Pro is available
 - **Requires Chrome for browser tasks.** The browser subagent relies on the Antigravity Chrome extension. Safari, Firefox, and other browsers are not supported for this feature.
 - **Review-driven development adds friction, but that is appropriate.** The agent-driven policy (no review prompts) moves faster but applies all changes without your review. Use it only on disposable code or when you fully understand what the agent is doing.
 - **Antigravity and Gemini CLI share config paths.** The global GEMINI.md and `~/.gemini/` directory are shared. Rules or settings written by one tool may affect the other.
-- **Free quota is limited.** The preview offers a free quota for Gemini 3 Pro. Complex tasks that require many model calls will exhaust it quickly. Quota behavior during preview is subject to change.
+- **Free quota is limited.** At last verification, the preview offered a free quota for Gemini 3 Pro. Complex tasks that require many model calls will exhaust it quickly. Quota amounts and plan structure are subject to change — verify at [antigravity.google](https://antigravity.google/).
 - **The `agy` CLI tool is optional but useful.** Installing it during setup lets you interact with Antigravity from a terminal without opening the GUI. Its commands are documented at [antigravity.google/docs](https://antigravity.google/docs).
 - **Undo support exists.** You can undo changes up to a checkpoint using the **Undo changes up to this point** option on artifacts. This is useful when an agent run produces unsatisfactory results.
 
@@ -202,7 +202,7 @@ The Agent Manager includes a model selection dropdown. Gemini 3 Pro is available
 | Artifact types (Task List, Implementation Plan, Walkthrough, code diffs, screenshots) | Confirmed by codelab |
 | Rules in `.agents/rules/`, workflows in `.agents/workflows/` | Confirmed by codelab |
 | Shared `~/.gemini/GEMINI.md` with Gemini CLI | Confirmed by codelab |
-| Gemini 3 Pro available with limited quota | Confirmed by codelab |
+| Gemini 3 Pro available with limited quota | Confirmed by codelab as of 2026-05-06; model lineup and quotas change quickly — re-verify before relying on this |
 | Undo functionality on artifacts | Confirmed by codelab |
 | Linux support available | Confirmed by codelab ("Mac, Windows, and specific Linux distributions") |
 
@@ -210,7 +210,7 @@ The Agent Manager includes a model selection dropdown. Gemini 3 Pro is available
 
 ## Cost and Rate-Limit Notes
 
-During preview, Antigravity is free to use with a personal Gmail account and a provided quota for Gemini 3 Pro. Quota amounts and billing model after the preview period are not yet documented. Check [antigravity.google](https://antigravity.google/) for updates. If you exhaust the free quota during a session, the agent will be unable to continue until quota resets or you configure a different authentication method.
+At this page's last full verification, Antigravity was free to use during preview with a personal Gmail account and a provided quota for Gemini 3 Pro. Quota amounts, plan tiers, and billing details have been changing as the product evolves — check [antigravity.google](https://antigravity.google/) for current quota and pricing information rather than relying on this snapshot. If you exhaust the free quota during a session, the agent will be unable to continue until quota resets or you configure a different authentication method.
 
 ---
 
