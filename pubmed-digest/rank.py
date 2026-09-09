@@ -59,24 +59,54 @@ def _recency_points(pub_date: str, max_points: float, halflife_days: float, toda
     return round(max_points * (0.5 ** (age_days / halflife_days)), 3)
 
 
-def _journal_tier_points(journal: str, tiers: dict[str, list[str]]) -> tuple[float, str | None]:
+def _parse_journal_tiers(tiers: dict[str, list[str]]) -> list[tuple[float, str, str]]:
+    """Pre-parse journal tier dict into a list of (points_float, name_lower, name_original) tuples."""
+    parsed: list[tuple[float, str, str]] = []
+    if not tiers:
+        return parsed
+    for points_str, names in tiers.items():
+        try:
+            pts = float(points_str)
+        except (ValueError, TypeError):
+            continue
+        for name in names:
+            parsed.append((pts, name.lower(), name))
+    return parsed
+
+
+def _journal_tier_points(
+    journal: str,
+    tiers: dict[str, list[str]] | list[tuple[float, str, str]],
+) -> tuple[float, str | None]:
     """Return (points, tier_label) for the journal, matching case-insensitively.
 
     ``tiers`` maps a numeric point value (as a string key) to a list of journal
     name fragments, e.g. ``{"5": ["N Engl J Med", "Lancet"], "3": [...]}.``
+    Alternatively, ``tiers`` can be a pre-parsed list of ``(points_float, name_lower, name_original)`` tuples.
     """
-    if not journal:
+    if not journal or not tiers:
         return 0.0, None
     jlower = journal.lower()
     best_points = 0.0
     best_label: str | None = None
-    for points_str, names in tiers.items():
-        for name in names:
-            if name.lower() in jlower:
-                pts = float(points_str)
+
+    if isinstance(tiers, list):
+        for pts, name_lower, name in tiers:
+            if name_lower in jlower:
                 if pts > best_points:
                     best_points = pts
                     best_label = name
+    else:
+        for points_str, names in tiers.items():
+            try:
+                pts = float(points_str)
+            except (ValueError, TypeError):
+                continue
+            for name in names:
+                if name.lower() in jlower:
+                    if pts > best_points:
+                        best_points = pts
+                        best_label = name
     return best_points, best_label
 
 
@@ -182,7 +212,10 @@ def score_record(record: Record, ranking: dict[str, Any], today: date | None = N
         breakdown["recency"] = recency_pts
 
     # --- Journal tier ---
-    tier_pts, _ = _journal_tier_points(record.journal, ranking.get("journal_tiers", {}))
+    tiers_cfg = ranking.get("_parsed_journal_tiers")
+    if tiers_cfg is None:
+        tiers_cfg = ranking.get("journal_tiers", {})
+    tier_pts, _ = _journal_tier_points(record.journal, tiers_cfg)
     if tier_pts:
         breakdown["journal_tier"] = round(tier_pts, 3)
 
@@ -210,6 +243,8 @@ def rank_records(
     call_ranking = dict(ranking)
     call_ranking["_active_keywords"] = topic_keywords
     call_ranking["_active_mesh"] = topic_mesh
+    if "_parsed_journal_tiers" not in call_ranking and "journal_tiers" in call_ranking:
+        call_ranking["_parsed_journal_tiers"] = _parse_journal_tiers(call_ranking["journal_tiers"])
 
     for rec in records:
         score_record(rec, call_ranking, today=today)
