@@ -31,6 +31,7 @@ Reference: https://github.com/modelcontextprotocol/python-sdk
 """
 
 import os
+import re
 import sys
 
 # ---------------------------------------------------------------------------
@@ -68,6 +69,8 @@ from mcp.server.fastmcp import FastMCP  # from the mcp package
 # ---------------------------------------------------------------------------
 mcp = FastMCP("greeter-server")
 
+FORBIDDEN_CHARS_RE = re.compile(r'[\n\r\x00;<>&|`$(){}\[\]]')
+
 
 @mcp.tool()
 def greet(name: str) -> str:
@@ -90,8 +93,7 @@ def greet(name: str) -> str:
     if len(name) > 100:
         return "Error: name must be 100 characters or fewer."
     # Reject inputs that look like injection attempts
-    forbidden_chars = set('\n\r\x00;<>&|`$(){}[]')
-    if any(c in forbidden_chars for c in name):
+    if FORBIDDEN_CHARS_RE.search(name):
         return "Error: name contains invalid characters."
     # Sanitize for display
     safe_name = name.strip()
