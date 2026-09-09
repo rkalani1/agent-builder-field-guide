@@ -14,7 +14,6 @@ an LLM or otherwise invented.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 from config import get_logger
 from models import Record
